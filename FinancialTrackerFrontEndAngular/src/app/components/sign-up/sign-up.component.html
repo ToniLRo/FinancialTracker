@@ -1,59 +1,37 @@
 <div class="content">
   <div class="login-wrap">
     <div class="login-html">
-      <input id="tab-1" type="radio" name="tab" class="sign-in"><label for="tab-1" class="tab">Sign In</label>
-      <input id="tab-2" type="radio" name="tab" class="sign-up" checked><label for="tab-2" class="tab" >Sign Up</label>
+      <input id="tab-1" type="radio" name="tab" class="sign-in" (click)="goToSignIn()"><label for="tab-1" class="tab">Sign In</label>
+      <input id="tab-2" type="radio" name="tab" class="sign-up" checked ><label for="tab-2" class="tab" >Sign Up</label>
       <div class="login-form">
       <form>
 			<div class="sign-up-htm">
 				<div class="group">
-					<label for="user" class="label">Username           </label>
-					<input id="user" type="text" class="input" name="username"
-          formControlName="username"   >
-          <div  class="alert alert-danger">
-            <div class="submitErrorMessages">Username is required.</div>
-            <div class="submitErrorMessages">Username is repeated. </div>
-          </div>
-				</div>
-        <div class="group">
-					<label for="pass" class="label">Email Address         </label>
-					<input id="pass" type="text" class="input" name="email"
-          formControlName="email" >
-          <div class="alert alert-danger">
-            <div class="submitErrorMessages">Email is required.</div>
-            <div  class="submitErrorMessages">Email is repeated. </div>
-            <div  class="submitErrorMessages">Please provide a valid email address. </div>
-
-          </div>
-
-      
+					<label for="signup-username" class="label">Username</label>
+					<input id="signup-username" type="text" class="input" name="username" [(ngModel)]="signUpData.username" required>
+				</div>  
+				<div class="group">
+					<label for="signup-email" class="label">Email Address</label>
+					<input id="signup-email" type="email" class="input" name="email" [(ngModel)]="signUpData.email" required>
 				</div>
 				<div class="group">
-					<label for="pass" class="label">Password                 </label>
-					<input id="pass" type="password" class="input" data-type="password" name="password"
-          formControlName="password"  >
-          <div  class="alert alert-danger">
-            <div class="submitErrorMessages">Password is required</div>
-          </div>
+					<label for="signup-password" class="label">Password</label>
+					<input id="signup-password" type="password" class="input" name="password" [(ngModel)]="signUpData.password" required>
 				</div>
 				<div class="group">
-
-
-					<label for="pass" class="label">Repeat Password            </label>
-					<input id="pass" type="password" class="input" data-type="password" name="confirmPassword"
-          formControlName="confirmPassword"  >
-          <div  class="alert alert-danger">
-            <div class="submitErrorMessages">Confirm Password is required.</div>
-            <div  class="submitErrorMessages">Passsword and
-              Confirm Password didn't match. </div>
-          </div>
-        </div>
-				<div class="group">
-					<button type="submit" class="button" >Sign Up</button>
+					<label for="signup-confirmPassword" class="label">Repeat Password</label>
+					<input id="signup-confirmPassword" type="password" class="input" name="confirmPassword" [(ngModel)]="signUpData.confirmPassword" required>
 				</div>
-				<div class="hr"></div>
-				<div class="foot-lnk">
-					<label for="tab-1">Already Member?</label>
+				<div class="group">
+					<button type="button" class="button" (click)="onSignUp()">Sign Up</button>
+				</div>
+        <div class="hr"></div>
+
+				<div *ngIf="signUpError" class="alert alert-danger">
+					{{ signUpError }}
+				</div>
+				<div *ngIf="signUpSuccess" class="alert alert-success">
+					{{ signUpSuccess }}
 				</div>
 			</div>
       </form>

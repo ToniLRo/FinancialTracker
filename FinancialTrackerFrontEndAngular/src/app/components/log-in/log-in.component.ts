@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-log-in',
@@ -6,10 +8,22 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./log-in.component.css']
 })
 export class LogINComponent implements OnInit {
+  loginData = {
+    username: '',
+    password: ''
+  };
 
-  constructor() { }
+  constructor(private router: Router) { }
 
-  ngOnInit(): void {
+  ngOnInit(): void {  
   }
 
+  goToSignUp() {
+    this.router.navigate(['/SignUp']);
+  }
+
+  onLogin() { 
+    console.log('Login data:', this.loginData);
+    // Aquí irá la lógica de login
+  }
 }

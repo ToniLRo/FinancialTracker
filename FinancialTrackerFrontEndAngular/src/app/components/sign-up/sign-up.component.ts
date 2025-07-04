@@ -31,7 +31,7 @@ export class SignUpComponent {
       this.signUpError = 'Las contraseñas no coinciden.';
       return;
     }
-    this.usersService.register(this.signUpData.email, this.signUpData.password)
+    this.usersService.register(this.signUpData.username, this.signUpData.email, this.signUpData.password)
       .subscribe({
         next: () => {
           this.signUpSuccess = '¡Registro exitoso! Ahora puedes iniciar sesión.';

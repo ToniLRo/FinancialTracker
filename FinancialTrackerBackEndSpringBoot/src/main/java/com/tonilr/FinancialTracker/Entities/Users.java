@@ -81,9 +81,9 @@ public class Users {
 	
 	public Date getRegisterDate() {
 		return register_date;
-	}
+	}		
 
-	public void setPassword(Date register_date) {
+	public void setRegisterDate(Date register_date) {
 		this.register_date = register_date;
 	}
 

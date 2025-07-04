@@ -1,4 +1,4 @@
-package com.tonilr.FinancialTracker.configuration;
+package com.tonilr.FinancialTracker.Configurations;
 
 import org.springframework.context.annotation.Configuration;
 

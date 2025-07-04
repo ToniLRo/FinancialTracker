@@ -6,11 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UsersService {
-  private apiUrl = 'http://localhost:8080/api/users'; // Ajusta la URL según tu backend
+  private apiUrl = 'http://localhost:8080/user'; // Ajusta la URL según tu backend
 
   constructor(private http: HttpClient) { }
 
-  register(email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { email, password });
+  register(username: string, email: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/add`, { username, email, password });
   }
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +13,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.Services.UsersServices;
+import com.tonilr.FinancialTracker.dto.RegisterRequest;
 
 
 
-@Controller
+@RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/user")
 public class UsersController {
@@ -45,8 +46,8 @@ public class UsersController {
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<Users> addUser(@RequestBody Users user) {
-		Users newUser = userService.addUser(user);
+	public ResponseEntity<Users> addUser(@RequestBody RegisterRequest request) {
+		Users newUser = userService.addUser(request);
 		return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 	}
 

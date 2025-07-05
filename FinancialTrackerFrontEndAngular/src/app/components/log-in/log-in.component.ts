@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth/auth.service';
 import { UsersService } from 'src/app/services/users/users.service';
 
 
@@ -18,6 +19,7 @@ export class LogINComponent implements OnInit {
 
   constructor(
     private usersService: UsersService,
+    private authService: AuthService,
     private router: Router
   ) { }
 
@@ -41,16 +43,15 @@ export class LogINComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.loginSuccess = '¡Login exitoso!';
-          console.log('Login response:', response);
           
-          // Guardar datos del usuario en localStorage (opcional)
-          localStorage.setItem('currentUser', JSON.stringify({
+          // Usar el nuevo método del UsersService
+          this.usersService.setCurrentUser({
             userId: response.userId,
             username: response.username,
             email: response.email
-          }));
+          });
           
-          // Redirigir a la página principal después de un breve delay
+          // Redirigir a la página principal
           setTimeout(() => {
             this.router.navigate(['/home']);
           }, 1000);

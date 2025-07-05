@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface User {
   userId: number;
@@ -11,28 +10,18 @@ export interface User {
 @Injectable({
   providedIn: 'root'
 })
-export class UsersService {
-  private apiUrl = 'http://localhost:8080/user'; // Ajusta la URL según tu backend
+export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
   private getUserFromStorage(): User | null {
     const userStr = localStorage.getItem('currentUser');
     return userStr ? JSON.parse(userStr) : null;
   }
 
-  register(username: string, email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add`, { username, email, password });
-  }
-
-  login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { username, password });
-  }
-
-  // Métodos de autenticación
-  setCurrentUser(user: User): void {
+  login(user: User): void {
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUserSubject.next(user);
   }
@@ -49,4 +38,4 @@ export class UsersService {
   isLoggedIn(): boolean {
     return this.getCurrentUser() !== null;
   }
-}
+} 

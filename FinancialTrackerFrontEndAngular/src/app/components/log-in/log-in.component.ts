@@ -23,7 +23,7 @@ export class LogINComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit(): void {  
+  ngOnInit(): void {
   }
 
   goToSignUp() {

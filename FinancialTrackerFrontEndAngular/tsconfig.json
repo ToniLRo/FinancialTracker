@@ -22,7 +22,8 @@
       "es2020",
       "dom"
     ],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "types": ["body-parser"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

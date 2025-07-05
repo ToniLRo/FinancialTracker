@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.dto.RegisterRequest;
+import com.tonilr.FinancialTracker.dto.LoginRequest;
 import com.tonilr.FinancialTracker.exceptions.UserNotFoundException;
 import com.tonilr.FinancialTracker.repos.UsersRepo;
 
@@ -61,5 +62,18 @@ public class UsersServices {
 
 	public void deleteUser(Long id) {
 		userRepo.deleteById(id);
+	}
+
+	public Users loginUser(LoginRequest request) {
+		// Buscar usuario por username
+		Users user = userRepo.findByUsername(request.getUsername())
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		
+		// Verificar contraseña con BCrypt
+		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new RuntimeException("Contraseña incorrecta");
+		}
+		
+		return user;
 	}
 }

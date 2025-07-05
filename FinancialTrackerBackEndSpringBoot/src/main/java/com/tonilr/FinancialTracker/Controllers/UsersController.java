@@ -1,6 +1,8 @@
 package com.tonilr.FinancialTracker.Controllers;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.dto.RegisterRequest;
+import com.tonilr.FinancialTracker.dto.LoginRequest;
 
 
 
@@ -63,5 +66,22 @@ public class UsersController {
 	public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
 		userService.deleteUser(id);
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
+		try {
+			Users user = userService.loginUser(request);
+			Map<String, Object> response = new HashMap<>();
+			response.put("message", "Login exitoso");
+			response.put("userId", user.getUser_Id());
+			response.put("username", user.getUsername());
+			response.put("email", user.getEmail());
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (RuntimeException e) {
+			Map<String, String> error = new HashMap<>();
+			error.put("message", e.getMessage());
+			return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+		}
 	}
 }

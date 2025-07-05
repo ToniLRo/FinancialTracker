@@ -3,9 +3,10 @@ import { UsersService } from '../../services/users/users.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-sign-up',
-  templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.css']
+    selector: 'app-sign-up',
+    templateUrl: './sign-up.component.html',
+    styleUrls: ['./sign-up.component.css'],
+    standalone: false
 })
 export class SignUpComponent {
   signUpData = {

@@ -4,9 +4,10 @@ import { Router } from '@angular/router';
 import { UsersService } from '../../services/users/users.service';
 
 @Component({
-  selector: 'navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+    selector: 'navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.css'],
+    standalone: false
 })
 export class NavbarComponent implements AfterViewInit {
 

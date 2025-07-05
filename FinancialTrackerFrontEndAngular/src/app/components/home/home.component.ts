@@ -4,9 +4,10 @@ import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, To
 
 
 @Component({
-  selector: 'home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+    selector: 'home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css'],
+    standalone: false
 })
 export class HomeComponent  implements OnInit, AfterViewInit  {
   @ViewChild('myChart', { static: false }) myChart!: ElementRef<HTMLCanvasElement>;

@@ -8,9 +8,10 @@ Swiper.use([Navigation, Pagination]);
 
 
 @Component({
-  selector: 'my-wallets',
-  templateUrl: './my-wallets.component.html',
-  styleUrls: ['./my-wallets.component.css']
+    selector: 'my-wallets',
+    templateUrl: './my-wallets.component.html',
+    styleUrls: ['./my-wallets.component.css'],
+    standalone: false
 })
 export class MyWalletsComponent implements OnInit, AfterViewInit {
 

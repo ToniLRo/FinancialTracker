@@ -4,39 +4,42 @@
       <input id="tab-1" type="radio" name="tab" class="sign-in" (click)="goToSignIn()"><label for="tab-1" class="tab">Sign In</label>
       <input id="tab-2" type="radio" name="tab" class="sign-up" checked ><label for="tab-2" class="tab" >Sign Up</label>
       <div class="login-form">
-      <form>
-			<div class="sign-up-htm">
-				<div class="group">
-					<label for="signup-username" class="label">Username</label>
-					<input id="signup-username" type="text" class="input" name="username" [(ngModel)]="signUpData.username" required>
-				</div>  
-				<div class="group">
-					<label for="signup-email" class="label">Email Address</label>
-					<input id="signup-email" type="email" class="input" name="email" [(ngModel)]="signUpData.email" required>
-				</div>
-				<div class="group">
-					<label for="signup-password" class="label">Password</label>
-					<input id="signup-password" type="password" class="input" name="password" [(ngModel)]="signUpData.password" required>
-				</div>
-				<div class="group">
-					<label for="signup-confirmPassword" class="label">Repeat Password</label>
-					<input id="signup-confirmPassword" type="password" class="input" name="confirmPassword" [(ngModel)]="signUpData.confirmPassword" required>
-				</div>
-				<div class="group">
-					<button type="button" class="button" (click)="onSignUp()">Sign Up</button>
-				</div>
-        <div class="hr"></div>
+        <form>
+          <div class="sign-up-htm">
+            <div class="group">
+              <label for="signup-username" class="label">Username</label>
+              <input id="signup-username" type="text" class="input" name="username" [(ngModel)]="signUpData.username" required>
+            </div>
+            <div class="group">
+              <label for="signup-email" class="label">Email Address</label>
+              <input id="signup-email" type="email" class="input" name="email" [(ngModel)]="signUpData.email" required>
+            </div>
+            <div class="group">
+              <label for="signup-password" class="label">Password</label>
+              <input id="signup-password" type="password" class="input" name="password" [(ngModel)]="signUpData.password" required>
+            </div>
+            <div class="group">
+              <label for="signup-confirmPassword" class="label">Repeat Password</label>
+              <input id="signup-confirmPassword" type="password" class="input" name="confirmPassword" [(ngModel)]="signUpData.confirmPassword" required>
+            </div>
+            <div class="group">
+              <button type="button" class="button" (click)="onSignUp()">Sign Up</button>
+            </div>
+            <div class="hr"></div>
 
-				<div *ngIf="signUpError" class="alert alert-danger">
-					{{ signUpError }}
-				</div>
-				<div *ngIf="signUpSuccess" class="alert alert-success">
-					{{ signUpSuccess }}
-				</div>
-			</div>
-      </form>
+            @if (signUpError) {
+              <div class="alert alert-danger">
+                {{ signUpError }}
+              </div>
+            }
+            @if (signUpSuccess) {
+              <div class="alert alert-success">
+                {{ signUpSuccess }}
+              </div>
+            }
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
-   

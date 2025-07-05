@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 export interface User {
   userId: number;
@@ -13,15 +14,10 @@ export interface User {
 })
 export class UsersService {
   private apiUrl = 'http://localhost:8080/user'; // Ajusta la URL según tu backend
-  private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) { }
-
-  private getUserFromStorage(): User | null {
-    const userStr = localStorage.getItem('currentUser');
-    return userStr ? JSON.parse(userStr) : null;
-  }
 
   register(username: string, email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/add`, { username, email, password });
@@ -29,21 +25,26 @@ export class UsersService {
 
   login(username: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { username, password });
-  }
+  } 
 
-  // Métodos de autenticación
   setCurrentUser(user: User): void {
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUserSubject.next(user);
   }
 
+  getCurrentUser(): User | null {
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
+  } 
+
   logout(): void {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
-  }
-
-  getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
+    
+    // Forzar navegación inmediata
+    setTimeout(() => {
+      window.location.href = '/log-in';
+    }, 100);
   }
 
   isLoggedIn(): boolean {

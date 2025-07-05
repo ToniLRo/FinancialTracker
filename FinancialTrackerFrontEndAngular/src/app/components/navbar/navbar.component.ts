@@ -22,32 +22,36 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(){
-    const canvas = this.myChart.nativeElement;
-    const ctx = canvas.getContext('2d');
+    if (this.myChart && this.myChart.nativeElement) {
+      const canvas = this.myChart.nativeElement;
+      const ctx = canvas.getContext('2d');
 
-    console.log('ViewChild:', this.myChart, ctx); // Debería mostrar información sobre el canvas
+      console.log('ViewChild:', this.myChart, ctx);
 
-    if (ctx) {
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-          datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+              label: '# of Votes',
+              data: [12, 19, 3, 5, 2, 3],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
             }
           }
-        }
-      });
+        });
+      } else {
+        console.error('No se pudo obtener el contexto 2D del canvas');
+      }
     } else {
-      console.error('No se pudo obtener el contexto 2D del canvas');
+      console.warn('El elemento myChart no está disponible');
     }
   }
 
@@ -65,6 +69,6 @@ export class NavbarComponent implements AfterViewInit {
 
   logout(): void {
     this.usersService.logout();
-    this.router.navigate(['/log-in']);
-  }
+    this.router.navigate(['/LogIn']);
+  } 
 }

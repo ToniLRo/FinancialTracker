@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth/auth.service';
-import { UsersService } from 'src/app/services/users/users.service';
-
+import { UsersService } from '../../services/users/users.service';
 
 @Component({
     selector: 'app-log-in',
@@ -20,7 +18,6 @@ export class LogINComponent implements OnInit {
 
   constructor(
     private usersService: UsersService,
-    private authService: AuthService,
     private router: Router
   ) { }
 
@@ -45,16 +42,14 @@ export class LogINComponent implements OnInit {
         next: (response) => {
           this.loginSuccess = '¡Login exitoso!';
           
-          // Usar el nuevo método del UsersService
           this.usersService.setCurrentUser({
             userId: response.userId,
             username: response.username,
             email: response.email
           });
           
-          // Redirigir a la página principal
           setTimeout(() => {
-            this.router.navigate(['/home']);
+            this.router.navigate(['/Home']);
           }, 1000);
         },
         error: (err) => {

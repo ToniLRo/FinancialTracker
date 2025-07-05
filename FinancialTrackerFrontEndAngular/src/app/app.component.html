@@ -1,6 +1,2 @@
-<div>
-    <h1>Financial Tracker</h1>
-    <p>This is a financial tracker application</p>
-    <p>It is a simple application that allows you to track your finances</p>
-    <p>It is a simple application that allows you to track your finances</p>
-</div>
+<navbar *ngIf="shouldShowNavbar()"></navbar>
+<router-outlet *ngIf="shouldShowNavbar()"></router-outlet>

@@ -35,7 +35,7 @@
     </ul>
 
     <!-- Dropdown del usuario -->
-    @if (usersService.isLoggedIn()) {
+    @if (usersService.getCurrentUser()) {
       <div class="dropdown d-flex flex-column flex-shrink-0 p-3 text-white" style="width: 280px;">
         <hr>
           <ul class="nav nav-pills flex-column mb-auto">

@@ -47,7 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   shouldShowNavbar(): boolean {
     // Rutas donde NO mostrar el navbar
-    const publicRoutes = ['/log-in', '/sign-up', '/LogIn', '/SignUp'];
+    const publicRoutes = ['/LogIn', '/SignUp'];
     
     // No mostrar navbar si está en una ruta pública
     if (publicRoutes.some(route => this.currentRoute.includes(route))) {

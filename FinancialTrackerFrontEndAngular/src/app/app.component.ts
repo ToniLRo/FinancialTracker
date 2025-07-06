@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { UsersService } from './services/users/users.service';
+import { AuthService } from './services/auth/auth.service';
 
 @Component({
     selector: 'app-root',
@@ -17,7 +18,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private usersService: UsersService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -33,7 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Suscribirse a cambios en el usuario actual
     this.subscription.add(
-      this.usersService.currentUser$.subscribe(user => {
+      this.authService.currentUser$.subscribe(user => {
         console.log('Usuario actual:', user);
         // Forzar detección de cambios
         this.forceChangeDetection();
@@ -56,7 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     
     // No mostrar navbar si no está logueado
-    const currentUser = this.usersService.getCurrentUser();
+    const currentUser = this.authService.getCurrentUser();
     if (!currentUser) {
       console.log('No mostrar navbar - no logueado');
       return false;

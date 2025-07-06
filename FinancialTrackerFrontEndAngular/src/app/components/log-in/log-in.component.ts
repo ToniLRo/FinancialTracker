@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UsersService } from '../../services/users/users.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
     selector: 'app-log-in',
@@ -15,9 +15,10 @@ export class LogINComponent implements OnInit {
   };
   loginError: string = '';
   loginSuccess: string = '';
+  isLoading: boolean = false;
 
   constructor(
-    private usersService: UsersService,
+    private authService: AuthService,
     private router: Router
   ) { }
 
@@ -31,29 +32,31 @@ export class LogINComponent implements OnInit {
   onLogin() {
     this.loginError = '';
     this.loginSuccess = '';
+    this.isLoading = true;
     
     if (!this.loginData.username || !this.loginData.password) {
       this.loginError = 'Por favor, completa todos los campos.';
+      this.isLoading = false;
       return;
     }
 
-    this.usersService.login(this.loginData.username, this.loginData.password)
+    this.authService.login(this.loginData.username, this.loginData.password)
       .subscribe({
         next: (response) => {
           this.loginSuccess = '¡Login exitoso!';
+          this.isLoading = false;
           
-          this.usersService.setCurrentUser({
+          this.authService.setCurrentUser({
             userId: response.userId,
             username: response.username,
             email: response.email
-          });
+          }, response.token);
           
-          setTimeout(() => {
-            this.router.navigate(['/Home']);
-          }, 1000);
+          this.router.navigate(['/Home']);
         },
         error: (err) => {
           this.loginError = err.error?.message || 'Error en el login. Verifica tus credenciales.';
+          this.isLoading = false;
         }
       });
   }

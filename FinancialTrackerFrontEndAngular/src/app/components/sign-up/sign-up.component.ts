@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UsersService } from '../../services/users/users.service';
+import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -19,7 +19,7 @@ export class SignUpComponent {
   signUpSuccess: string = '';
   selectedTab: string = 'sign-up';
 
-  constructor(private usersService: UsersService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   selectTab(tab: string) {
     this.selectedTab = tab;
@@ -32,7 +32,7 @@ export class SignUpComponent {
       this.signUpError = 'Las contraseñas no coinciden.';
       return;
     }
-    this.usersService.register(this.signUpData.username, this.signUpData.email, this.signUpData.password)
+    this.authService.register(this.signUpData.username, this.signUpData.email, this.signUpData.password)
       .subscribe({
         next: () => {
           this.signUpSuccess = '¡Registro exitoso! Ahora puedes iniciar sesión.';

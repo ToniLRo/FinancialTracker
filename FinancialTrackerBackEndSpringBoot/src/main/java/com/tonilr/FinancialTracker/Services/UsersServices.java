@@ -1,10 +1,15 @@
 package com.tonilr.FinancialTracker.Services;
 
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +18,7 @@ import com.tonilr.FinancialTracker.dto.RegisterRequest;
 import com.tonilr.FinancialTracker.dto.LoginRequest;
 import com.tonilr.FinancialTracker.exceptions.UserNotFoundException;
 import com.tonilr.FinancialTracker.repos.UsersRepo;
+import com.tonilr.FinancialTracker.Services.JwtService;
 
 @Service
 public class UsersServices {
@@ -20,10 +26,18 @@ public class UsersServices {
 	@Autowired
 	private final UsersRepo userRepo;
 	
+	@Autowired
+	private final JwtService jwtService;
+	
+	@Autowired
+	private final AuthenticationManager authenticationManager;
+	
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-	public UsersServices(UsersRepo userRepo) {
+	public UsersServices(UsersRepo userRepo, JwtService jwtService, AuthenticationManager authenticationManager) {
 		this.userRepo = userRepo;
+		this.jwtService = jwtService;
+		this.authenticationManager = authenticationManager;
 	}
 
 	public Users addUser(RegisterRequest request) {
@@ -64,16 +78,33 @@ public class UsersServices {
 		userRepo.deleteById(id);
 	}
 
-	public Users loginUser(LoginRequest request) {
+	public Map<String, Object> loginUser(LoginRequest request) {
+		// Autenticar usando Spring Security
+		authenticationManager.authenticate(
+			new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+		);
+		
 		// Buscar usuario por username
 		Users user = userRepo.findByUsername(request.getUsername())
 				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 		
-		// Verificar contraseña con BCrypt
-		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new RuntimeException("Contraseña incorrecta");
-		}
+		// Generar token JWT
+		UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+			user.getUsername(), 
+			user.getPassword(), 
+			java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("USER"))
+		);
 		
-		return user;
+		String jwtToken = jwtService.generateToken(userDetails);
+		
+		// Crear respuesta
+		Map<String, Object> response = new HashMap<>();
+		response.put("token", jwtToken);
+		response.put("userId", user.getUser_Id());
+		response.put("username", user.getUsername());
+		response.put("email", user.getEmail());
+		response.put("message", "Login exitoso");
+		
+		return response;
 	}
 }

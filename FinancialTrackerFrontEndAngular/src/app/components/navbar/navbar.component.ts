@@ -2,6 +2,7 @@ import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { Chart, CategoryScale, LinearScale, BarController, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Router } from '@angular/router';
 import { UsersService } from '../../services/users/users.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
     selector: 'navbar',
@@ -16,7 +17,8 @@ export class NavbarComponent implements AfterViewInit {
 
   constructor(
     public usersService: UsersService,
-    private router: Router
+    private router: Router,
+    public authService: AuthService
   ) { 
     Chart.register(CategoryScale, LinearScale, BarController, BarElement, Title, Tooltip, Legend);
   }
@@ -68,7 +70,7 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   logout(): void {
-    this.usersService.logout();
+    this.authService.logout();
     this.router.navigate(['/LogIn']);
   } 
 }

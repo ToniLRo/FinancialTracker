@@ -1,33 +1,41 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
-import { LogINComponent } from './components/log-in/log-in.component';
-import { SignUpComponent } from './components/sign-up/sign-up.component';
-import { NavbarComponent } from './components/navbar/navbar.component';
 import { MyWalletsComponent } from './components/my-wallets/my-wallets.component';
 import { PaymentsComponent } from './components/payments/payments.component';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { SignUpComponent } from './components/sign-up/sign-up.component';
+import { LogINComponent } from './components/log-in/log-in.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { AuthInterceptor } from './services/auth/auth.interceptor';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    LogINComponent,
-    SignUpComponent,
-    NavbarComponent,
     MyWalletsComponent,
-    PaymentsComponent
+    PaymentsComponent,
+    SignUpComponent,
+    LogINComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

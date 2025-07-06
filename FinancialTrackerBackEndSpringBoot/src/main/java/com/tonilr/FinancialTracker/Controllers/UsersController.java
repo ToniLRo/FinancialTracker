@@ -71,12 +71,7 @@ public class UsersController {
 	@PostMapping("/login")
 	public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
 		try {
-			Users user = userService.loginUser(request);
-			Map<String, Object> response = new HashMap<>();
-			response.put("message", "Login exitoso");
-			response.put("userId", user.getUser_Id());
-			response.put("username", user.getUsername());
-			response.put("email", user.getEmail());
+			Map<String, Object> response = userService.loginUser(request);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (RuntimeException e) {
 			Map<String, String> error = new HashMap<>();

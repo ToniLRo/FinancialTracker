@@ -103,8 +103,10 @@ public class UsersServices {
 		response.put("userId", user.getUser_Id());
 		response.put("username", user.getUsername());
 		response.put("email", user.getEmail());
+		response.put("registerDate", user.getRegisterDate() != null ? user.getRegisterDate().toString() : null);
 		response.put("message", "Login exitoso");
 		
+		System.out.println("Login response: " + response); // Debug
 		return response;
 	}
 }

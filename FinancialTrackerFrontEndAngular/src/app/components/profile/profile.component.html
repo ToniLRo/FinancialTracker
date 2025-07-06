@@ -1,0 +1,147 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Mi Perfil</h1>
+    <p class="text-muted">Gestiona tu información personal y configuración de cuenta</p>
+  </div>
+
+  <div class="profile-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3>Información Personal</h3>
+      <button 
+        class="btn btn-outline-primary" 
+        (click)="toggleEdit()"
+        [disabled]="isLoading">
+        {{ isEditing ? 'Cancelar' : 'Editar' }}
+      </button>
+    </div>
+
+    <div class="card-body">
+      <form (ngSubmit)="updateProfile()" #profileForm="ngForm">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="username" class="form-label">Nombre de Usuario *</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="username" 
+              name="username"
+              [(ngModel)]="profileData.username"
+              [readonly]="!isEditing"
+              required>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label for="email" class="form-label">Correo Electrónico *</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email" 
+              name="email"
+              [(ngModel)]="profileData.email"
+              [readonly]="!isEditing"
+              required>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="isEditing">
+          <div class="col-12">
+            <hr>
+            <h5>Cambiar Contraseña</h5>
+            <p class="text-muted small">Deja en blanco si no quieres cambiar la contraseña</p>
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label for="currentPassword" class="form-label">Contraseña Actual</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="currentPassword" 
+              name="currentPassword"
+              [(ngModel)]="profileData.currentPassword">
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label for="newPassword" class="form-label">Nueva Contraseña</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="newPassword" 
+              name="newPassword"
+              [(ngModel)]="profileData.newPassword">
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="confirmPassword" 
+              name="confirmPassword"
+              [(ngModel)]="profileData.confirmPassword">
+          </div>
+        </div>
+
+        <div class="row" *ngIf="isEditing">
+          <div class="col-12">
+            <div class="d-flex justify-content-end gap-2">
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                (click)="toggleEdit()"
+                [disabled]="isLoading">
+                Cancelar
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-primary" 
+                [disabled]="isLoading || !profileForm.form.valid">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ isLoading ? 'Guardando...' : 'Guardar Cambios' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Mensajes de éxito y error -->
+      <div *ngIf="successMessage" class="alert alert-success mt-3">
+        {{ successMessage }}
+      </div>
+      
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+        {{ errorMessage }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Información adicional del perfil -->
+  <div class="profile-info mt-4">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="info-card">
+          <h5>Información de la Cuenta</h5>
+          <ul class="list-unstyled">
+            <li><strong>ID de Usuario:</strong> {{ authService.getCurrentUser()?.userId }}</li>
+            <li><strong>Miembro desde:</strong> {{ getMemberSince() }}</li>
+            <li><strong>Estado:</strong> <span class="badge bg-success">Activo</span></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="info-card">
+          <h5>Acciones Rápidas</h5>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-download me-2"></i>Exportar Datos
+            </button>
+            <button class="btn btn-outline-warning btn-sm">
+              <i class="bi bi-shield-lock me-2"></i>Configuración de Privacidad
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

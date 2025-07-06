@@ -46,10 +46,13 @@ export class LogINComponent implements OnInit {
           this.loginSuccess = '¡Login exitoso!';
           this.isLoading = false;
           
+          console.log('Login response:', response); // Debug: ver qué está llegando
+          
           this.authService.setCurrentUser({
             userId: response.userId,
             username: response.username,
-            email: response.email
+            email: response.email,
+            registerDate: response.registerDate // Asegurar que se guarde
           }, response.token);
           
           this.router.navigate(['/Home']);

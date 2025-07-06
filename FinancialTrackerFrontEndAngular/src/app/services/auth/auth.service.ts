@@ -6,6 +6,7 @@ export interface User {
   userId: number;
   username: string;
   email: string;
+  registerDate?: string;
 }
 
 export interface LoginResponse {
@@ -13,6 +14,7 @@ export interface LoginResponse {
   userId: number;
   username: string;
   email: string;
+  registerDate: string;
   message: string;
 }
 
@@ -63,5 +65,9 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.getCurrentUser() !== null && this.getToken() !== null;
+  }
+
+  getUserProfile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/profile`);
   }
 } 

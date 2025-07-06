@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.dto.RegisterRequest;
 import com.tonilr.FinancialTracker.dto.LoginRequest;
+import com.tonilr.FinancialTracker.Services.JwtService;
 
 
 
@@ -32,8 +34,12 @@ public class UsersController {
 	@Autowired
 	private final UsersServices userService;
 	
-	public UsersController(UsersServices userService) {
+	@Autowired
+	private final JwtService jwtService;
+	
+	public UsersController(UsersServices userService, JwtService jwtService) {
 		this.userService = userService;
+		this.jwtService = jwtService;
 	}
 
 	@GetMapping("/all")
@@ -77,6 +83,28 @@ public class UsersController {
 			Map<String, String> error = new HashMap<>();
 			error.put("message", e.getMessage());
 			return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+		}
+	}
+
+	@GetMapping("/profile")
+	public ResponseEntity<?> getUserProfile(@RequestHeader("Authorization") String token) {
+		try {
+			// Extraer userId del token JWT
+			String jwt = token.substring(7); // Remover "Bearer "
+			Long userId = jwtService.extractUserId(jwt);
+
+			Users user = userService.findUserById(userId);
+
+			Map<String, Object> profile = new HashMap<>();
+			profile.put("userId", user.getUser_Id());
+			profile.put("username", user.getUsername());
+			profile.put("registerDate", user.getRegisterDate() != null ? user.getRegisterDate().toString() : null);
+			
+			return new ResponseEntity<>(profile, HttpStatus.OK);
+		} catch (Exception e) {
+			Map<String, String> error = new HashMap<>();
+			error.put("message", "Error al obtener perfil: " + e.getMessage());
+			return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

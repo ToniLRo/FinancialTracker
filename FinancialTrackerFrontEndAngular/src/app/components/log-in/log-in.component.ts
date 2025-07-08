@@ -55,7 +55,7 @@ export class LogINComponent implements OnInit {
             registerDate: response.registerDate // Asegurar que se guarde
           }, response.token);
           
-          this.router.navigate(['/Home']);
+            this.router.navigate(['/Home']);
         },
         error: (err) => {
           this.loginError = err.error?.message || 'Error en el login. Verifica tus credenciales.';

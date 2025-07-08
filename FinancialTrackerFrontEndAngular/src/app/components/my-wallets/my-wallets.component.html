@@ -1,4 +1,4 @@
-<!--<head>
+<head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
 </head>
@@ -9,7 +9,31 @@
         </div>
     </div>
     <div class="content text-white">
-        <div class="actions"> 
+        <div class="actions">
+            <div class="action-button">
+                <button class="button-27" role="button" title="Add Card" (click)="openAddForm()">
+                    <i class="bi bi-plus-circle" style="color: white; font-size: 25px;"></i>
+                </button>
+                <div class="button-description"  style="text-align: center;">
+                    Add Card
+                </div>
+            </div>
+            <div class="action-button">
+                <button class="button-27" role="button" title="Edit Card" [disabled]="!selectedCard" (click)="openEditForm(selectedCard!)">
+                        <i class="bi bi-pencil-square" style="color: white; font-size: 25px;"></i>
+                </button>
+                <div class="button-description"  style="text-align: center;">
+                    Edit Card
+                </div>
+            </div>
+            <div class="action-button">
+                <button class="button-27" role="button" title="Delete Card" [disabled]="!selectedCard" (click)="deleteCard(selectedCard!.id)">
+                    <i class="bi bi-trash" style="color: white; font-size: 25px;"></i>
+                </button>
+                <div class="button-description"  style="text-align: center;">
+                    Delete Card
+                </div>
+            </div>
             <div class="action-button">
                 <button title="Show Details" class="button-27" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
@@ -22,7 +46,7 @@
                 </div>
             </div>
             <div class="action-button">
-                <button title="Freeze" class="button-27" role="button">
+                <button class="button-27" role="button" title="Freeze/Unfreeze" [disabled]="!selectedCard" (click)="freezeCard(selectedCard!)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-snow" viewBox="0 0 16 16">
                         <path d="M8 16a.5.5 0 0 1-.5-.5v-1.293l-.646.647a.5.5 0 0 1-.707-.708L7.5 12.793V8.866l-3.4 1.963-.496 1.85a.5.5 0 1 1-.966-.26l.237-.882-1.12.646a.5.5 0 0 1-.5-.866l1.12-.646-.884-.237a.5.5 0 1 1 .26-.966l1.848.495L7 8 3.6 6.037l-1.85.495a.5.5 0 0 1-.258-.966l.883-.237-1.12-.646a.5.5 0 1 1 .5-.866l1.12.646-.237-.883a.5.5 0 1 1 .966-.258l.495 1.849L7.5 7.134V3.207L6.147 1.854a.5.5 0 1 1 .707-.708l.646.647V.5a.5.5 0 1 1 1 0v1.293l.647-.647a.5.5 0 1 1 .707.708L8.5 3.207v3.927l3.4-1.963.496-1.85a.5.5 0 1 1 .966.26l-.236.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.883.237a.5.5 0 1 1-.26.966l-1.848-.495L9 8l3.4 1.963 1.849-.495a.5.5 0 0 1 .259.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.236.883a.5.5 0 1 1-.966.258l-.495-1.849-3.4-1.963v3.927l1.353 1.353a.5.5 0 0 1-.707.708l-.647-.647V15.5a.5.5 0 0 1-.5.5z"/>
                     </svg>                </button>
@@ -31,7 +55,7 @@
                 </div>
             </div>
             <div class="action-button">
-                <button title="Add Transaction/Transfer" class="button-27" role="button">
+                <button title="Add Transaction/Transfer" class="button-27" role="button" [disabled]="!selectedCard" (click)="openTransactionForm(selectedCard!)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                     </svg>
@@ -65,266 +89,57 @@
         </div>
         <div class="mycards">
             <div class="slide-container swiper">
-                <h5 style="text-align: center;">Card Name</h5>
+                <h5 style="text-align: center;">My Cards</h5>
                 <div class="slide-content">
                     <div class="card-wrapper swiper-wrapper">
-                        <div class="card swiper-slide">
-                        <div class="card-inner">
-                            <div class="card-front">  
-                            <div class="card-bg"></div>
-                            <div class="card-glow"></div>
-                            <svg
-                                width="72"
-                                height="24"
-                                viewBox="0 0 72 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="logo"
-                            >
-                                <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                fill="white"
-                                />
-                            </svg>
-                            <div class="card-contactless">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                <path
-                                    fill="none"
-                                    stroke="#f9f9f9"
-                                    stroke-width="6"
-                                    stroke-linecap="round"
-                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                />
-                                </svg>
+                        <div *ngFor="let card of cards" class="card swiper-slide" [class.selected]="card === selectedCard" (click)="selectCard(card)">
+                            <div class="card-inner">
+                                <div class="card-front">  
+                                    <div class="card-bg"></div>
+                                    <div class="card-glow"></div>
+                                    <svg
+                                        width="72"
+                                        height="24"
+                                        viewBox="0 0 72 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="logo"
+                                    >
+                                        <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
+                                        fill="white"
+                                        />
+                                    </svg>
+                                    <div class="card-contactless">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
+                                        <path
+                                            fill="none"
+                                            stroke="#f9f9f9"
+                                            stroke-width="6"
+                                            stroke-linecap="round"
+                                            d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
+                                0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
+                                        />
+                                        </svg>
+                                    </div>
+                                    <div class="card-chip"></div>
+                                    <div class="card-holder">{{ card.holder }}</div>
+                                    <div class="card-number">{{ card.number }}</div>
+                                    <div class="card-valid">{{ card.validThru }}</div>
+                                    <div class="card-balance" style="position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #fff;">
+                                        {{ card.balance | currency:'USD' }}
+                                    </div>
+                                    <div class="card-status" *ngIf="card.frozen" style="position: absolute; top: 10px; right: 15px; background: rgba(255,0,0,0.8); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px;">
+                                        FROZEN
+                                    </div>
+                                </div>
+                                <div class="card-back">
+                                    <div class="card-signature">{{ card.holder }}</div>
+                                    <div class="card-seccode">123</div>
+                                </div>
                             </div>
-                            <div class="card-chip"></div>
-                            <div class="card-holder">Prueba4</div>
-                            <div class="card-number">1234 5678 9000 1234</div>
-                            <div class="card-valid">12/24</div>
-                            </div>
-                            <div class="card-back">
-                            <div class="card-signature">Prueba4</div>
-                            <div class="card-seccode">123</div>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="card swiper-slide">
-                        <div class="card-inner">
-                            <div class="card-front">  
-                            <div class="card-bg"></div>
-                            <div class="card-glow"></div>
-                            <svg
-                                width="72"
-                                height="24"
-                                viewBox="0 0 72 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="logo"
-                                >
-                                <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                fill="white"
-                                />
-                            </svg>
-                            <div class="card-contactless">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                <path
-                                    fill="none"
-                                    stroke="#f9f9f9"
-                                    stroke-width="6"
-                                    stroke-linecap="round"
-                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                />
-                                </svg>
-                            </div>
-                            <div class="card-chip"></div>
-                            <div class="card-holder">Prueba4</div>
-                            <div class="card-number">1234 5678 9000 1234</div>
-                            <div class="card-valid">12/24</div>
-                            </div>
-                            <div class="card-back">
-                            <div class="card-signature">Prueba4</div>
-                            <div class="card-seccode">123</div>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="card swiper-slide">
-                        <div class="card-inner">
-                            <div class="card-front">  
-                            <div class="card-bg"></div>
-                            <div class="card-glow"></div>
-                            <svg
-                                width="72"
-                                height="24"
-                                viewBox="0 0 72 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="logo"
-                            >
-                                <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                fill="white"
-                                />
-                            </svg>
-                            <div class="card-contactless">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                <path
-                                    fill="none"
-                                    stroke="#f9f9f9"
-                                    stroke-width="6"
-                                    stroke-linecap="round"
-                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                />
-                                </svg>
-                            </div>
-                            <div class="card-chip"></div>
-                            <div class="card-holder">Prueba4</div>
-                            <div class="card-number">1234 5678 9000 1234</div>
-                            <div class="card-valid">12/24</div>
-                            </div>
-                            <div class="card-back">
-                            <div class="card-signature">Prueba4</div>
-                            <div class="card-seccode">123</div>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="card swiper-slide">
-                        <div class="card-inner">
-                            <div class="card-front">  
-                            <div class="card-bg"></div>
-                            <div class="card-glow"></div>
-                            <svg
-                                width="72"
-                                height="24"
-                                viewBox="0 0 72 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="logo"
-                            >
-                                <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                fill="white"
-                                />
-                            </svg>
-                            <div class="card-contactless">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                <path
-                                    fill="none"
-                                    stroke="#f9f9f9"
-                                    stroke-width="6"
-                                    stroke-linecap="round"
-                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                />
-                                </svg>
-                            </div>
-                            <div class="card-chip"></div>
-                            <div class="card-holder">Prueba4</div>
-                            <div class="card-number">1234 5678 9000 1234</div>
-                            <div class="card-valid">12/24</div>
-                            </div>
-                            <div class="card-back">
-                            <div class="card-signature">Prueba4</div>
-                            <div class="card-seccode">123</div>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="card swiper-slide">
-                        <div class="card-inner">
-                            <div class="card-front">  
-                            <div class="card-bg"></div>
-                            <div class="card-glow"></div>
-                            <svg
-                                width="72"
-                                height="24"
-                                viewBox="0 0 72 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="logo"
-                            >
-                                <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                fill="white"
-                                />
-                            </svg>
-                            <div class="card-contactless">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                <path
-                                    fill="none"
-                                    stroke="#f9f9f9"
-                                    stroke-width="6"
-                                    stroke-linecap="round"
-                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                />
-                                </svg>
-                            </div>
-                            <div class="card-chip"></div>
-                            <div class="card-holder">Prueba4</div>
-                            <div class="card-number">1234 5678 9000 1234</div>
-                            <div class="card-valid">12/24</div>
-                            </div>
-                            <div class="card-back">
-                            <div class="card-signature">Prueba4</div>
-                            <div class="card-seccode">123</div>
-                            </div>
-                        </div>
-                        </div>
-                        <div class="card swiper-slide">
-                        <div class="card-inner">
-                            <div class="card-front">  
-                            <div class="card-bg"></div>
-                            <div class="card-glow"></div>
-                            <svg
-                                width="72"
-                                height="24"
-                                viewBox="0 0 72 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="logo"
-                            >
-                                <path
-                                fill-rule="evenodd"
-                                clip-rule="evenodd"
-                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                fill="white"
-                                />
-                            </svg>
-                            <div class="card-contactless">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                <path
-                                    fill="none"
-                                    stroke="#f9f9f9"
-                                    stroke-width="6"
-                                    stroke-linecap="round"
-                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                />
-                                </svg>
-                            </div>
-                            <div class="card-chip"></div>
-                            <div class="card-holder">Prueba4</div>
-                            <div class="card-number">1234 5678 9000 1234</div>
-                            <div class="card-valid">12/24</div>
-                            </div>
-                            <div class="card-back">
-                            <div class="card-signature">Prueba4</div>
-                            <div class="card-seccode">123</div>
-                            </div>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -337,10 +152,10 @@
             <h2>Latest Transactions</h2>
             <h3>Today</h3>
             <div class="transactions">
-                <details>
+                <details *ngFor="let transaction of getActiveCardTransactions()">
                     <summary>
                         <div>
-                            <span style="background-color: #f2dcbb;">
+                            <span [style.background-color]="getTransactionIconColor(transaction.type)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
                                     <rect width="256" height="256" fill="none"></rect>
                                     <path d="M192,120h27.05573a8,8,0,0,0,7.15542-4.42229l18.40439-36.80878a8,8,0,0,0-3.18631-10.52366L192,40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
@@ -349,186 +164,43 @@
                                 </svg>
                             </span>
                             <h3>
-                                <strong>American Eagle</strong>
-                                <small>Clothes & Fashion</small>
+                                <strong>{{ transaction.description }}</strong>
+                                <small>{{ transaction.type }}</small>
                             </h3>
-                            <span>-39.99 USD</span>
+                            <span [class.plus]="transaction.amount > 0" [class.minus]="transaction.amount < 0">
+                                {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount | currency:'USD' }}
+                            </span>
                         </div>
                     </summary>
                     <div>
                         <dl>
                             <div>
-                                <dt>Time</dt>
-                                <dd>4.27pm</dd>
+                                <dt>Date</dt>
+                                <dd>{{ transaction.date | date:'shortDate' }}</dd>
                             </div>
-            
                             <div>
                                 <dt>Card used</dt>
-                                <dd>•••• 6890</dd>
+                                <dd>•••• {{ getActiveCard()?.number?.slice(-4) }}</dd>
                             </div>
-            
                             <div>
                                 <dt>Reference ID</dt>
-                                <dd>3125-568911</dd>
+                                <dd>{{ generateReferenceId() }}</dd>
                             </div>
                         </dl>
                     </div>
                 </details>
-                <details>
-                    <summary>
-                        <div>
-                            <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
-                                    <rect width="256" height="256" fill="none"></rect>
-                                    <rect x="32" y="80" width="192" height="48" rx="7.99999" stroke-width="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none"></rect>
-                                    <path d="M208,128v72a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-                                    <line x1="128" y1="80" x2="128" y2="208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-                                    <path d="M173.25483,68.68629C161.94113,80,128,80,128,80s0-33.94113,11.31371-45.25483a24,24,0,0,1,33.94112,33.94112Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-                                    <path d="M82.74517,68.68629C94.05887,80,128,80,128,80s0-33.94113-11.31371-45.25483A24,24,0,0,0,82.74517,68.68629Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-                                </svg>
-                            </span>
-                            <h3>
-                                <strong>From Håvard Brynjulfsen</strong>
-                                <small>Gift</small>
-                            </h3>
-                            <span class="plus">+50.00 USD</span>
-                        </div>
-                    </summary>
-                    <div>
-                        <dl>
-                            <div>
-                                <dt>Time</dt>
-                                <dd>8.14am</dd>
-                            </div>
-                            
-                            <div>
-                                <dt>Reference ID</dt>
-                                <dd>3125-568912</dd>
-                            </div>
-                        </dl>
-                    </div>
-                </details>
-                <details>
-                    <summary>
-                        <div>
-                            <span style="background-color: #e0ece4;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="#000000" viewBox="0 0 256 256">
-                                    <rect width="256" height="256" fill="none"></rect>
-                                    <line x1="88" y1="24" x2="88" y2="56" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-                                    <line x1="120" y1="24" x2="120" y2="56" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-                                    <line x1="152" y1="24" x2="152" y2="56" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-                                    <line x1="32" y1="216" x2="208" y2="216" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
-                                    <path d="M83.29651,216.0038A88.01441,88.01441,0,0,1,32,136V88H208v48a88.0144,88.0144,0,0,1-51.29712,80.00408" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-                                    <path d="M208,88h0a32,32,0,0,1,32,32V128a32,32,0,0,1-32,32h-3.37846" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-                                </svg>
-                            </span>
-                            <h3>
-                                <strong>Starbucks</strong>
-                                <small>Food & Beverage</small>
-                            </h3>
-                            <span>-14.99 USD</span>
-                        </div>
-                    </summary>
-                    <div>
-                        <dl>
-                            <div>
-                                <dt>Time</dt>
-                                <dd>7.49am</dd>
-                            </div>
-                            
-                            <div>
-                                <dt>Card used</dt>
-                                <dd>•••• 6890</dd>
-                            </div>
-                            
-                            <div>
-                                <dt>Reference ID</dt>
-                                <dd>3125-568913</dd>
-                            </div>
-                        </dl>
-                    </div>
-                </details>
-                <details>
-                    <summary>
-                        <div>
-                            <span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="#000000" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><circle cx="128" cy="128" r="96" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle><g><path d="M179.1333,108.32931a112.19069,112.19069,0,0,0-102.3584.04859" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M164.29541,136.71457a79.94058,79.94058,0,0,0-72.68359.04736" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M149.47217,165.07248a47.97816,47.97816,0,0,0-43.03662.04736" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path></g></svg>
-                            </span>
-                            <h3>
-                                <strong>Spotify</strong>
-                                <small>Music & Entertainment</small>
-                            </h3>
-                            <span>-9.99 USD</span>
-                        </div>
-                    </summary>
-                    <div>
-                        <dl>
-                            <div>
-                                <dt>Time</dt>
-                                <dd>1.00am</dd>
-                            </div>
-                            
-                            <div>
-                                <dt>Card used</dt>
-                                <dd>•••• 6890</dd>
-                            </div>
-                            
-                            <div>
-                                <dt>Reference ID</dt>
-                                <dd>3125-568915</dd>
-                            </div>
-                        </dl>
-                    </div>
-                </details>
+                
+                <!-- Mensaje cuando no hay transacciones -->
+                <div *ngIf="!getActiveCardTransactions()?.length" class="no-transactions">
+                    <p>No transactions found for this card.</p>
+                </div>
             </div>
-    </div>
-</div>-->
+        </div>
+</div>
 
-<div class="wallets-header">
-    <h2>My Wallets</h2>
-    <div class="actions">
-      <button class="action-btn" title="Add Card" (click)="openAddForm()">
-        <i class="bi bi-plus-circle"></i>
-      </button>
-      <button class="action-btn" title="Edit Card" [disabled]="!selectedCard" (click)="openEditForm(selectedCard!)">
-        <i class="bi bi-pencil-square"></i>
-      </button>
-      <button class="action-btn" title="Delete Card" [disabled]="!selectedCard" (click)="deleteCard(selectedCard!.id)">
-        <i class="bi bi-trash"></i>
-      </button>
-      <button class="action-btn" title="Freeze Card" [disabled]="!selectedCard" (click)="freezeCard(selectedCard!)">
-        <i class="bi bi-snow"></i>
-      </button>
-      <button class="action-btn" title="Deposit" [disabled]="!selectedCard" (click)="deposit(selectedCard!)">
-        <i class="bi bi-cash-stack"></i>
-      </button>
-      <button class="action-btn" title="Withdraw" [disabled]="!selectedCard" (click)="withdraw(selectedCard!)">
-        <i class="bi bi-reply-all-fill"></i>
-      </button>
-      <button class="action-btn" title="Transfer" [disabled]="!selectedCard" (click)="transfer(selectedCard!)">
-        <i class="bi bi-arrow-left-right"></i>
-      </button>
-    </div>
-  </div>
   
-  <div class="cards-carousel">
-    <div *ngFor="let card of cards" class="wallet-card" [class.selected]="card === selectedCard" (click)="selectCard(card!)">
-      <div class="card-header">
-        <span class="card-type">{{ card.type }}</span>
-        <span class="card-actions">
-          <i class="bi bi-three-dots-vertical"></i>
-        </span>
-      </div>
-      <div class="card-number">{{ card.number }}</div>
-      <div class="card-holder">{{ card.holder }}</div>
-      <div class="card-balance">Balance: {{ card.balance | currency:'USD' }}</div>
-      <div class="card-valid">Valid Thru: {{ card.validThru }}</div>
-      <div class="card-status" *ngIf="card.frozen">Frozen</div>
-    </div>
-  </div>
-  
-  <!-- Modal for Add/Edit Card -->
-  <div class="modal" *ngIf="showForm">
+<!-- Modal for Add/Edit Card -->
+<div class="modal" *ngIf="showForm">
     <div class="modal-content">
       <h3>{{ isEdit ? 'Edit Card' : 'Add Card' }}</h3>
       <form (ngSubmit)="saveCard(selectedCard!)">
@@ -552,27 +224,28 @@
     </div>
   </div>
   
-  <!-- Transactions for selected card -->
-  <div class="transactions-section" *ngIf="selectedCard">
-    <h3>Recent Transactions</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Amount</th>
-          <th>Type</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let tx of selectedCard!.transactions">
-          <td>{{ tx.date | date:'shortDate' }}</td>
-          <td>{{ tx.description }}</td>
-          <td [class.negative]="tx.amount < 0" [class.positive]="tx.amount > 0">
-            {{ tx.amount | currency:'USD' }}
-          </td>
-          <td>{{ tx.type }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Modal for Add Transaction -->
+  <div class="modal" *ngIf="showTransactionForm">
+    <div class="modal-content">
+      <h3>Add Transaction</h3>
+      <form (ngSubmit)="saveTransaction()">
+        <label>Date</label>
+        <input type="date" [(ngModel)]="transactionForm.date" name="date" required>
+        <label>Description</label>
+        <input [(ngModel)]="transactionForm.description" name="description" required>
+        <label>Amount</label>
+        <input type="number" [(ngModel)]="transactionForm.amount" name="amount" required>
+        <label>Type</label>
+        <select [(ngModel)]="transactionForm.type" name="type" required>
+          <option value="Food">Food</option>
+          <option value="Transport">Transport</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Income">Income</option>
+          <option value="Gift">Gift</option>
+        </select>
+        <button type="submit" class="btn btn-success">Add</button>
+        <button type="button" class="btn btn-secondary" (click)="closeTransactionForm()">Cancel</button>
+      </form>
+    </div>
   </div>

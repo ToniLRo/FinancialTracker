@@ -19,20 +19,75 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   selectedAccount: Account | null = null;
   isEdit = false;
   showForm = false;
-  cards: Card[] = []; // tu array de tarjetas
+  cards: Card[] = [
+    {
+      id: 1,
+      holder: 'John Doe',
+      number: '1234 5678 9012 3456',
+      type: 'Credit',
+      balance: 2500.50,
+      validThru: '12/25',
+      frozen: false,
+      transactions: [
+        { id: 1, date: '2024-01-15', description: 'Starbucks', amount: -5.99, type: 'Food' },
+        { id: 2, date: '2024-01-14', description: 'Gas Station', amount: -45.00, type: 'Transport' }
+      ]
+    },
+    {
+      id: 2,
+      holder: 'John Doe',
+      number: '9876 5432 1098 7654',
+      type: 'Debit',
+      balance: 1500.75,
+      validThru: '08/26',
+      frozen: false,
+      transactions: [
+        { id: 1, date: '2024-01-15', description: 'Salary', amount: 3000.00, type: 'Income' }
+      ]
+    },
+    {
+      id: 3,
+      holder: 'John Doe',
+      number: '1234 5678 9012 3456',
+      type: 'Credit',
+      balance: 2500.50,
+      validThru: '12/25',
+      frozen: false,
+      transactions: [
+        { id: 1, date: '2024-01-15', description: 'Starbucks', amount: -5.99, type: 'Food' },
+        { id: 2, date: '2024-01-14', description: 'Gas Station', amount: -45.00, type: 'Transport' }
+      ]
+    },
+    {
+      id: 4,
+      holder: 'John Doe',
+      number: '1234 5678 9012 3456',
+      type: 'Credit',
+      balance: 2500.50,
+      validThru: '12/25',
+      frozen: false,
+      transactions: [
+        { id: 1, date: '2024-01-15', description: 'Starbucks', amount: -5.99, type: 'Food' },
+        { id: 2, date: '2024-01-14', description: 'Gas Station', amount: -45.00, type: 'Transport' }
+      ]
+    }
+  ];  
   selectedCard: Card | null = null; // <--- Añade esta línea
-
+  transactionForm = { date: '', description: '', amount: 0, type: '' };
+  showTransactionForm = false;
+  private swiper: any;
+  activeCardIndex: number = 0;
 
   constructor(private renderer: Renderer2, private accountService: AccountService ) { }
 
   
   ngAfterViewInit(): void {
-    new Swiper('.slide-content', {
+    this.swiper = new Swiper('.slide-content', {
       slidesPerView: 3,
       spaceBetween: 25,
       loop: true,
       centeredSlides: true,
-      fadeEffect: { crossFade: true },  // Se usa 'fadeEffect' en lugar de 'fade'
+      fadeEffect: { crossFade: true },
       grabCursor: true,
       pagination: {
         el: '.swiper-pagination',
@@ -54,7 +109,30 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           slidesPerView: 3,
         },
       },
+      on: {
+        slideChange: () => {
+          this.updateActiveCard();
+        }
+      }
     });
+  }
+
+  updateActiveCard() {
+    if (this.swiper) {
+      // Obtener el índice real considerando el loop
+      const realIndex = this.swiper.realIndex;
+      this.activeCardIndex = realIndex;
+      this.selectedCard = this.cards[realIndex];
+    }
+  }
+
+  getActiveCard(): Card | null {
+    return this.cards[this.activeCardIndex] || null;
+  }
+
+  getActiveCardTransactions() {
+    const activeCard = this.getActiveCard();
+    return activeCard?.transactions || [];
   }
 
   ngOnInit() {
@@ -111,6 +189,40 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.selectedAccount = null;
   }
 
+  openTransactionForm(card: Card) {
+    this.selectedCard = card;
+    this.transactionForm = {
+      date: new Date().toISOString().split('T')[0],
+      description: '',
+      amount: 0,
+      type: 'Food'
+    };
+    this.showTransactionForm = true;
+  }
+
+  saveTransaction() {
+    if (this.selectedCard) {
+      const newTransaction = {
+        ...this.transactionForm,
+        id: Date.now() // Generar ID único
+      };
+      
+      if (!this.selectedCard.transactions) {
+        this.selectedCard.transactions = [];
+      }
+      
+      this.selectedCard.transactions.unshift(newTransaction); // Agregar al inicio
+      
+      // Actualizar el balance si es necesario
+      this.selectedCard.balance += newTransaction.amount;
+    }
+    this.showTransactionForm = false;
+  }
+
+  closeTransactionForm() {
+    this.showTransactionForm = false;
+  }
+
   saveCard(card: Card) {
     if (this.isEdit) {
       // Update existing card
@@ -156,6 +268,23 @@ deleteCard(id: number) {
   transfer(card: Card) {
     // Implement transfer logic
     console.log('Transfer from card:', card.id);
+  }
+
+  getTransactionIconColor(type: string): string {
+    const colors: { [key: string]: string } = {
+      'Food': '#f2dcbb',
+      'Transport': '#e0ece4',
+      'Shopping': '#ffebee',
+      'Entertainment': '#e3f2fd',
+      'Income': '#e8f5e8',
+      'Gift': '#fff3e0',
+      'default': '#f5f5f5'
+    };
+    return colors[type] || colors['default'];
+  }
+
+  generateReferenceId(): string {
+    return Math.random().toString(36).substr(2, 9).toUpperCase();
   }
 
 }

@@ -5,5 +5,6 @@ export interface LoginResponse {
     username: string;
     email: string;
     message: string;
+    registerDate: Date;
   }
   

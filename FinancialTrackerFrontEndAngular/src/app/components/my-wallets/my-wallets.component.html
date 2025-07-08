@@ -1,4 +1,4 @@
-<head>
+<!--<head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
 </head>
@@ -482,4 +482,97 @@
                 </details>
             </div>
     </div>
-</div>
+</div>-->
+
+<div class="wallets-header">
+    <h2>My Wallets</h2>
+    <div class="actions">
+      <button class="action-btn" title="Add Card" (click)="openAddForm()">
+        <i class="bi bi-plus-circle"></i>
+      </button>
+      <button class="action-btn" title="Edit Card" [disabled]="!selectedCard" (click)="openEditForm(selectedCard!)">
+        <i class="bi bi-pencil-square"></i>
+      </button>
+      <button class="action-btn" title="Delete Card" [disabled]="!selectedCard" (click)="deleteCard(selectedCard!.id)">
+        <i class="bi bi-trash"></i>
+      </button>
+      <button class="action-btn" title="Freeze Card" [disabled]="!selectedCard" (click)="freezeCard(selectedCard!)">
+        <i class="bi bi-snow"></i>
+      </button>
+      <button class="action-btn" title="Deposit" [disabled]="!selectedCard" (click)="deposit(selectedCard!)">
+        <i class="bi bi-cash-stack"></i>
+      </button>
+      <button class="action-btn" title="Withdraw" [disabled]="!selectedCard" (click)="withdraw(selectedCard!)">
+        <i class="bi bi-reply-all-fill"></i>
+      </button>
+      <button class="action-btn" title="Transfer" [disabled]="!selectedCard" (click)="transfer(selectedCard!)">
+        <i class="bi bi-arrow-left-right"></i>
+      </button>
+    </div>
+  </div>
+  
+  <div class="cards-carousel">
+    <div *ngFor="let card of cards" class="wallet-card" [class.selected]="card === selectedCard" (click)="selectCard(card!)">
+      <div class="card-header">
+        <span class="card-type">{{ card.type }}</span>
+        <span class="card-actions">
+          <i class="bi bi-three-dots-vertical"></i>
+        </span>
+      </div>
+      <div class="card-number">{{ card.number }}</div>
+      <div class="card-holder">{{ card.holder }}</div>
+      <div class="card-balance">Balance: {{ card.balance | currency:'USD' }}</div>
+      <div class="card-valid">Valid Thru: {{ card.validThru }}</div>
+      <div class="card-status" *ngIf="card.frozen">Frozen</div>
+    </div>
+  </div>
+  
+  <!-- Modal for Add/Edit Card -->
+  <div class="modal" *ngIf="showForm">
+    <div class="modal-content">
+      <h3>{{ isEdit ? 'Edit Card' : 'Add Card' }}</h3>
+      <form (ngSubmit)="saveCard(selectedCard!)">
+        <label>Card Holder</label>
+        <input [(ngModel)]="selectedCard!.holder" name="holder" required>
+        <label>Card Number</label>
+        <input [(ngModel)]="selectedCard!.number" name="number" required maxlength="16">
+        <label>Type</label>
+        <select [(ngModel)]="selectedCard!.type" name="type" required>
+          <option value="Credit">Credit</option>
+          <option value="Debit">Debit</option>
+          <option value="Cash">Cash</option>
+        </select>
+        <label>Balance</label>
+        <input type="number" [(ngModel)]="selectedCard!.balance" name="balance" required>
+        <label>Valid Thru</label>
+        <input type="text" [(ngModel)]="selectedCard!.validThru" name="validThru" placeholder="MM/YY" required>
+        <button type="submit" class="btn btn-success">{{ isEdit ? 'Save Changes' : 'Add Card' }}</button>
+        <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Transactions for selected card -->
+  <div class="transactions-section" *ngIf="selectedCard">
+    <h3>Recent Transactions</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Amount</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tx of selectedCard!.transactions">
+          <td>{{ tx.date | date:'shortDate' }}</td>
+          <td>{{ tx.description }}</td>
+          <td [class.negative]="tx.amount < 0" [class.positive]="tx.amount > 0">
+            {{ tx.amount | currency:'USD' }}
+          </td>
+          <td>{{ tx.type }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

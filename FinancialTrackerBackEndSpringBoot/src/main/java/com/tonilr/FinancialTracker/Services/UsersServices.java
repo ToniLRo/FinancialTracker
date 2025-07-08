@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +17,12 @@ import com.tonilr.FinancialTracker.dto.RegisterRequest;
 import com.tonilr.FinancialTracker.dto.LoginRequest;
 import com.tonilr.FinancialTracker.exceptions.UserNotFoundException;
 import com.tonilr.FinancialTracker.repos.UsersRepo;
-import com.tonilr.FinancialTracker.Services.JwtService;
+import com.tonilr.FinancialTracker.dto.ChangePasswordRequest;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.SimpleMailMessage;
 
 @Service
 public class UsersServices {
@@ -31,6 +35,9 @@ public class UsersServices {
 	
 	@Autowired
 	private final AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private JavaMailSender mailSender;
 	
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -88,6 +95,11 @@ public class UsersServices {
 		Users user = userRepo.findByUsername(request.getUsername())
 				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 		
+		// Verificar contraseña con validación estricta de mayúsculas/minúsculas
+		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new RuntimeException("Credenciales incorrectas. Verifica tu usuario y contraseña.");
+		}
+		
 		// Generar token JWT
 		UserDetails userDetails = new org.springframework.security.core.userdetails.User(
 			user.getUsername(), 
@@ -106,7 +118,69 @@ public class UsersServices {
 		response.put("registerDate", user.getRegisterDate() != null ? user.getRegisterDate().toString() : null);
 		response.put("message", "Login exitoso");
 		
-		System.out.println("Login response: " + response); // Debug
 		return response;
+	}
+
+	public Map<String, Object> changePassword(String username, ChangePasswordRequest request) {
+		// Buscar usuario
+		Users user = userRepo.findByUsername(username)
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		
+		// Verificar contraseña actual con validación estricta
+		if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+			throw new RuntimeException("La contraseña actual es incorrecta");
+		}
+		
+		// Verificar que las nuevas contraseñas coincidan exactamente
+		if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+			throw new RuntimeException("Las nuevas contraseñas no coinciden");
+		}
+		
+		// Verificar que la nueva contraseña sea diferente
+		if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+			throw new RuntimeException("La nueva contraseña debe ser diferente a la actual");
+		}
+		
+		// Encriptar y guardar nueva contraseña
+		user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+		userRepo.save(user);
+		
+		Map<String, Object> response = new HashMap<>();
+		response.put("message", "Contraseña actualizada exitosamente");
+		return response;
+	}
+
+	public String generatePasswordResetToken(String email) {
+	    Users user = userRepo.findByEmail(email)
+	        .orElseThrow(() -> new RuntimeException("No existe usuario con ese email"));
+	    // Generar JWT con expiración corta
+	    String token = Jwts.builder()
+	        .setSubject(user.getEmail())
+	        .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 minutos
+	        .signWith(SignatureAlgorithm.HS256, "claveSecretaParaReset".getBytes())
+	        .compact();
+	    return token;
+	}
+
+	public void sendPasswordResetEmail(String email) {
+	    Users user = userRepo.findByEmail(email)
+	        .orElseThrow(() -> new RuntimeException("No existe usuario con ese email"));
+
+	    // Generar el token JWT como ya tienes
+	    String token = Jwts.builder()
+	        .setSubject(user.getEmail())
+	        .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 minutos
+	        .signWith(SignatureAlgorithm.HS256, "claveSecretaParaReset".getBytes())
+	        .compact();
+
+	    String resetLink = "http://localhost:4200/forgot-password?token=" + token;
+
+	    // Crear y enviar el email
+	    SimpleMailMessage message = new SimpleMailMessage();
+	    message.setTo(user.getEmail());
+	    message.setSubject("Recuperación de contraseña");
+	    message.setText("Haz clic en el siguiente enlace para restablecer tu contraseña:\n" + resetLink);
+
+	    mailSender.send(message);
 	}
 }

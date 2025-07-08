@@ -165,4 +165,29 @@
       margin-top: 5px;
       margin-left: 3px;
   }
+
+.error-message {
+  background: rgba(255, 64, 129, 0.1);
+  color: #ff4081;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin: 18px auto 0 auto;   /* Margen superior para separarlo del forgot password */
+  font-weight: 600;
+  font-size: 15px;
+  border-left: 4px solid #ff4081;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 2px 8px rgba(255, 64, 129, 0.08);
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
   

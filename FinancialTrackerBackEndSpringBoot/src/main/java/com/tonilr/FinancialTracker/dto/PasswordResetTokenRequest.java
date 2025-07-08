@@ -1,0 +1,19 @@
+// src/main/java/com/tonilr/FinancialTracker/dto/PasswordResetTokenRequest.java
+package com.tonilr.FinancialTracker.dto;
+
+public class PasswordResetTokenRequest {
+    private String token;
+    private String newPassword;
+
+    public PasswordResetTokenRequest() {}
+
+    public PasswordResetTokenRequest(String token, String newPassword) {
+        this.token = token;
+        this.newPassword = newPassword;
+    }
+
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
+    public String getNewPassword() { return newPassword; }
+    public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
+}

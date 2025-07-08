@@ -1,20 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LoginResponse } from 'src/app/models/LoginResponse/loginresponse.model';
 
-export interface User {
-  userId: number;
-  username: string;
-  email: string;
-}
 
-export interface LoginResponse {
-  token: string;
-  userId: number;
-  username: string;
-  email: string;
-  message: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -30,5 +19,5 @@ export class UsersService {
 
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password });
-  } 
+  }
 }

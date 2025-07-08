@@ -46,8 +46,8 @@
         <div class="row" *ngIf="isEditing">
           <div class="col-12">
             <hr>
-            <h5>Cambiar Contraseña</h5>
-            <p class="text-muted small">Deja en blanco si no quieres cambiar la contraseña</p>
+            <!--<h5>Cambiar Contraseña</h5>
+            <p class="text-muted small">Deja en blanco si no quieres cambiar la contraseña</p>-->
           </div>
           
           <div class="col-md-4 mb-3">
@@ -67,7 +67,10 @@
               class="form-control" 
               id="newPassword" 
               name="newPassword"
-              [(ngModel)]="profileData.newPassword">
+              [(ngModel)]="profileData.newPassword"
+              minlength="6"
+              pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$">
+            <div class="form-text">Mínimo 6 caracteres, al menos una letra y un número</div>
           </div>
           
           <div class="col-md-4 mb-3">

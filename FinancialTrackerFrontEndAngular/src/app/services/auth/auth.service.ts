@@ -1,22 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { LoginResponse } from 'src/app/models/LoginResponse/loginresponse.model';
+import { User } from 'src/app/models/User/user.model';
+import { ChangePasswordRequest } from 'src/app/models/ChangePasswordRequest.model';
 
-export interface User {
-  userId: number;
-  username: string;
-  email: string;
-  registerDate?: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  userId: number;
-  username: string;
-  email: string;
-  registerDate: string;
-  message: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +28,10 @@ export class AuthService {
 
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password });
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/change-password`, request);
   }
 
   // Métodos de autenticación

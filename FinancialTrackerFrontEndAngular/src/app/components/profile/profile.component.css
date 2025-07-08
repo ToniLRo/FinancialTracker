@@ -275,6 +275,12 @@
   box-shadow: 0 0 0 0.2rem rgba(33, 190, 114, 0.25);
 }
 
+.form-text {
+  color: #21be72; /* Verde como el tema */
+  font-size: 12px;
+  margin-top: 0.25rem;
+}
+
 /* Custom scrollbar */
 .profile-container::-webkit-scrollbar {
   width: 8px;

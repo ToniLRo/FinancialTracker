@@ -21,9 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.dto.RegisterRequest;
+
+import io.jsonwebtoken.Jwts;
+
 import com.tonilr.FinancialTracker.dto.LoginRequest;
 import com.tonilr.FinancialTracker.Services.JwtService;
-
+import com.tonilr.FinancialTracker.dto.ChangePasswordRequest;
+import com.tonilr.FinancialTracker.dto.PasswordResetRequest;
+import com.tonilr.FinancialTracker.dto.PasswordResetTokenRequest;
 
 
 @RestController
@@ -105,6 +110,22 @@ public class UsersController {
 			Map<String, String> error = new HashMap<>();
 			error.put("message", "Error al obtener perfil: " + e.getMessage());
 			return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping("/change-password")
+	public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token, 
+										   @RequestBody ChangePasswordRequest request) {
+		try {
+			String jwt = token.substring(7);
+			String username = jwtService.extractUsername(jwt);
+			
+			Map<String, Object> response = userService.changePassword(username, request);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (RuntimeException e) {
+			Map<String, String> error = new HashMap<>();
+			error.put("message", e.getMessage());
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 	}
 }

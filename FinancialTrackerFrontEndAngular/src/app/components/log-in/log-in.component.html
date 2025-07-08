@@ -27,9 +27,16 @@
 							<div class="foot-lnk">
 								<a href="#forgot">Forgot Password?</a>
 							</div>
+							<div class="error-message" *ngIf="loginError">
+								{{ loginError }}
+							</div>
 						</div>
 					</form>
+			
 			</div>
+
+
 		</div>
 	</div>
 </div>
+

@@ -1,10 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth/auth.service';
+import { AuthService } from '../../services/auth/auth.service'; 
 import { Router } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 export interface ProfileData {
   username: string;
   email: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+} 
+
+export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
@@ -70,32 +80,88 @@ export class ProfileComponent implements OnInit {
     this.isLoading = true;
     this.clearMessages();
 
+    // Validaciones básicas
     if (!this.profileData.username || !this.profileData.email) {
       this.errorMessage = 'Por favor, completa todos los campos obligatorios.';
       this.isLoading = false;
       return;
     }
 
-    if (this.profileData.newPassword && this.profileData.newPassword !== this.profileData.confirmPassword) {
-      this.errorMessage = 'Las contraseñas nuevas no coinciden.';
-      this.isLoading = false;
-      return;
+    // Validar contraseña si se está cambiando
+    if (this.profileData.newPassword || this.profileData.currentPassword) {
+      if (!this.profileData.currentPassword) {
+        this.errorMessage = 'Debes ingresar tu contraseña actual para cambiarla.';
+        this.isLoading = false;
+        return;
+      }
+      
+      if (!this.profileData.newPassword) {
+        this.errorMessage = 'Debes ingresar una nueva contraseña.';
+        this.isLoading = false;
+        return;
+      }
+      
+      if (this.profileData.newPassword !== this.profileData.confirmPassword) {
+        this.errorMessage = 'Las contraseñas nuevas no coinciden.';
+        this.isLoading = false;
+        return;
+      }
+      
+      if (this.profileData.newPassword.length < 6) {
+        this.errorMessage = 'La nueva contraseña debe tener al menos 6 caracteres.';
+        this.isLoading = false;
+        return;
+      }
     }
 
-    setTimeout(() => {
-      this.successMessage = 'Perfil actualizado exitosamente.';
-      this.isLoading = false;
-      this.isEditing = false;
-      
-      const currentUser = this.authService.getCurrentUser();
-      if (currentUser) {
-        this.authService.setCurrentUser({
-          ...currentUser,
-          username: this.profileData.username,
-          email: this.profileData.email
-        }, this.authService.getToken() || '');
-      }
-    }, 1000);
+    // Si hay cambio de contraseña, hacer la llamada al servidor
+    if (this.profileData.newPassword) {
+      this.authService.changePassword({
+        currentPassword: this.profileData.currentPassword,
+        newPassword: this.profileData.newPassword,
+        confirmPassword: this.profileData.confirmPassword
+      }).subscribe({
+        next: (response) => {
+          this.successMessage = 'Perfil y contraseña actualizados exitosamente.';
+          this.isLoading = false;
+          this.isEditing = false;
+          
+          // Limpiar campos de contraseña
+          this.profileData.currentPassword = '';
+          this.profileData.newPassword = '';
+          this.profileData.confirmPassword = '';
+          
+          // Actualizar usuario en localStorage
+          const currentUser = this.authService.getCurrentUser();
+          if (currentUser) {
+            this.authService.setCurrentUser({
+              ...currentUser,
+              username: this.profileData.username
+            }, this.authService.getToken() || '');
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err.error?.message || 'Error al actualizar la contraseña.';
+          this.isLoading = false;
+        }
+      });
+    } else {
+      // Solo actualizar datos del perfil (sin contraseña)
+      setTimeout(() => {
+        this.successMessage = 'Perfil actualizado exitosamente.';
+        this.isLoading = false;
+        this.isEditing = false;
+        
+        // Actualizar usuario en localStorage
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+          this.authService.setCurrentUser({
+            ...currentUser,
+            username: this.profileData.username
+          }, this.authService.getToken() || '');
+        }
+      }, 1000);
+    }
   }
 
   getMemberSince(): string {

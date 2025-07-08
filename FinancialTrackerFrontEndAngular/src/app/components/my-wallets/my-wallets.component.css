@@ -731,3 +731,90 @@ text-align: center;
     display: none;
   }
 }
+
+
+.wallets-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+}
+.action-btn {
+  background: #222;
+  color: #21be72;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.action-btn:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+.cards-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+.wallet-card {
+  background: linear-gradient(135deg, #667eea 0%, #21be72 100%);
+  color: #fff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  min-width: 300px;
+  box-shadow: 0 4px 24px rgba(33, 190, 114, 0.15);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.wallet-card.selected {
+  border: 3px solid #21be72;
+  transform: scale(1.04);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-type {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.card-number {
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  margin: 1rem 0;
+}
+.card-holder, .card-balance, .card-valid {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+.card-status {
+  color: #ffc107;
+  font-weight: bold;
+}
+.transactions-section {
+  margin-top: 2rem;
+}
+.table {
+  width: 100%;
+  background: #fff;
+  color: #222;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.table th, .table td {
+  padding: 0.75rem 1rem;
+}
+.negative { color: #ff4081; }
+.positive { color: #21be72; }

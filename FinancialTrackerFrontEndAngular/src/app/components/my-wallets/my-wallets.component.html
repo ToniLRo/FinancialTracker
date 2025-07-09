@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="action-button">
-                <button class="button-27" role="button" title="Edit Card" [disabled]="!selectedCard" (click)="openEditForm(selectedCard!)">
+                <button class="button-27" role="button" title="Edit Card" [disabled]="!getActiveCard()" (click)="openEditFormForActiveCard()">
                         <i class="bi bi-pencil-square" style="color: white; font-size: 25px;"></i>
                 </button>
                 <div class="button-description"  style="text-align: center;">
@@ -92,7 +92,7 @@
                 <h5 style="text-align: center;">My Cards</h5>
                 <div class="slide-content">
                     <div class="card-wrapper swiper-wrapper">
-                        <div *ngFor="let card of cards" class="card swiper-slide" [class.selected]="card === selectedCard" (click)="selectCard(card)">
+                        <div *ngFor="let card of cards; let i = index" class="card swiper-slide" [class.selected]="card === selectedCard" (click)="selectCard(card, i)">
                             <div class="card-inner">
                                 <div class="card-front">  
                                     <div class="card-bg"></div>
@@ -125,9 +125,9 @@
                                         </svg>
                                     </div>
                                     <div class="card-chip"></div>
-                                    <div class="card-holder">{{ card.holder }}</div>
-                                    <div class="card-number">{{ card.number }}</div>
-                                    <div class="card-valid">{{ card.validThru }}</div>
+                                    <div class="card-holder" [title]="card.holder">{{ truncateText(card.holder, 12) }}</div>
+                                    <div class="card-number">{{ formatCardNumber(card.number) }}</div>
+                                    <div class="card-valid">{{ formatValidThru(card.validThru) }}</div>
                                     <div class="card-balance" style="position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #fff;">
                                         {{ card.balance | currency:'USD' }}
                                     </div>
@@ -205,9 +205,11 @@
       <h3>{{ isEdit ? 'Edit Card' : 'Add Card' }}</h3>
       <form (ngSubmit)="saveCard(selectedCard!)">
         <label>Card Holder</label>
-        <input [(ngModel)]="selectedCard!.holder" name="holder" required>
+        <input [(ngModel)]="selectedCard!.holder" name="holder" required maxlength="50">
         <label>Card Number</label>
-        <input [(ngModel)]="selectedCard!.number" name="number" required maxlength="16">
+        <input [(ngModel)]="selectedCard!.number" name="number" required maxlength="19" 
+               (input)="onCardNumberInput($event)"
+               placeholder="1234 5678 9012 3456">   
         <label>Type</label>
         <select [(ngModel)]="selectedCard!.type" name="type" required>
           <option value="Credit">Credit</option>
@@ -215,9 +217,11 @@
           <option value="Cash">Cash</option>
         </select>
         <label>Balance</label>
-        <input type="number" [(ngModel)]="selectedCard!.balance" name="balance" required>
+        <input type="number" [(ngModel)]="selectedCard!.balance" name="balance" required step="0.01">
         <label>Valid Thru</label>
-        <input type="text" [(ngModel)]="selectedCard!.validThru" name="validThru" placeholder="MM/YY" required>
+        <input type="text" [(ngModel)]="selectedCard!.validThru" name="validThru" 
+               (input)="onValidThruInput($event)"
+               placeholder="MM/YY" required maxlength="5">
         <button type="submit" class="btn btn-success">{{ isEdit ? 'Save Changes' : 'Add Card' }}</button>
         <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
       </form>

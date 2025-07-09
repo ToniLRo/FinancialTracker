@@ -1,4 +1,3 @@
-
 .bi {
     vertical-align: -.125em;
     fill: currentColor;
@@ -793,7 +792,7 @@ text-align: center;
 .card-number {
   font-size: 1.3rem;
   letter-spacing: 2px;
-  margin: 1rem 0;
+  margin: 1.1rem 0;
 }
 .card-holder, .card-balance, .card-valid {
   font-size: 1rem;
@@ -897,3 +896,176 @@ text-align: center;
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* Estilos para tooltips y texto truncado */
+.card-holder {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  cursor: pointer;
+}
+
+
+/* Mejorar estilos de los inputs en los modales */
+.modal-content input[type="text"],
+.modal-content input[type="number"] {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+.modal-content input[name="number"] {
+  font-size: 16px;
+  text-align: start;
+}
+
+.modal-content input[name="validThru"] {
+  font-size: 16px;
+  text-align: center;
+  width: 80px;
+}
+
+
+
+
+
+
+
+/* Estilos para resaltar la tarjeta activa del swiper */
+.swiper-slide-active .card {
+  transform: scale(1.3); /* Remover scale, usar dimensiones directas */
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 8px 32px rgba(0, 183, 255, 0.3);
+}
+
+.swiper-slide-active .card-inner {
+  box-shadow: 0 0 35px 5px rgba(0, 183, 255, 0.4);
+}
+
+.swiper-slide-active .card-front {
+  background: linear-gradient(321.03deg, #00b7ff 0%, #0077cc 91.45%);
+}
+
+.swiper-slide-active .card-glow {
+  background: rgba(0, 183, 255, 0.6);
+  filter: blur(15px);
+}
+
+/* Efecto de borde brillante para la tarjeta activa */
+.swiper-slide-active .card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #00b7ff, #0077cc, #00b7ff);
+  border-radius: 12px;
+  z-index: -1;
+  animation: borderGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes borderGlow {
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Efecto de pulso para la tarjeta activa */
+.swiper-slide-active .card-inner::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: radial-gradient(circle, rgba(0, 183, 255, 0.2) 0%, transparent 70%);
+  border-radius: 15px;
+  z-index: -1;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+}
+
+/* Estilos para las tarjetas no activas (más pequeñas y opacas) */
+.swiper-slide:not(.swiper-slide-active) .card {
+  width: 272px !important; /* 320px * 0.85 = 272px */
+  height: 170px !important; /* 200px * 0.85 = 170px */
+  transform: none; /* Remover scale, usar dimensiones directas */
+  transition: all 0.3s ease;
+  opacity: 0.6;
+}
+
+.swiper-slide:not(.swiper-slide-active) .card-inner {
+  box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto hover para las tarjetas no activas */
+.swiper-slide:not(.swiper-slide-active) .card:hover {
+  width: 288px !important; /* 320px * 0.9 = 288px */
+  height: 180px !important; /* 200px * 0.9 = 180px */
+  opacity: 0.8;
+}
+
+/* Responsive para dispositivos móviles */
+@media screen and (max-width: 768px) {
+  .slide-content {
+    margin: 0 10px;
+    padding: 15px 0;
+  }
+  
+  .swiper-slide-active .card {
+    transform: scale(1.3);
+  }
+  
+  .swiper-slide:not(.swiper-slide-active) .card {
+    width: 256px !important; /* 320px * 0.8 = 256px */
+    height: 160px !important; /* 200px * 0.8 = 160px */
+  }
+  
+  .swiper-slide:not(.swiper-slide-active) .card:hover {
+    width: 272px !important; /* 320px * 0.85 = 272px */
+    height: 170px !important; /* 200px * 0.85 = 170px */
+  }
+}
+
+
+.swiper-wrapper {
+  overflow: visible;
+  width: 100%;
+  position: relative;
+  height: 340px;
+}
+
+.card.swiper-slide {
+  margin-right: 25px;
+  margin-left: 0;
+  transition: all 0.3s;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.card.swiper-slide.selected {
+  opacity: 1;
+  z-index: 2;
+  box-shadow: 0 8px 32px rgba(0, 183, 255, 0.3);
+  transform: scale(1.5);
+}
+

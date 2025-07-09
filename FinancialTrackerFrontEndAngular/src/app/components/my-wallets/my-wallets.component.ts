@@ -77,6 +77,12 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   showTransactionForm = false;
   private swiper: any;
   activeCardIndex: number = 0;
+  cardWidth = 480; // Debe coincidir con el CSS de la tarjeta activa
+  gap = 25; // Espacio entre tarjetas
+  get translateX(): number {
+    // Centra la tarjeta activa
+    return -((this.cardWidth + this.gap) * this.activeCardIndex);
+  }
 
   constructor(private renderer: Renderer2, private accountService: AccountService ) { }
 
@@ -223,29 +229,68 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.showTransactionForm = false;
   }
 
+  // Funciones para máscaras
+  formatCardNumber(number: string): string {
+    if (!number) return '';
+    // Remover espacios y caracteres no numéricos
+    const cleanNumber = number.replace(/\D/g, '');
+    // Aplicar máscara: XXXX XXXX XXXX XXXX
+    return cleanNumber.replace(/(\d{4})(?=\d)/g, '$1 ').substring(0, 19);
+  }
+
+  formatValidThru(validThru: string): string {
+    if (!validThru) return '';
+    // Remover caracteres no numéricos
+    const clean = validThru.replace(/\D/g, '');
+    // Aplicar máscara: MM/YY
+    if (clean.length >= 2) {
+      return clean.substring(0, 2) + '/' + clean.substring(2, 4);
+    }
+    return clean;
+  }
+
+  // Función para truncar texto largo
+  truncateText(text: string, maxLength: number = 20): string {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  }
+
+  // Función para obtener el texto completo para tooltip
+  getFullText(text: string): string {
+    return text || '';
+  }
+
+  // Actualizar el método saveCard para aplicar máscaras
   saveCard(card: Card) {
+    // Aplicar máscaras antes de guardar
+    card.number = card.number.replace(/\s/g, ''); // Remover espacios para guardar
+    card.validThru = card.validThru.replace(/\//g, ''); // Remover / para guardar
+    
     if (this.isEdit) {
-      // Update existing card
       const index = this.cards.findIndex(c => c.id === card.id);
       if (index !== -1) {
         this.cards[index] = { ...card };
       }
     } else {
-      // Add new card
-      card.id = this.cards.length + 1;
+      card.id = Math.max(...this.cards.map(c => c.id)) + 1;
       this.cards.push({ ...card });
     }
     this.showForm = false;
     this.selectedCard = null;
   }
   
-selectCard(card: Card) {
+selectCard(card: Card, index: number) {
   this.selectedCard = card;
+  this.activeCardIndex = index;
 }
 
 deleteCard(id: number) {
   if (confirm('Are you sure you want to delete this card?')) {
     this.cards = this.cards.filter(card => card.id !== id);
+    // Si eliminamos la tarjeta activa, actualizar el índice
+    if (this.activeCardIndex >= this.cards.length) {
+      this.activeCardIndex = Math.max(0, this.cards.length - 1);
+    }
     this.selectedCard = null;
   }
 }
@@ -285,6 +330,46 @@ deleteCard(id: number) {
 
   generateReferenceId(): string {
     return Math.random().toString(36).substr(2, 9).toUpperCase();
+  }
+
+  onCardNumberInput(event: any) {
+    this.selectedCard!.number = this.formatCardNumber(event.target.value);
+  }
+
+  onValidThruInput(event: any) {
+    this.selectedCard!.validThru = this.formatValidThru(event.target.value);
+  }
+
+  // Nuevo método para editar la tarjeta activa del swiper
+  openEditFormForActiveCard() {
+    const activeCard = this.getActiveCard();
+    if (activeCard) {
+      this.openEditForm(activeCard);
+    }
+  }
+
+  // Nuevo método para eliminar la tarjeta activa del swiper
+  deleteActiveCard() {
+    const activeCard = this.getActiveCard();
+    if (activeCard) {
+      this.deleteCard(activeCard.id);
+    }
+  }
+
+  prevCard() {
+    if (this.activeCardIndex > 0) {
+      this.activeCardIndex--;
+    }
+  }
+
+  nextCard() {
+    if (this.activeCardIndex < this.cards.length - 1) {
+      this.activeCardIndex++;
+    }
+  }
+
+  goToCard(index: number) {
+    this.activeCardIndex = index;
   }
 
 }

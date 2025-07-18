@@ -26,8 +26,11 @@ public class AccountServices {
 		}
 		
 		// Validaciones básicas
-		if (account.getAccount_name() == null || account.getAccount_name().trim().isEmpty()) {
-			throw new RuntimeException("Account name is required");
+		if (account.getHolder_name() == null || account.getHolder_name().trim().isEmpty()) {
+			throw new RuntimeException("Holder name is required");
+		}
+		if (account.getAccount_number() == null || account.getAccount_number().trim().isEmpty()) {
+			throw new RuntimeException("Account number is required");
 		}
 		
 		if (account.getAccount_type() == null) {

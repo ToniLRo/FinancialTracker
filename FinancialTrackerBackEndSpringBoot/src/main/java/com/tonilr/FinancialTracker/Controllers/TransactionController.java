@@ -139,7 +139,7 @@ public class TransactionController {
 			// Verificar que la cuenta existe
 			Account account = accountService.findAccountById(accountId);
 			System.out.println("Account found: " + account.getAccount_Id());
-			System.out.println("Account name: " + account.getAccount_name());
+			System.out.println("Account number: " + account.getAccount_number());
 			
 			// Buscar transacciones
 			System.out.println("Searching transactions for account ID: " + accountId);

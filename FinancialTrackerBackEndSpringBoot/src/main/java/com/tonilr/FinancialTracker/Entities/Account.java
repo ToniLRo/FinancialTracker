@@ -26,7 +26,10 @@ public class Account {
 	private Long account_Id;
 	
 	@Column(nullable = false, updatable = true)
-	private String account_name;
+	private String holder_name;
+
+	@Column(nullable = false, updatable = true)
+	private String account_number;
 	
 	@Column(nullable = false, updatable = true)
 	private AccountType account_type;
@@ -49,10 +52,11 @@ public class Account {
 	public Account() {
 	}
 
-	public Account(String account_name, AccountType account_type, double initial_balance, 
+	public Account(String holder_name, String account_number, AccountType account_type, double initial_balance, 
 			String currency, Date creation_date) {
 		super();
-		this.account_name = account_name;
+		this.holder_name = holder_name;
+		this.account_number = account_number;
 		this.account_type = account_type;
 		this.initial_balance = initial_balance;
 		this.currency = currency;
@@ -68,12 +72,20 @@ public class Account {
 		this.account_Id = account_Id;
 	}
 
-	public String getAccount_name() {
-		return account_name;
+	public String getHolder_name() {
+		return holder_name;
 	}
 
-	public void setAccount_name(String account_name) {
-		this.account_name = account_name;
+	public void setHolder_name(String holder_name) {
+		this.holder_name = holder_name;
+	}
+
+	public String getAccount_number() {
+		return account_number;
+	}
+
+	public void setAccount_number(String account_number) {
+		this.account_number = account_number;
 	}
 
 	public AccountType getAccount_type() {

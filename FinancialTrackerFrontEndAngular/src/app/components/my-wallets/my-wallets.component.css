@@ -1238,3 +1238,120 @@ text-align: center;
     color: #ff4757;
 }
 
+/* NUEVO: Estilos para botones con estados */
+.button-27.processing {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-27.danger:hover {
+  background-color: #ff4757 !important;
+  transform: scale(1.05);
+}
+
+/* NUEVO: Estilos mejorados para el modal */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #21be72;
+  box-shadow: 0 0 0 2px rgba(33, 190, 114, 0.2);
+}
+
+.form-group input:disabled,
+.form-group select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.validation-message {
+  margin-top: 5px;
+}
+
+.validation-message small {
+  color: #ff4757;
+  font-size: 12px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid transparent;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 5px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* MEJORAR: Error message styling */
+.error-message {
+  background-color: rgba(255, 71, 87, 0.1);
+  border: 1px solid rgba(255, 71, 87, 0.3);
+  color: #ff4757;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 15px 0;
+  font-size: 14px;
+}
+

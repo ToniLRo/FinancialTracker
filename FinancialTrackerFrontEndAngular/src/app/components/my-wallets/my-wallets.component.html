@@ -11,7 +11,10 @@
     <div class="content-container text-white">
         <div class="actions">
             <div class="action-button">
-                <button class="button-27" role="button" title="Add Card" (click)="openAddForm()">
+                <button class="button-27" role="button" title="Add Card" 
+                [disabled]="isProcessing" 
+                (click)="openAddForm()"
+                [class.processing]="isProcessing">
                     <i class="bi bi-plus-circle" style="color: white; font-size: 25px;"></i>
                 </button>
                 <div class="button-description"  style="text-align: center;">
@@ -19,7 +22,10 @@
                 </div>
             </div>
             <div class="action-button">
-                <button class="button-27" role="button" title="Edit Card" [disabled]="!getActiveAccount()" (click)="openEditFormForActiveAccount()">
+                <button class="button-27" role="button" title="Edit Card" 
+                [disabled]="!getActiveAccount() || isProcessing" 
+                (click)="openEditFormForActiveAccount()"
+                [class.processing]="isProcessing">
                         <i class="bi bi-pencil-square" style="color: white; font-size: 25px;"></i>
                 </button>
                 <div class="button-description"  style="text-align: center;">
@@ -27,7 +33,11 @@
                 </div>
             </div>
             <div class="action-button">
-                <button class="button-27" role="button" title="Delete Card" [disabled]="!selectedAccount" (click)="deleteActiveAccount()">
+                <button class="button-27" role="button" title="Delete Card" 
+                [disabled]="!getActiveAccount() || isProcessing" 
+                (click)="deleteActiveAccount()"
+                [class.processing]="isProcessing"
+                [class.danger]="true">
                     <i class="bi bi-trash" style="color: white; font-size: 25px;"></i>
                 </button>
                 <div class="button-description"  style="text-align: center;">
@@ -139,8 +149,8 @@
                                         </svg>
                                     </div>
                                     <div class="card-chip"></div>
-                                    <div class="card-holder" [title]="account.account_name">
-                                        {{ truncateText(account.account_name, 12) }}
+                                    <div class="card-holder" [title]="account.holder_name">
+                                        {{ truncateText(account.holder_name, 12) }}
                                     </div>
                                     <div class="card-number">{{ formatCardNumber(account.account_type) }}</div>
                                     <div class="card-valid">{{ formatValidThru() }}</div>
@@ -155,7 +165,7 @@
                                     </div>
                                 </div>
                                 <div class="card-back">
-                                    <div class="card-signature">{{ account.account_name }}</div>
+                                    <div class="card-signature">{{ account.holder_name }}</div>
                                     <div class="card-seccode">123</div>
                                 </div>
                             </div>
@@ -218,33 +228,161 @@
 </div>
 
   
-<!-- Modal for Add/Edit Account -->
+<!-- Modal for Add/Edit Account mejorado -->
 <div class="modal" *ngIf="showForm">
     <div class="modal-content">
-      <h3>{{ isEdit ? 'Edit Card' : 'Add Card' }}</h3>
-      <form (ngSubmit)="saveAccount(selectedAccount!)">
-        <label>Card Holder</label>
-        <input [(ngModel)]="selectedAccount!.account_name" name="account_name" required maxlength="50">
+      <div class="modal-header">
+        <h3>{{ isEdit ? 'Edit Card' : 'Add New Card' }}</h3>
+        <button type="button" class="close-btn" (click)="closeForm()" [disabled]="isProcessing">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="saveAccount(selectedAccount!)" #accountForm="ngForm">
+                <!-- Holder Name -->
+                <div class="form-group">
+                    <label for="holder_name">Card Holder *</label>
+                    <input 
+                      id="holder_name"
+                      [(ngModel)]="selectedAccount!.holder_name" 
+                      name="holder_name" 
+                      required 
+                      maxlength="50"
+                      placeholder="e.g., John Doe"
+                      [disabled]="isProcessing"
+                      #holderName="ngModel">
+                    <div class="validation-message" *ngIf="holderName.invalid && holderName.touched">
+                      <small *ngIf="holderName.errors?.['required']">Holder name is required</small>
+                    </div>
+                  </div>
+                  
+        <!-- Card Type -->
+        <div class="form-group">
+          <label for="account_type">Card Type *</label>
+          <select 
+            id="account_type"
+            [(ngModel)]="selectedAccount!.account_type" 
+            name="account_type" 
+            required
+            [disabled]="isProcessing"
+            (change)="onAccountTypeChange()">
+            <option value="">Select card type</option>
+            <option value="CreditCard">Credit Card</option>
+            <option value="BankAccount">Bank Account</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
         
-        <label>Card Type</label>
-        <select [(ngModel)]="selectedAccount!.account_type" name="account_type" required>
-          <option value="CreditCard">Credit Card</option>
-          <option value="BankAccount">Bank Account</option>
-          <option value="Cash">Cash</option>
-        </select>
+        <!-- Card Number con máscara mejorada -->
+        <div class="form-group">
+          <label for="account_number">
+            {{ selectedAccount?.account_type === 'CreditCard' ? 'Card Number' : 
+               selectedAccount?.account_type === 'BankAccount' ? 'Account Number' : 
+               'Cash ID' }} *
+          </label>
+          <div class="input-with-actions">
+            <input 
+              id="account_number"
+              [(ngModel)]="selectedAccount!.account_number" 
+              name="account_number"     
+              required 
+              [maxlength]="getAccountNumberMaxLength(selectedAccount?.account_type || 'CreditCard')"
+              [placeholder]="getAccountNumberPlaceholder(selectedAccount?.account_type || 'CreditCard')"
+              [disabled]="isProcessing"
+              (input)="onAccountNumberInput($event)"
+              #accountNumber="ngModel"
+              autocomplete="off"
+              class="account-number-input">
+            <button 
+              type="button" 
+              class="generate-btn"
+              (click)="selectedAccount && (selectedAccount.account_number = generateAccountNumber(selectedAccount.account_type || 'CreditCard'))"
+              [disabled]="isProcessing || !selectedAccount"
+              title="Generate random number">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+          <div class="validation-message" *ngIf="accountNumber.invalid && accountNumber.touched">
+            <small *ngIf="accountNumber.errors?.['required']">
+              {{ selectedAccount?.account_type === 'CreditCard' ? 'Card number' : 
+                 selectedAccount?.account_type === 'BankAccount' ? 'Account number' : 
+                 'Cash ID' }} is required
+            </small>
+          </div>
+          <div class="validation-message" *ngIf="selectedAccount && selectedAccount.account_number && selectedAccount.account_type && !validateAccountNumber(selectedAccount.account_number, selectedAccount.account_type)">
+            <small class="error">           
+              Invalid {{ selectedAccount?.account_type === 'CreditCard' ? 'card' : 
+                 selectedAccount?.account_type === 'BankAccount' ? 'account' : 
+                 'cash ID' }} number format
+            </small>
+          </div>
+          <div class="format-hint">
+            <small>
+              Format: {{ getAccountNumberPlaceholder(selectedAccount?.account_type || 'CreditCard') }}
+            </small>
+          </div>
+        </div>
         
-        <label>Balance</label>
-        <input type="number" [(ngModel)]="selectedAccount!.initial_balance" name="initial_balance" required step="0.01">
+        <!-- Initial Balance -->
+        <div class="form-group">
+          <label for="initial_balance">{{ isEdit ? 'Current Balance' : 'Initial Balance' }} *</label>
+          <input 
+            id="initial_balance"
+            type="number" 
+            [(ngModel)]="selectedAccount!.initial_balance" 
+            name="initial_balance" 
+            required 
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            [disabled]="isProcessing"
+            #balance="ngModel">
+          <div class="validation-message" *ngIf="balance.invalid && balance.touched">
+            <small *ngIf="balance.errors?.['required']">Balance is required</small>
+            <small *ngIf="balance.errors?.['min']">Balance cannot be negative</small>
+          </div>
+        </div>
         
-        <label>Currency</label>
-        <select [(ngModel)]="selectedAccount!.currency" name="currency" required>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-        </select>
+        <!-- Currency -->
+        <div class="form-group">
+          <label for="currency">Currency *</label>
+          <select 
+            id="currency"
+            [(ngModel)]="selectedAccount!.currency" 
+            name="currency" 
+            required
+            [disabled]="isProcessing">
+            <option value="">Select currency</option>
+            <option value="USD">USD - US Dollar</option>
+            <option value="EUR">EUR - Euro</option>
+            <option value="GBP">GBP - British Pound</option>
+            <option value="JPY">JPY - Japanese Yen</option>
+            <option value="CAD">CAD - Canadian Dollar</option>
+          </select>
+        </div>
         
-        <button type="submit" class="btn btn-success">{{ isEdit ? 'Save Changes' : 'Add Card' }}</button>
-        <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <!-- Error Messages -->
+        <div class="error-message" *ngIf="accountError">
+          {{ accountError }}
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="modal-buttons">
+          <button 
+            type="submit" 
+            class="btn btn-success" 
+            [disabled]="!accountForm.valid || isProcessing">
+            <span *ngIf="isProcessing" class="spinner"></span>
+            {{ isProcessing ? 'Saving...' : (isEdit ? 'Save Changes' : 'Add Card') }}
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="closeForm()"
+            [disabled]="isProcessing">
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
 </div>

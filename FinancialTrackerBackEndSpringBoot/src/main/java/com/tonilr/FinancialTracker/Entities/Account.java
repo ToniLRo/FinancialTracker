@@ -1,12 +1,18 @@
 package com.tonilr.FinancialTracker.Entities;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.FetchType;
 
 @Entity
 @Table(name = "Account")
@@ -16,16 +22,26 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(nullable = false, updatable = false)
 	private Long account_Id;
+	
 	@Column(nullable = false, updatable = true)
 	private String account_name;
+	
 	@Column(nullable = false, updatable = true)
 	private AccountType account_type;
+	
 	@Column(nullable = false, updatable = true)
 	private double initial_balance;
+	
 	@Column(nullable = false, updatable = true)
 	private String currency;
+	
 	@Column(nullable = false, updatable = true)
 	private Date creation_date;
+	
+	// ARREGLAR: Evitar serialización de transactions para evitar lazy loading
+	@JsonIgnore
+	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Transaction> transactions;
 	
 	public Account() {
 	}
@@ -40,6 +56,7 @@ public class Account {
 		this.creation_date = creation_date;
 	}
 
+	// Getters y setters existentes...
 	public Long getAccount_Id() {
 		return account_Id;
 	}
@@ -48,27 +65,27 @@ public class Account {
 		this.account_Id = account_Id;
 	}
 
-	public String getAccountName() {
+	public String getAccount_name() {
 		return account_name;
 	}
 
-	public void setAccountName(String account_name) {
+	public void setAccount_name(String account_name) {
 		this.account_name = account_name;
 	}
 
-	public AccountType getAccountType() {
+	public AccountType getAccount_type() {
 		return account_type;
 	}
 
-	public void setAccountType(AccountType account_type) {
+	public void setAccount_type(AccountType account_type) {
 		this.account_type = account_type;
 	}
 
-	public double getInitialBalance() {
+	public double getInitial_balance() {
 		return initial_balance;
 	}
 
-	public void setInitialBalance(double initial_balance) {
+	public void setInitial_balance(double initial_balance) {
 		this.initial_balance = initial_balance;
 	}
 	
@@ -80,11 +97,15 @@ public class Account {
 		this.currency = currency;
 	}
 
-	public Date getCreationDate() {
+	public Date getCreation_date() {
 		return creation_date;
 	}
 
-	public void setCreationDate(Date creation_date) {
+	public void setCreation_date(Date creation_date) {
 		this.creation_date = creation_date;
 	}
+
+	// Getter y setter para transactions
+	public List<Transaction> getTransactions() { return transactions; }
+	public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }
 }

@@ -20,32 +20,58 @@ public class Transaction {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(nullable = false, updatable = false)
 	private Long transaction_Id;
+	
 	@Column(nullable = false, updatable = true)
 	private double amount;
+	
 	@Column(nullable = false, updatable = true)
 	private Date date;
+	
 	@Column(nullable = false, updatable = true)
 	private String description;
+	
 	@Column(nullable = false, updatable = true)
 	private Date register_date;
+	
+	@Column(nullable = true, updatable = true)
+	private String type;
+	
+	@Column(nullable = true, updatable = true)
+	private String referenceId;
+	
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "user_Id",nullable = true)
+    @JoinColumn(name = "user_Id", nullable = true)
     private Users user;
 
-    
+    // RELACIÓN: Many-to-One con Account
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_Id", nullable = false)
+    private Account account;
 	
 	public Transaction() {
 	}
 
-	public Transaction(double amount, Date date, String description, Date register_date) {
+	public Transaction(double amount, Date date, String description, Date register_date, Account account) {
 		super();
 		this.amount = amount;
 		this.date = date;
 		this.description = description;
 		this.register_date = register_date;
-
+		this.account = account;
 	}
 
+	public Transaction(double amount, Date date, String description, Date register_date, String type, String referenceId, Account account) {
+		super();
+		this.amount = amount;
+		this.date = date;
+		this.description = description;
+		this.register_date = register_date;
+		this.type = type;
+		this.referenceId = referenceId;
+		this.account = account;
+	}
+
+	// Getters y setters existentes...
 	public Long getTransaction_Id() {
 		return transaction_Id;
 	}
@@ -86,6 +112,22 @@ public class Transaction {
 		this.register_date = register_date;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getReferenceId() {
+		return referenceId;
+	}
+
+	public void setReferenceId(String referenceId) {
+		this.referenceId = referenceId;
+	}
+
 	public Users getUser() {
 		return user;
 	}
@@ -94,4 +136,12 @@ public class Transaction {
 		this.user = user;
 	}
 
+	// Getter y setter para Account
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
 }

@@ -1,10 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { Card } from 'src/app/models/card/card.model';
-import { Account, AccountService } from 'src/app/services/account/account.service';
+import { AccountService, Transaction } from 'src/app/services/account/account.service';
+import { Account } from 'src/app/models/account/account.model';
 import Swiper from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
-import { SwiperOptions } from 'swiper/types';
-
 
 Swiper.use([Navigation, Pagination]);
 
@@ -19,175 +17,377 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   selectedAccount: Account | null = null;
   isEdit = false;
   showForm = false;
-  cards: Card[] = [
-    {
-      id: 1,
-      holder: 'John Doe',
-      number: '1234 5678 9012 3456',
-      type: 'Credit',
-      balance: 2500.50,
-      validThru: '12/25',
-      frozen: false,
-      transactions: [
-        { id: 1, date: '2024-01-15', description: 'Starbucks', amount: -5.99, type: 'Food' },
-        { id: 2, date: '2024-01-14', description: 'Gas Station', amount: -45.00, type: 'Transport' }
-      ]
-    },
-    {
-      id: 2,
-      holder: 'John Doe',
-      number: '9876 5432 1098 7654',
-      type: 'Debit',
-      balance: 1500.75,
-      validThru: '08/26',
-      frozen: false,
-      transactions: [
-        { id: 1, date: '2024-01-15', description: 'Salary', amount: 3000.00, type: 'Income' }
-      ]
-    },
-    {
-      id: 3,
-      holder: 'John Doe',
-      number: '1234 5678 9012 3456',
-      type: 'Credit',
-      balance: 2500.50,
-      validThru: '12/25',
-      frozen: false,
-      transactions: [
-        { id: 1, date: '2024-01-15', description: 'Starbucks', amount: -5.99, type: 'Food' },
-        { id: 2, date: '2024-01-14', description: 'Gas Station', amount: -45.00, type: 'Transport' }
-      ]
-    },
-    {
-      id: 4,
-      holder: 'John Doe',
-      number: '1234 5678 9012 3456',
-      type: 'Credit',
-      balance: 2500.50,
-      validThru: '12/25',
-      frozen: false,
-      transactions: [
-        { id: 1, date: '2024-01-15', description: 'Starbucks', amount: -5.99, type: 'Food' },
-        { id: 2, date: '2024-01-14', description: 'Gas Station', amount: -45.00, type: 'Transport' }
-      ]
-    }
-  ];  
-  selectedCard: Card | null = null; // <--- Añade esta línea
-  transactionForm = { date: '', description: '', amount: 0, type: '' };
+  transactionForm = { date: '', description: '', amount: 0, type: '', transactionType: 'expense' };
   showTransactionForm = false;
+  showWithdrawForm = false;
+  showDepositForm = false;
   private swiper: any;
-  activeCardIndex: number = 0;
-  cardWidth = 480; // Debe coincidir con el CSS de la tarjeta activa
-  gap = 25; // Espacio entre tarjetas
-  get translateX(): number {
-    // Centra la tarjeta activa
-    return -((this.cardWidth + this.gap) * this.activeCardIndex);
-  }
-
-  constructor(private renderer: Renderer2, private accountService: AccountService ) { }
-
+  activeAccountIndex: number = 0;
   
-  ngAfterViewInit(): void {
-    this.swiper = new Swiper('.slide-content', {
-      slidesPerView: 3,
-      spaceBetween: 25,
-      loop: true,
-      centeredSlides: true,
-      fadeEffect: { crossFade: true },
-      grabCursor: true,
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-        dynamicBullets: true,
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      breakpoints: {
-        0: {
-          slidesPerView: 1,
-        },
-        520: {
-          slidesPerView: 2,
-        },
-        950: {
-          slidesPerView: 3,
-        },
-      },
-      on: {
-        slideChange: () => {
-          this.updateActiveCard();
-        }
-      }
-    });
-  }
+  // Nuevas propiedades para validaciones y errores
+  transactionError = '';
+  withdrawError = '';
+  depositError = '';
+  isProcessing = false;
+  
+  // NUEVA: Variable para guardar el reference ID fijo para cada transacción
+  currentReferenceId = '';
 
-  updateActiveCard() {
-    if (this.swiper) {
-      // Obtener el índice real considerando el loop
-      const realIndex = this.swiper.realIndex;
-      this.activeCardIndex = realIndex;
-      this.selectedCard = this.cards[realIndex];
-    }
-  }
-
-  getActiveCard(): Card | null {
-    return this.cards[this.activeCardIndex] || null;
-  }
-
-  getActiveCardTransactions() {
-    const activeCard = this.getActiveCard();
-    return activeCard?.transactions || [];
-  }
+  constructor(private renderer: Renderer2, private accountService: AccountService) { }
 
   ngOnInit() {
     this.loadAccounts();
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.initSwiper();
+    }, 100);
+  }
+
+  initSwiper() {
+    if (this.accounts.length > 0) {
+      this.swiper = new Swiper('.slide-content', {
+        slidesPerView: 3,
+        spaceBetween: 25,
+        loop: this.accounts.length > 3,
+        centeredSlides: true,
+        grabCursor: true,
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+          dynamicBullets: true,
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        breakpoints: {
+          0: { slidesPerView: 1 },
+          520: { slidesPerView: 2 },
+          950: { slidesPerView: 3 },
+        },
+        on: {
+          slideChange: () => {
+            this.updateActiveAccount();
+          }
+        }
+      });
+    }
+  }
+
   loadAccounts() {
-    this.accountService.getAccounts().subscribe(accounts => this.accounts = accounts);
+    this.accountService.getAccounts().subscribe({
+      next: (accounts) => {
+        this.accounts = accounts;
+        
+        if (this.accounts.length > 0) {
+          this.selectedAccount = this.accounts[0];
+          // Cargar transacciones de la primera cuenta
+          this.loadTransactionsForAccount(this.accounts[0]);
+        }
+        
+        this.initSwiper();
+      },
+      error: (error) => {
+        console.error('Error loading accounts:', error);
+      }
+    });
+  }
+
+  loadTransactionsForAccount(account: Account) {
+    if (account.account_Id) {
+      // NUEVO: Verificar token antes de hacer la petición
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        this.transactionError = 'Please login again to view transactions';
+        return;
+      }
+
+      this.accountService.getAccountTransactions(account.account_Id).subscribe({
+        next: (transactions) => {
+          account.transactions = transactions;
+          console.log(`Loaded ${transactions.length} transactions for account ${account.account_Id}`);
+        },
+        error: (error) => {
+          console.error('Error loading transactions:', error);
+          
+          if (error.status === 403) {
+            this.transactionError = 'Authentication error. Please login again.';
+            // Opcional: redirigir al login
+            // this.router.navigate(['/login']);
+          } else {
+            this.transactionError = 'Error loading transactions. Please try again.';
+          }
+          
+          // Inicializar array vacío para evitar errores en el template
+          account.transactions = [];
+        }
+      });
+    }
+  }
+
+  updateActiveAccount() {
+    if (this.swiper && this.accounts.length > 0) {
+      const realIndex = this.swiper.realIndex || this.swiper.activeIndex;
+      this.activeAccountIndex = realIndex;
+      this.selectedAccount = this.accounts[realIndex];
+      
+      // Cargar transacciones de la cuenta activa si no están cargadas
+      if (this.selectedAccount && !this.selectedAccount.transactions) {
+        this.loadTransactionsForAccount(this.selectedAccount);
+      }
+    }
+  }
+
+  getActiveAccount(): Account | null {
+    return this.accounts[this.activeAccountIndex] || null;
+  }
+
+  getActiveAccountTransactions() {
+    const activeAccount = this.getActiveAccount();
+    return activeAccount?.transactions || [];
+  }
+
+  selectAccount(account: Account, index: number) {
+    this.selectedAccount = account;
+    this.activeAccountIndex = index;
+    
+    // Cargar transacciones si no están cargadas
+    if (!account.transactions) {
+      this.loadTransactionsForAccount(account);
+    }
   }
 
   openAddForm() {
-    this.selectedCard = {
-      id: 0,
-      holder: '',
-      number: '',
-      type: 'Credit',
-      balance: 0,
-      validThru: '',
-      frozen: false,
-      transactions: []
+    this.selectedAccount = {
+      account_name: '',
+      account_type: 'CreditCard',
+      initial_balance: 0,
+      currency: 'USD'
     };
     this.isEdit = false;
     this.showForm = true;
   }
 
-  openEditForm(card: Card) {
-    this.selectedCard = { ...card };
-    this.isEdit = true;
-    this.showForm = true;
+  openEditFormForActiveAccount() {
+    const activeAccount = this.getActiveAccount();
+    if (activeAccount) {
+      this.selectedAccount = { ...activeAccount };
+      this.isEdit = true;
+      this.showForm = true;
+    }
   }
 
   saveAccount(account: Account) {
-    if (this.isEdit) {
-      this.accountService.updateAccount(account).subscribe(() => {
-        this.loadAccounts();
-        this.showForm = false;
+    if (this.isEdit && account.account_Id) {
+      this.accountService.updateAccount(account).subscribe({
+        next: (updatedAccount) => {
+          const index = this.accounts.findIndex(a => a.account_Id === account.account_Id);
+          if (index !== -1) {
+            this.accounts[index] = updatedAccount;
+          }
+          this.closeForm();
+        },
+        error: (error) => console.error('Error updating account:', error)
       });
     } else {
-      this.accountService.addAccount(account).subscribe(() => {
-        this.loadAccounts();
-        this.showForm = false;
+      this.accountService.addAccount(account).subscribe({
+        next: (newAccount) => {
+          this.accounts.push(newAccount);
+          this.closeForm();
+          setTimeout(() => this.initSwiper(), 100);
+        },
+        error: (error) => console.error('Error adding account:', error)
       });
     }
   }
 
-  deleteAccount(id: number) {
-    if (confirm('¿Seguro que quieres eliminar esta cuenta?')) {
-      this.accountService.deleteAccount(id).subscribe(() => this.loadAccounts());
+  deleteActiveAccount() {
+    const activeAccount = this.getActiveAccount();
+    if (activeAccount && activeAccount.account_Id && confirm('Are you sure you want to delete this account?')) {
+      this.accountService.deleteAccount(activeAccount.account_Id).subscribe({
+        next: () => {
+          this.accounts = this.accounts.filter(a => a.account_Id !== activeAccount.account_Id);
+          if (this.accounts.length > 0) {
+            this.activeAccountIndex = Math.min(this.activeAccountIndex, this.accounts.length - 1);
+            this.selectedAccount = this.accounts[this.activeAccountIndex];
+          } else {
+            this.selectedAccount = null;
+            this.activeAccountIndex = 0;
+          }
+          setTimeout(() => this.initSwiper(), 100);
+        },
+        error: (error) => console.error('Error deleting account:', error)
+      });
     }
+  }
+
+  freezeAccount(account: Account) {
+    account.frozen = !account.frozen;
+    // Aquí puedes añadir una llamada al backend para actualizar el estado
+    console.log(`Account ${account.frozen ? 'frozen' : 'unfrozen'}`);
+  }
+
+  openTransactionForm(account: Account) {
+    this.selectedAccount = account;
+    this.transactionForm = { 
+      date: new Date().toISOString().split('T')[0], 
+      description: '', 
+      amount: 0, 
+      type: 'Food',
+      transactionType: 'expense'
+    };
+    this.transactionError = '';
+    this.currentReferenceId = this.generateReferenceId(); // Generar una sola vez
+    this.showTransactionForm = true;
+  }
+
+  openWithdrawForm(account: Account) {
+    this.selectedAccount = account;
+    this.transactionForm = { 
+      date: new Date().toISOString().split('T')[0], 
+      description: 'Withdrawal', 
+      amount: 0, 
+      type: 'Cash',
+      transactionType: 'withdraw'
+    };
+    this.withdrawError = '';
+    this.currentReferenceId = this.generateReferenceId(); // Generar una sola vez
+    this.showWithdrawForm = true;
+  }
+
+  openDepositForm(account: Account) {
+    this.selectedAccount = account;
+    this.transactionForm = { 
+      date: new Date().toISOString().split('T')[0], 
+      description: 'Deposit', 
+      amount: 0, 
+      type: 'Income',
+      transactionType: 'deposit'
+    };
+    this.depositError = '';
+    this.currentReferenceId = this.generateReferenceId(); // Generar una sola vez
+    this.showDepositForm = true;
+  }
+
+  validateTransaction(): boolean {
+    const amount = this.transactionForm.amount;
+    
+    // Validaciones generales
+    if (amount <= 0) {
+      this.setError('Amount must be greater than 0');
+      return false;
+    }
+
+    if (!this.transactionForm.description.trim()) {
+      this.setError('Description is required');
+      return false;
+    }
+
+    // Validación específica para retiros y gastos
+    if (this.transactionForm.transactionType === 'withdraw' || this.transactionForm.transactionType === 'expense') {
+      if (amount > this.selectedAccount!.initial_balance) {
+        this.setError(`Insufficient funds. Available balance: ${this.selectedAccount!.initial_balance.toFixed(2)} ${this.selectedAccount!.currency}`);
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  setError(message: string) {
+    if (this.showTransactionForm) this.transactionError = message;
+    if (this.showWithdrawForm) this.withdrawError = message;
+    if (this.showDepositForm) this.depositError = message;
+  }
+
+  clearErrors() {
+    this.transactionError = '';
+    this.withdrawError = '';
+    this.depositError = '';
+  }
+
+  saveTransaction() {
+    if (!this.validateTransaction() || this.isProcessing) return;
+
+    this.isProcessing = true;
+    this.clearErrors();
+
+    if (this.selectedAccount && this.selectedAccount.account_Id) {
+      // Calcular el monto final (negativo para gastos/retiros, positivo para ingresos/depósitos)
+      let finalAmount = this.transactionForm.amount;
+      if (this.transactionForm.transactionType === 'expense' || this.transactionForm.transactionType === 'withdraw') {
+        finalAmount = -Math.abs(finalAmount);
+      } else {
+        finalAmount = Math.abs(finalAmount);
+      }
+
+      const transactionData = {
+        date: this.transactionForm.date,
+        description: this.transactionForm.description,
+        amount: finalAmount,
+        type: this.transactionForm.type,
+        referenceId: this.currentReferenceId, // Usar el ID generado al abrir el modal
+        accountId: this.selectedAccount.account_Id
+      };
+      
+      this.accountService.addTransaction(transactionData).subscribe({
+        next: (newTransaction) => {
+          // Actualizar balance de la cuenta
+          this.selectedAccount!.initial_balance += finalAmount;
+          
+          // Añadir transacción a la lista
+          if (!this.selectedAccount!.transactions) {
+            this.selectedAccount!.transactions = [];
+          }
+          this.selectedAccount!.transactions.unshift(newTransaction);
+          
+          // Actualizar la cuenta en el backend
+          this.updateAccountBalance(this.selectedAccount!);
+          
+          this.closeAllForms();
+          this.isProcessing = false;
+        },
+        error: (error) => {
+          console.error('Error adding transaction:', error);
+          
+          if (error.status === 403) {
+            this.setError('Authentication error. Please login again.');
+          } else {
+            this.setError('Error processing transaction. Please try again.');
+          }
+          
+          this.isProcessing = false;
+        }
+      });
+    }
+  }
+
+  updateAccountBalance(account: Account) {
+    this.accountService.updateAccount(account).subscribe({
+      next: (updatedAccount) => {
+        // Actualizar la cuenta en la lista local
+        const index = this.accounts.findIndex(a => a.account_Id === updatedAccount.account_Id);
+        if (index !== -1) {
+          this.accounts[index] = { ...updatedAccount, transactions: account.transactions };
+        }
+      },
+      error: (error) => {
+        console.error('Error updating account balance:', error);
+      }
+    });
+  }
+
+  closeAllForms() {
+    this.showTransactionForm = false;
+    this.showWithdrawForm = false;
+    this.showDepositForm = false;
+    this.transactionForm = { date: '', description: '', amount: 0, type: '', transactionType: 'expense' };
+    this.currentReferenceId = ''; // Limpiar el reference ID
+    this.clearErrors();
+    this.isProcessing = false;
   }
 
   closeForm() {
@@ -195,183 +395,68 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.selectedAccount = null;
   }
 
-  openTransactionForm(card: Card) {
-    this.selectedCard = card;
-    this.transactionForm = {
-      date: new Date().toISOString().split('T')[0],
-      description: '',
-      amount: 0,
-      type: 'Food'
+  // Métodos de formateo (mantener existentes pero simplificados)
+  formatCardNumber(accountType: string): string {
+    // Generar número basado en el tipo de cuenta
+    const prefixes = {
+      'CreditCard': '4567',
+      'BankAccount': '1234',
+      'Cash': '9999'
     };
-    this.showTransactionForm = true;
+    const prefix = prefixes[accountType as keyof typeof prefixes] || '0000';
+    return `${prefix} **** **** 3456`;
   }
 
-  saveTransaction() {
-    if (this.selectedCard) {
-      const newTransaction = {
-        ...this.transactionForm,
-        id: Date.now() // Generar ID único
-      };
-      
-      if (!this.selectedCard.transactions) {
-        this.selectedCard.transactions = [];
-      }
-      
-      this.selectedCard.transactions.unshift(newTransaction); // Agregar al inicio
-      
-      // Actualizar el balance si es necesario
-      this.selectedCard.balance += newTransaction.amount;
-    }
-    this.showTransactionForm = false;
+  formatValidThru(): string {
+    const now = new Date();
+    const futureDate = new Date(now.getFullYear() + 3, now.getMonth());
+    const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = futureDate.getFullYear().toString().slice(-2);
+    return `${month}/${year}`;
   }
 
-  closeTransactionForm() {
-    this.showTransactionForm = false;
-  }
-
-  // Funciones para máscaras
-  formatCardNumber(number: string): string {
-    if (!number) return '';
-    // Remover espacios y caracteres no numéricos
-    const cleanNumber = number.replace(/\D/g, '');
-    // Aplicar máscara: XXXX XXXX XXXX XXXX
-    return cleanNumber.replace(/(\d{4})(?=\d)/g, '$1 ').substring(0, 19);
-  }
-
-  formatValidThru(validThru: string): string {
-    if (!validThru) return '';
-    // Remover caracteres no numéricos
-    const clean = validThru.replace(/\D/g, '');
-    // Aplicar máscara: MM/YY
-    if (clean.length >= 2) {
-      return clean.substring(0, 2) + '/' + clean.substring(2, 4);
-    }
-    return clean;
-  }
-
-  // Función para truncar texto largo
-  truncateText(text: string, maxLength: number = 20): string {
+  truncateText(text: string, maxLength: number): string {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   }
 
-  // Función para obtener el texto completo para tooltip
-  getFullText(text: string): string {
-    return text || '';
-  }
-
-  // Actualizar el método saveCard para aplicar máscaras
-  saveCard(card: Card) {
-    // Aplicar máscaras antes de guardar
-    card.number = card.number.replace(/\s/g, ''); // Remover espacios para guardar
-    card.validThru = card.validThru.replace(/\//g, ''); // Remover / para guardar
-    
-    if (this.isEdit) {
-      const index = this.cards.findIndex(c => c.id === card.id);
-      if (index !== -1) {
-        this.cards[index] = { ...card };
-      }
-    } else {
-      card.id = Math.max(...this.cards.map(c => c.id)) + 1;
-      this.cards.push({ ...card });
-    }
-    this.showForm = false;
-    this.selectedCard = null;
-  }
-  
-selectCard(card: Card, index: number) {
-  this.selectedCard = card;
-  this.activeCardIndex = index;
-}
-
-deleteCard(id: number) {
-  if (confirm('Are you sure you want to delete this card?')) {
-    this.cards = this.cards.filter(card => card.id !== id);
-    // Si eliminamos la tarjeta activa, actualizar el índice
-    if (this.activeCardIndex >= this.cards.length) {
-      this.activeCardIndex = Math.max(0, this.cards.length - 1);
-    }
-    this.selectedCard = null;
-  }
-}
-
-
-  freezeCard(card: Card) {
-    card.frozen = !card.frozen;
-  }
-  
-  deposit(card: Card) {
-    // Implement deposit logic
-    console.log('Deposit to card:', card.id);
-  }
-  
-  withdraw(card: Card) {
-    // Implement withdraw logic
-    console.log('Withdraw from card:', card.id);
-  }
-  
-  transfer(card: Card) {
-    // Implement transfer logic
-    console.log('Transfer from card:', card.id);
-  }
-
   getTransactionIconColor(type: string): string {
     const colors: { [key: string]: string } = {
-      'Food': '#f2dcbb',
-      'Transport': '#e0ece4',
-      'Shopping': '#ffebee',
-      'Entertainment': '#e3f2fd',
-      'Income': '#e8f5e8',
-      'Gift': '#fff3e0',
-      'default': '#f5f5f5'
+      'Food': '#FF6B6B',
+      'Transport': '#4ECDC4',
+      'Shopping': '#45B7D1',
+      'Entertainment': '#96CEB4',
+      'Income': '#21be72',
+      'Cash': '#FFA07A'
     };
-    return colors[type] || colors['default'];
+    return colors[type] || '#666';
   }
 
   generateReferenceId(): string {
-    return Math.random().toString(36).substr(2, 9).toUpperCase();
+    return Math.random().toString(36).substring(2, 15).toUpperCase();
   }
 
-  onCardNumberInput(event: any) {
-    this.selectedCard!.number = this.formatCardNumber(event.target.value);
+  // Métodos helper para el template
+  getFormattedBalance(account: Account): string {
+    return `${account.initial_balance.toFixed(2)} ${account.currency}`;
   }
 
-  onValidThruInput(event: any) {
-    this.selectedCard!.validThru = this.formatValidThru(event.target.value);
+  getBalanceColor(account: Account): string {
+    return account.initial_balance >= 0 ? '#21be72' : '#ff4757';
   }
 
-  // Nuevo método para editar la tarjeta activa del swiper
-  openEditFormForActiveCard() {
-    const activeCard = this.getActiveCard();
-    if (activeCard) {
-      this.openEditForm(activeCard);
-    }
+  getTransactionColor(transaction: Transaction): string {
+    return transaction.amount >= 0 ? '#21be72' : '#ff4757';
   }
 
-  // Nuevo método para eliminar la tarjeta activa del swiper
-  deleteActiveCard() {
-    const activeCard = this.getActiveCard();
-    if (activeCard) {
-      this.deleteCard(activeCard.id);
-    }
+  getTransactionSign(transaction: Transaction): string {
+    return transaction.amount >= 0 ? '+' : '';
   }
 
-  prevCard() {
-    if (this.activeCardIndex > 0) {
-      this.activeCardIndex--;
-    }
+  // NUEVA: Método para obtener reference ID para mostrar en el template
+  getCurrentReferenceId(): string {
+    return this.currentReferenceId || 'N/A';
   }
-
-  nextCard() {
-    if (this.activeCardIndex < this.cards.length - 1) {
-      this.activeCardIndex++;
-    }
-  }
-
-  goToCard(index: number) {
-    this.activeCardIndex = index;
-  }
-
 }
 
 

@@ -1094,3 +1094,134 @@ text-align: center;
   bottom: 10px !important;
 }
 
+/* Estilos para el mensaje cuando no hay cards */
+.no-cards-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.no-cards-content {
+  text-align: center;
+  color: white;
+  max-width: 400px;
+}
+
+.no-cards-icon {
+  color: #21be72;
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
+}
+
+.no-cards-content h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.no-cards-content p {
+  font-size: 1rem;
+  color: #aaa;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.btn-add-first-card {
+  background: linear-gradient(90deg, #21be72 0%, #1a9b5c 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 15px 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-add-first-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(33, 190, 114, 0.3);
+}
+
+.btn-add-first-card i {
+  font-size: 18px;
+}
+
+.account-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.account-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.account-info strong {
+    color: #333;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 14px;
+    margin: 10px 0;
+    padding: 8px;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+.btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-danger:hover:not([disabled]) {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn-success:hover:not([disabled]) {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+/* Actualizar colores del balance en las tarjetas */
+.card-balance {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Mejorar las transacciones */
+.transaction-amount {
+    font-weight: bold;
+}
+
+.transaction-amount.positive {
+    color: #21be72;
+}
+
+.transaction-amount.negative {
+    color: #ff4757;
+}
+

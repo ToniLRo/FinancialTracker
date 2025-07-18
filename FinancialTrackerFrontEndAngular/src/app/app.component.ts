@@ -28,14 +28,14 @@ export class AppComponent implements OnInit, OnDestroy {
         filter(event => event instanceof NavigationEnd)
       ).subscribe((event: NavigationEnd) => {
         this.currentRoute = event.urlAfterRedirects;
-        console.log('Ruta actual:', this.currentRoute);
+        //console.log('Ruta actual:', this.currentRoute);
       })
     );
 
     // Suscribirse a cambios en el usuario actual
     this.subscription.add(
       this.authService.currentUser$.subscribe(user => {
-        console.log('Usuario actual:', user);
+        //console.log('Usuario actual:', user);
         // Forzar detección de cambios
         this.forceChangeDetection();
       })
@@ -52,18 +52,18 @@ export class AppComponent implements OnInit, OnDestroy {
     
     // No mostrar navbar si está en una ruta pública
     if (publicRoutes.some(route => this.currentRoute.includes(route))) {
-      console.log('No mostrar navbar - ruta pública:', this.currentRoute);
+      //console.log('No mostrar navbar - ruta pública:', this.currentRoute);
       return false;
     }
     
     // No mostrar navbar si no está logueado
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) {
-      console.log('No mostrar navbar - no logueado');
+      //console.log('No mostrar navbar - no logueado');
       return false;
     }
     
-    console.log('Mostrar navbar - usuario logueado:', currentUser.username);
+    //console.log('Mostrar navbar - usuario logueado:', currentUser.username);
     return true;
   }
 

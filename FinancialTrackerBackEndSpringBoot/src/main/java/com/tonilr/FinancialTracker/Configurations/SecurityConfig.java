@@ -35,6 +35,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password").permitAll()
+                .requestMatchers("/account/**", "/transaction/**").authenticated() // Añadir transaction endpoints
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

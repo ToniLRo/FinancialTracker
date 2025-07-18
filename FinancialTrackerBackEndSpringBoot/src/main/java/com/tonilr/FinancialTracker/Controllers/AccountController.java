@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.tonilr.FinancialTracker.Entities.Account;
+import com.tonilr.FinancialTracker.Entities.Transaction;
 import com.tonilr.FinancialTracker.Services.AccountServices;
 
 @Controller

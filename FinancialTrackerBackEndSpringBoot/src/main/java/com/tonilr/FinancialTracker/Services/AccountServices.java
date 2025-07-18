@@ -1,6 +1,7 @@
 package com.tonilr.FinancialTracker.Services;
 
 import java.util.List;
+import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,24 @@ public class AccountServices {
 	}
 
 	public Account addAccount(Account account) {
+		// Establecer fecha de creación si no se proporciona
+		if (account.getCreation_date() == null) {
+			account.setCreation_date(new Date(System.currentTimeMillis()));
+		}
+		
+		// Validaciones básicas
+		if (account.getAccount_name() == null || account.getAccount_name().trim().isEmpty()) {
+			throw new RuntimeException("Account name is required");
+		}
+		
+		if (account.getAccount_type() == null) {
+			throw new RuntimeException("Account type is required");
+		}
+		
+		if (account.getCurrency() == null || account.getCurrency().trim().isEmpty()) {
+			account.setCurrency("USD"); // Valor por defecto
+		}
+		
 		return accountRepo.save(account);
 	}
 

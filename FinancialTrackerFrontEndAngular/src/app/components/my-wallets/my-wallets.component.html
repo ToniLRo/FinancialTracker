@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="action-button">
-                <button class="button-27" role="button" title="Edit Card" [disabled]="!getActiveCard()" (click)="openEditFormForActiveCard()">
+                <button class="button-27" role="button" title="Edit Card" [disabled]="!getActiveAccount()" (click)="openEditFormForActiveAccount()">
                         <i class="bi bi-pencil-square" style="color: white; font-size: 25px;"></i>
                 </button>
                 <div class="button-description"  style="text-align: center;">
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="action-button">
-                <button class="button-27" role="button" title="Delete Card" [disabled]="!selectedCard" (click)="deleteCard(selectedCard!.id)">
+                <button class="button-27" role="button" title="Delete Card" [disabled]="!selectedAccount" (click)="deleteActiveAccount()">
                     <i class="bi bi-trash" style="color: white; font-size: 25px;"></i>
                 </button>
                 <div class="button-description"  style="text-align: center;">
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="action-button">
-                <button class="button-27" role="button" title="Freeze/Unfreeze" [disabled]="!selectedCard" (click)="freezeCard(selectedCard!)">
+                <button class="button-27" role="button" title="Freeze/Unfreeze" [disabled]="!selectedAccount" (click)="freezeAccount(selectedAccount!)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-snow" viewBox="0 0 16 16">
                         <path d="M8 16a.5.5 0 0 1-.5-.5v-1.293l-.646.647a.5.5 0 0 1-.707-.708L7.5 12.793V8.866l-3.4 1.963-.496 1.85a.5.5 0 1 1-.966-.26l.237-.882-1.12.646a.5.5 0 0 1-.5-.866l1.12-.646-.884-.237a.5.5 0 1 1 .26-.966l1.848.495L7 8 3.6 6.037l-1.85.495a.5.5 0 0 1-.258-.966l.883-.237-1.12-.646a.5.5 0 1 1 .5-.866l1.12.646-.237-.883a.5.5 0 1 1 .966-.258l.495 1.849L7.5 7.134V3.207L6.147 1.854a.5.5 0 1 1 .707-.708l.646.647V.5a.5.5 0 1 1 1 0v1.293l.647-.647a.5.5 0 1 1 .707.708L8.5 3.207v3.927l3.4-1.963.496-1.85a.5.5 0 1 1 .966.26l-.236.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.883.237a.5.5 0 1 1-.26.966l-1.848-.495L9 8l3.4 1.963 1.849-.495a.5.5 0 0 1 .259.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.236.883a.5.5 0 1 1-.966.258l-.495-1.849-3.4-1.963v3.927l1.353 1.353a.5.5 0 0 1-.707.708l-.647-.647V15.5a.5.5 0 0 1-.5.5z"/>
                     </svg>                </button>
@@ -55,7 +55,7 @@
                 </div>
             </div>
             <div class="action-button">
-                <button title="Add Transaction/Transfer" class="button-27" role="button" [disabled]="!selectedCard" (click)="openTransactionForm(selectedCard!)">
+                <button title="Add Transaction/Transfer" class="button-27" role="button" [disabled]="!selectedAccount" (click)="openTransactionForm(selectedAccount!)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                     </svg>
@@ -90,9 +90,23 @@
         <div class="mycards">
             <div class="slide-container swiper">
                 <h5 style="text-align: center;">My Cards</h5>
-                <div class="slide-content">
+                
+                <!-- Mensaje cuando no hay accounts -->
+                <div *ngIf="accounts.length === 0" class="no-cards-message">
+                    <div class="no-cards-content">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="currentColor" class="no-cards-icon" viewBox="0 0 16 16">
+                            <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                            <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/>
+                        </svg>
+                        <h3>No Cards Found</h3>
+                        <p>You don't have any cards yet. Add your first card to get started!</p>
+                    </div>
+                </div>
+
+                <!-- Swiper solo se muestra si hay accounts -->
+                <div class="slide-content" *ngIf="accounts.length > 0">
                     <div class="card-wrapper swiper-wrapper">
-                        <div *ngFor="let card of cards; let i = index" class="card swiper-slide" [class.selected]="card === selectedCard" (click)="selectCard(card, i)">
+                        <div *ngFor="let account of accounts; let i = index" class="card swiper-slide" [class.selected]="account === selectedAccount" (click)="selectAccount(account, i)">
                             <div class="card-inner">
                                 <div class="card-front">  
                                     <div class="card-bg"></div>
@@ -125,34 +139,39 @@
                                         </svg>
                                     </div>
                                     <div class="card-chip"></div>
-                                    <div class="card-holder" [title]="card.holder">{{ truncateText(card.holder, 12) }}</div>
-                                    <div class="card-number">{{ formatCardNumber(card.number) }}</div>
-                                    <div class="card-valid">{{ formatValidThru(card.validThru) }}</div>
-                                    <div class="card-balance" style="position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #fff;">
-                                        {{ card.balance | currency:'USD' }}
+                                    <div class="card-holder" [title]="account.account_name">
+                                        {{ truncateText(account.account_name, 12) }}
                                     </div>
-                                    <div class="card-status" *ngIf="card.frozen" style="position: absolute; top: 10px; right: 15px; background: rgba(255,0,0,0.8); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px;">
+                                    <div class="card-number">{{ formatCardNumber(account.account_type) }}</div>
+                                    <div class="card-valid">{{ formatValidThru() }}</div>
+                                    <div class="card-balance" style="position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #fff;">
+                                        {{ account.initial_balance | currency:account.currency }}
+                                    </div>
+                                    <div class="card-status" *ngIf="account.frozen" style="position: absolute; top: 10px; right: 15px; background: rgba(255,0,0,0.8); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px;">
                                         FROZEN
+                                    </div>
+                                    <div class="card-type" style="position: absolute; top: 10px; left: 15px; background: rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px;">
+                                        {{ account.account_type }}
                                     </div>
                                 </div>
                                 <div class="card-back">
-                                    <div class="card-signature">{{ card.holder }}</div>
+                                    <div class="card-signature">{{ account.account_name }}</div>
                                     <div class="card-seccode">123</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="swiper-button-next swiper-navBtn"></div>
-                <div class="swiper-button-prev swiper-navBtn"></div>
-                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next swiper-navBtn" *ngIf="accounts.length > 0"></div>
+                <div class="swiper-button-prev swiper-navBtn" *ngIf="accounts.length > 0"></div>
+                <div class="swiper-pagination" *ngIf="accounts.length > 0"></div>
             </div>
         </div>
         <div class="transactions-data text-white">
             <h2>Latest Transactions</h2>
             <h3>Today</h3>
             <div class="transactions">
-                <details *ngFor="let transaction of getActiveCardTransactions()">
+                <details *ngFor="let transaction of getActiveAccountTransactions()">
                     <summary>
                         <div>
                             <span [style.background-color]="getTransactionIconColor(transaction.type)">
@@ -180,18 +199,18 @@
                             </div>
                             <div>
                                 <dt>Card used</dt>
-                                <dd>•••• {{ getActiveCard()?.number?.slice(-4) }}</dd>
+                                <dd>•••• {{ getActiveAccount()?.account_type?.slice(-4) }}</dd>
                             </div>
                             <div>
                                 <dt>Reference ID</dt>
-                                <dd>{{ generateReferenceId() }}</dd>
+                                <dd>{{ getCurrentReferenceId() }}</dd>
                             </div>
                         </dl>
                     </div>
                 </details>
                 
                 <!-- Mensaje cuando no hay transacciones -->
-                <div *ngIf="!getActiveCardTransactions()?.length" class="no-transactions">
+                <div *ngIf="!getActiveAccountTransactions()?.length" class="no-transactions">
                     <p>No transactions found for this card.</p>
                 </div>
             </div>
@@ -199,34 +218,36 @@
 </div>
 
   
-<!-- Modal for Add/Edit Card -->
+<!-- Modal for Add/Edit Account -->
 <div class="modal" *ngIf="showForm">
     <div class="modal-content">
       <h3>{{ isEdit ? 'Edit Card' : 'Add Card' }}</h3>
-      <form (ngSubmit)="saveCard(selectedCard!)">
+      <form (ngSubmit)="saveAccount(selectedAccount!)">
         <label>Card Holder</label>
-        <input [(ngModel)]="selectedCard!.holder" name="holder" required maxlength="50">
-        <label>Card Number</label>
-        <input [(ngModel)]="selectedCard!.number" name="number" required maxlength="19" 
-               (input)="onCardNumberInput($event)"
-               placeholder="1234 5678 9012 3456">   
-        <label>Type</label>
-        <select [(ngModel)]="selectedCard!.type" name="type" required>
-          <option value="Credit">Credit</option>
-          <option value="Debit">Debit</option>
+        <input [(ngModel)]="selectedAccount!.account_name" name="account_name" required maxlength="50">
+        
+        <label>Card Type</label>
+        <select [(ngModel)]="selectedAccount!.account_type" name="account_type" required>
+          <option value="CreditCard">Credit Card</option>
+          <option value="BankAccount">Bank Account</option>
           <option value="Cash">Cash</option>
         </select>
+        
         <label>Balance</label>
-        <input type="number" [(ngModel)]="selectedCard!.balance" name="balance" required step="0.01">
-        <label>Valid Thru</label>
-        <input type="text" [(ngModel)]="selectedCard!.validThru" name="validThru" 
-               (input)="onValidThruInput($event)"
-               placeholder="MM/YY" required maxlength="5">
+        <input type="number" [(ngModel)]="selectedAccount!.initial_balance" name="initial_balance" required step="0.01">
+        
+        <label>Currency</label>
+        <select [(ngModel)]="selectedAccount!.currency" name="currency" required>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+        </select>
+        
         <button type="submit" class="btn btn-success">{{ isEdit ? 'Save Changes' : 'Add Card' }}</button>
         <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
       </form>
     </div>
-  </div>
+</div>
   
   <!-- Modal for Add Transaction -->
   <div class="modal" *ngIf="showTransactionForm">
@@ -249,7 +270,7 @@
           <option value="Gift">Gift</option>
         </select>
         <button type="submit" class="btn btn-success">Add</button>
-        <button type="button" class="btn btn-secondary" (click)="closeTransactionForm()">Cancel</button>
+        <button type="button" class="btn btn-secondary" (click)="closeAllForms()">Cancel</button>
       </form>
     </div>
   </div>

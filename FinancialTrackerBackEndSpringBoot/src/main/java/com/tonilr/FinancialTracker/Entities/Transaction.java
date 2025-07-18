@@ -39,7 +39,7 @@ public class Transaction {
 	@Column(nullable = true, updatable = true)
 	private String referenceId;
 	
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "user_Id", nullable = true)
     private Users user;
 

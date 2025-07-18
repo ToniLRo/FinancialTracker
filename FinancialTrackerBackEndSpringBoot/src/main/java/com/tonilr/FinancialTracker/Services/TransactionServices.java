@@ -41,6 +41,19 @@ public class TransactionServices {
 	}
 
 	public List<Transaction> findTransactionsByAccountId(Long accountId) {
-		return transactionRepo.findByAccountId(accountId);
+		System.out.println("=== TRANSACTION SERVICE ===");
+		System.out.println("Service received accountId: " + accountId);
+		
+		try {
+			List<Transaction> transactions = transactionRepo.findByAccountId(accountId);
+			System.out.println("Repository returned " + transactions.size() + " transactions");
+			
+			return transactions;
+		} catch (Exception e) {
+			System.err.println("ERROR in TransactionServices.findTransactionsByAccountId:");
+			System.err.println("Error message: " + e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

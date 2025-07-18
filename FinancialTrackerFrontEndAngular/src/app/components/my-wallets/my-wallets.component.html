@@ -8,7 +8,7 @@
             <h2>My Wallets</h2>
         </div>
     </div>
-    <div class="content text-white">
+    <div class="content-container text-white">
         <div class="actions">
             <div class="action-button">
                 <button class="button-27" role="button" title="Add Card" (click)="openAddForm()">
@@ -171,7 +171,7 @@
             <h2>Latest Transactions</h2>
             <h3>Today</h3>
             <div class="transactions">
-                <details *ngFor="let transaction of getActiveAccountTransactions()">
+                <details *ngFor="let transaction of activeAccountTransactions; trackBy: trackByTransactionId">
                     <summary>
                         <div>
                             <span [style.background-color]="getTransactionIconColor(transaction.type)">
@@ -210,7 +210,7 @@
                 </details>
                 
                 <!-- Mensaje cuando no hay transacciones -->
-                <div *ngIf="!getActiveAccountTransactions()?.length" class="no-transactions">
+                <div *ngIf="!activeAccountTransactions?.length" class="no-transactions">
                     <p>No transactions found for this card.</p>
                 </div>
             </div>

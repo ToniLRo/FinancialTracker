@@ -50,10 +50,10 @@ export class NavbarComponent implements AfterViewInit {
           }
         });
       } else {
-        console.error('No se pudo obtener el contexto 2D del canvas');
+        //console.error('No se pudo obtener el contexto 2D del canvas');
       }
     } else {
-      console.warn('El elemento myChart no está disponible');
+      //console.warn('El elemento myChart no está disponible');
     }
   }
 

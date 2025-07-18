@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Account } from 'src/app/models/account/account.model';
+import { tap } from 'rxjs/operators';
 
 export interface Transaction {
   id: number;
@@ -22,7 +23,7 @@ export class AccountService {
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('jwt_token'); // CAMBIAR: de 'token' a 'jwt_token'
     if (!token) {
       console.warn('No authentication token found in localStorage');
     }
@@ -35,11 +36,11 @@ export class AccountService {
   // NUEVO: Método para manejar errores
   private handleError(error: HttpErrorResponse) {
     if (error.status === 403) {
-      console.error('Authentication error - token may be expired');
+      //console.error('Authentication error - token may be expired');
     } else if (error.status === 401) {
-      console.error('Unauthorized - please login');
+      //console.error('Unauthorized - please login');
     } else {
-      console.error('HTTP Error:', error.message);
+      //console.error('HTTP Error:', error.message);
     }
     return throwError(() => error);
   }
@@ -73,10 +74,24 @@ export class AccountService {
 
   // Métodos de Transaction (usando el TransactionController existente)
   getAccountTransactions(accountId: number): Observable<Transaction[]> {
+    console.log('=== ACCOUNT SERVICE - GET TRANSACTIONS ===');
+    console.log('Request AccountId:', accountId);
+    console.log('Request URL:', `${this.transactionApiUrl}/account/${accountId}`);
+    
+    const headers = this.getAuthHeaders();
+    console.log('Request Headers:', {
+      'Authorization': headers.get('Authorization')?.substring(0, 20) + '...',
+      'Content-Type': headers.get('Content-Type')
+    });
+    
     return this.http.get<Transaction[]>(`${this.transactionApiUrl}/account/${accountId}`, { 
-      headers: this.getAuthHeaders() 
+      headers: headers 
     }).pipe(
-      catchError(this.handleError.bind(this))
+      tap(response => console.log('✅ Service Response:', response)),
+      catchError(error => {
+        console.error('❌ Service Error:', error);
+        return throwError(() => error);
+      })
     );
   }
 

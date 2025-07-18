@@ -12,8 +12,21 @@
       width: 100%;
       background-color: rgba(33,37,41,255);
       padding: 20px;
+      overflow-y: auto;
 
   }
+  
+  .content-container{
+    position: relative;
+    height: 100vh;
+    max-height: 100vh;
+    width: 100%;
+    background-color: rgba(33,37,41,255);
+    padding: 20px;
+
+}
+
+
   .header{
       display: flex;
       align-items: center;
@@ -552,7 +565,7 @@ and (max-device-width: 1600px){
   .transactions{
     height: 25vh; 
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: hidden;
   }
 }
 

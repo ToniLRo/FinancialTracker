@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AccountService, Transaction } from 'src/app/services/account/account.service';
 import { Account } from 'src/app/models/account/account.model';
 import Swiper from 'swiper';
@@ -32,8 +32,12 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   
   // NUEVA: Variable para guardar el reference ID fijo para cada transacción
   currentReferenceId = '';
+  router: any;
 
-  constructor(private renderer: Renderer2, private accountService: AccountService) { }
+  // NUEVO: Propiedad directa para las transacciones activas
+  activeAccountTransactions: any[] = [];
+
+  constructor(private renderer: Renderer2, private accountService: AccountService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.loadAccounts();
@@ -77,17 +81,38 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   loadAccounts() {
+    console.log('Loading accounts');
     this.accountService.getAccounts().subscribe({
       next: (accounts) => {
         this.accounts = accounts;
         
+        // Debug cada cuenta individualmente
+        this.accounts.forEach((account, index) => {
+          console.log(`Account ${index}:`, account);
+          console.log(`Account ${index} ID:`, account.account_Id);
+          console.log(`Account ${index} ID type:`, typeof account.account_Id);
+        });
+        
         if (this.accounts.length > 0) {
           this.selectedAccount = this.accounts[0];
-          // Cargar transacciones de la primera cuenta
-          this.loadTransactionsForAccount(this.accounts[0]);
+          this.activeAccountIndex = 0;
+          
+          // Mapear cuentas y cargar transacciones para la primera cuenta
+          this.accounts = this.accounts.map(account => ({
+            ...account,
+            frozen: false,
+            transactions: []
+          }));
+          
+          // Cargar transacciones para la cuenta activa
+          //console.log('Selected account:', this.selectedAccount);
+          if (this.selectedAccount) {
+            console.log('Loading transactions for selected account:', this.selectedAccount);
+            this.loadTransactionsForAccount(this.selectedAccount);
+          }
         }
         
-        this.initSwiper();
+        setTimeout(() => this.initSwiper(), 100);
       },
       error: (error) => {
         console.error('Error loading accounts:', error);
@@ -96,48 +121,66 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactionsForAccount(account: Account) {
-    if (account.account_Id) {
-      // NUEVO: Verificar token antes de hacer la petición
-      const token = localStorage.getItem('token');
+    console.log('Loading transactions for account:', account.account_Id);
+    if (account.account_Id != null && account.account_Id !== undefined) {
+      const token = localStorage.getItem('jwt_token');
       if (!token) {
-        console.error('No authentication token found');
         this.transactionError = 'Please login again to view transactions';
         return;
       }
 
       this.accountService.getAccountTransactions(account.account_Id).subscribe({
         next: (transactions) => {
-          account.transactions = transactions;
-          console.log(`Loaded ${transactions.length} transactions for account ${account.account_Id}`);
-        },
-        error: (error) => {
-          console.error('Error loading transactions:', error);
+          console.log('✅ API Response received:', transactions);
           
-          if (error.status === 403) {
-            this.transactionError = 'Authentication error. Please login again.';
-            // Opcional: redirigir al login
-            // this.router.navigate(['/login']);
-          } else {
-            this.transactionError = 'Error loading transactions. Please try again.';
+          // Guardar en la cuenta
+          account.transactions = transactions;
+          
+          // NUEVO: Si es la cuenta activa, actualizar la lista visible
+          if (this.selectedAccount && this.selectedAccount.account_Id === account.account_Id) {
+            this.activeAccountTransactions = transactions;
+            console.log('✅ Updated activeAccountTransactions:', this.activeAccountTransactions);
           }
           
-          // Inicializar array vacío para evitar errores en el template
+          console.log(`✅ Loaded ${transactions.length} transactions for account ${account.account_Id}`);
+        },
+        error: (error) => {
+          console.error('❌ API Error:', error);
           account.transactions = [];
+          
+          // NUEVO: También limpiar la lista activa si es necesario
+          if (this.selectedAccount && this.selectedAccount.account_Id === account.account_Id) {
+            this.activeAccountTransactions = [];
+          }
         }
       });
     }
   }
 
   updateActiveAccount() {
+    console.log('=== UPDATE ACTIVE ACCOUNT ===');
     if (this.swiper && this.accounts.length > 0) {
       const realIndex = this.swiper.realIndex || this.swiper.activeIndex;
+      console.log('Swiper realIndex:', realIndex);
+      console.log('Current activeAccountIndex:', this.activeAccountIndex);
+      
       this.activeAccountIndex = realIndex;
       this.selectedAccount = this.accounts[realIndex];
       
-      // Cargar transacciones de la cuenta activa si no están cargadas
-      if (this.selectedAccount && !this.selectedAccount.transactions) {
+      console.log('New selectedAccount:', this.selectedAccount);
+      console.log('Selected account has transactions?', !!this.selectedAccount?.transactions);
+      
+      // NUEVO: Actualizar inmediatamente las transacciones visibles
+      this.activeAccountTransactions = this.selectedAccount?.transactions || [];
+      console.log('✅ Updated activeAccountTransactions:', this.activeAccountTransactions);
+      
+      // Cargar transacciones si no existen
+      if (this.selectedAccount && (!this.selectedAccount.transactions || this.selectedAccount.transactions.length === 0)) {
+        console.log('🔄 Loading transactions for account...');
         this.loadTransactionsForAccount(this.selectedAccount);
       }
+    } else {
+      console.log('❌ No swiper or no accounts');
     }
   }
 
@@ -145,18 +188,25 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     return this.accounts[this.activeAccountIndex] || null;
   }
 
-  getActiveAccountTransactions() {
-    const activeAccount = this.getActiveAccount();
-    return activeAccount?.transactions || [];
-  }
-
   selectAccount(account: Account, index: number) {
+    console.log('=== SELECT ACCOUNT ===');
+    console.log('Selected account:', account);
+    
     this.selectedAccount = account;
     this.activeAccountIndex = index;
     
-    // Cargar transacciones si no están cargadas
-    if (!account.transactions) {
+    // NUEVO: Actualizar inmediatamente las transacciones visibles
+    this.activeAccountTransactions = account.transactions || [];
+    console.log('✅ Set activeAccountTransactions:', this.activeAccountTransactions);
+    
+    // Cargar transacciones si no existen
+    if (!account.transactions || account.transactions.length === 0) {
+      console.log('🔄 Loading transactions...');
       this.loadTransactionsForAccount(account);
+    }
+    
+    if (this.swiper) {
+      this.swiper.slideTo(index);
     }
   }
 
@@ -315,6 +365,17 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.isProcessing = true;
     this.clearErrors();
 
+    // NUEVO: Verificar token antes de enviar
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.setError('No authentication token found. Please login again.');
+      this.isProcessing = false;
+      return;
+    }
+
+    console.log('Token length:', token.length); // Debug
+    console.log('Sending transaction data:', this.transactionForm); // Debug
+
     if (this.selectedAccount && this.selectedAccount.account_Id) {
       // Calcular el monto final (negativo para gastos/retiros, positivo para ingresos/depósitos)
       let finalAmount = this.transactionForm.amount;
@@ -335,6 +396,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       
       this.accountService.addTransaction(transactionData).subscribe({
         next: (newTransaction) => {
+          console.log('Transaction created successfully:', newTransaction); // Debug
           // Actualizar balance de la cuenta
           this.selectedAccount!.initial_balance += finalAmount;
           
@@ -347,11 +409,17 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           // Actualizar la cuenta en el backend
           this.updateAccountBalance(this.selectedAccount!);
           
+          // NUEVO: Actualizar inmediatamente la lista visible
+          this.activeAccountTransactions = [...this.selectedAccount!.transactions];
+          console.log('✅ Updated activeAccountTransactions with new transaction');
+          
           this.closeAllForms();
           this.isProcessing = false;
         },
         error: (error) => {
           console.error('Error adding transaction:', error);
+          console.error('Error status:', error.status); // Debug
+          console.error('Error body:', error.error); // Debug
           
           if (error.status === 403) {
             this.setError('Authentication error. Please login again.');
@@ -456,6 +524,16 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   // NUEVA: Método para obtener reference ID para mostrar en el template
   getCurrentReferenceId(): string {
     return this.currentReferenceId || 'N/A';
+  }
+
+  trackByTransactionId(index: number, transaction: any): any {
+    return transaction.id || index;
+  }
+
+  // Mantener solo para debug si necesitas
+  getActiveAccountTransactions() {
+    console.log('⚠️ getActiveAccountTransactions called - should use activeAccountTransactions property instead');
+    return this.activeAccountTransactions;
   }
 }
 

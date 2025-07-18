@@ -18,9 +18,7 @@ import com.tonilr.FinancialTracker.dto.LoginRequest;
 import com.tonilr.FinancialTracker.exceptions.UserNotFoundException;
 import com.tonilr.FinancialTracker.repos.UsersRepo;
 import com.tonilr.FinancialTracker.dto.ChangePasswordRequest;
-import com.tonilr.FinancialTracker.dto.PasswordResetRequest;
 import com.tonilr.FinancialTracker.dto.PasswordResetTokenRequest;
-import com.tonilr.FinancialTracker.Services.EmailService;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -207,5 +205,10 @@ public class UsersServices {
 	    message.setText("Haz clic en el siguiente enlace para restablecer tu contraseña:\n" + resetLink);
 
 	    mailSender.send(message);
+	}
+
+	public Users findUserByUsername(String username) {
+		return userRepo.findByUsername(username)
+			.orElseThrow(() -> new UserNotFoundException("User by username " + username + " was not found"));
 	}
 }

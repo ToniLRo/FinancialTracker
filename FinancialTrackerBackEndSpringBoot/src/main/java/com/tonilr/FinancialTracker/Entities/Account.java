@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.FetchType;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Account")
@@ -41,8 +43,9 @@ public class Account {
 	// ARREGLAR: Evitar serialización de transactions para evitar lazy loading
 	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Transaction> transactions;
-	
+	private Set<Transaction> transactions = new HashSet<Transaction>();
+
+
 	public Account() {
 	}
 
@@ -106,6 +109,6 @@ public class Account {
 	}
 
 	// Getter y setter para transactions
-	public List<Transaction> getTransactions() { return transactions; }
-	public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }
+	public Set<Transaction> getTransactions() { return transactions; }
+	public void setTransactions(Set<Transaction> transactions) { this.transactions = transactions; }
 }

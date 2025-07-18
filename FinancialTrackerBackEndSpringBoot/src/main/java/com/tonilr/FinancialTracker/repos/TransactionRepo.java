@@ -13,7 +13,11 @@ import com.tonilr.FinancialTracker.Entities.Transaction;
 @Repository
 public interface TransactionRepo extends JpaRepository<Transaction, Long> {
 	
-	@Query("SELECT t FROM Transaction t WHERE t.account.account_Id = :accountId")
+	// Usar query personalizada para evitar problemas de naming
+	@Query("SELECT t FROM Transaction t WHERE t.account.account_Id = :accountId ORDER BY t.register_date DESC")
 	List<Transaction> findByAccountId(@Param("accountId") Long accountId);
 	
+	// CORREGIR: Para buscar por usuario, usar query personalizada también
+	@Query("SELECT t FROM Transaction t WHERE t.user.user_Id = :userId ORDER BY t.register_date DESC")
+	List<Transaction> findByUserId(@Param("userId") Long userId);
 }

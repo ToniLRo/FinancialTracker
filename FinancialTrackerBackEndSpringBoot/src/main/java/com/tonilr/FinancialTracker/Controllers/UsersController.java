@@ -29,6 +29,7 @@ import com.tonilr.FinancialTracker.Services.JwtService;
 import com.tonilr.FinancialTracker.dto.ChangePasswordRequest;
 import com.tonilr.FinancialTracker.dto.PasswordResetRequest;
 import com.tonilr.FinancialTracker.dto.PasswordResetTokenRequest;
+import com.tonilr.FinancialTracker.Services.EmailService;
 
 
 @RestController
@@ -42,9 +43,13 @@ public class UsersController {
 	@Autowired
 	private final JwtService jwtService;
 	
-	public UsersController(UsersServices userService, JwtService jwtService) {
+	@Autowired
+	private final EmailService emailService;
+	
+	public UsersController(UsersServices userService, JwtService jwtService, EmailService emailService) {
 		this.userService = userService;
 		this.jwtService = jwtService;
+		this.emailService = emailService;
 	}
 
 	@GetMapping("/all")
@@ -121,6 +126,37 @@ public class UsersController {
 			String username = jwtService.extractUsername(jwt);
 			
 			Map<String, Object> response = userService.changePassword(username, request);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (RuntimeException e) {
+			Map<String, String> error = new HashMap<>();
+			error.put("message", e.getMessage());
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/forgot-password")
+	public ResponseEntity<?> forgotPassword(@RequestBody PasswordResetRequest request) {
+		try {
+			String resetToken = userService.generatePasswordResetToken(request.getEmail());
+			emailService.sendPasswordResetEmail(request.getEmail(), resetToken);
+			
+			Map<String, String> response = new HashMap<>();
+			response.put("message", "Password reset instructions have been sent to your email");
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (RuntimeException e) {
+			Map<String, String> error = new HashMap<>();
+			error.put("message", e.getMessage());
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping("/reset-password")
+	public ResponseEntity<?> resetPassword(@RequestBody PasswordResetTokenRequest request) {
+		try {
+			userService.resetPasswordWithToken(request);
+			
+			Map<String, String> response = new HashMap<>();
+			response.put("message", "Password has been reset successfully");
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (RuntimeException e) {
 			Map<String, String> error = new HashMap<>();

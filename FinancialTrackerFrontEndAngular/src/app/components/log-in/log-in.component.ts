@@ -28,7 +28,7 @@ export class LogINComponent implements OnInit {
   goToSignUp() {
     this.router.navigate(['/SignUp']);
   }
-
+  
   onLogin() {
     this.loginError = '';
     this.loginSuccess = '';

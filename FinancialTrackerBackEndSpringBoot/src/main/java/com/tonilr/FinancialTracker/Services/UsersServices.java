@@ -18,6 +18,9 @@ import com.tonilr.FinancialTracker.dto.LoginRequest;
 import com.tonilr.FinancialTracker.exceptions.UserNotFoundException;
 import com.tonilr.FinancialTracker.repos.UsersRepo;
 import com.tonilr.FinancialTracker.dto.ChangePasswordRequest;
+import com.tonilr.FinancialTracker.dto.PasswordResetRequest;
+import com.tonilr.FinancialTracker.dto.PasswordResetTokenRequest;
+import com.tonilr.FinancialTracker.Services.EmailService;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -38,6 +41,9 @@ public class UsersServices {
 	
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	@Autowired
+	private EmailService emailService;
 	
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -151,15 +157,34 @@ public class UsersServices {
 	}
 
 	public String generatePasswordResetToken(String email) {
-	    Users user = userRepo.findByEmail(email)
-	        .orElseThrow(() -> new RuntimeException("No existe usuario con ese email"));
-	    // Generar JWT con expiración corta
-	    String token = Jwts.builder()
-	        .setSubject(user.getEmail())
-	        .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 minutos
-	        .signWith(SignatureAlgorithm.HS256, "claveSecretaParaReset".getBytes())
-	        .compact();
-	    return token;
+		Users user = userRepo.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("No account found with this email address"));
+
+		// Generar token JWT con expiración de 30 minutos
+		return jwtService.generatePasswordResetToken(user.getEmail());
+	}
+
+	public void resetPasswordWithToken(PasswordResetTokenRequest request) {
+		// Validar que las contraseñas coincidan
+		if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+			throw new RuntimeException("Passwords do not match");
+		}
+
+		// Validar token JWT
+		try {
+			String email = jwtService.extractEmailFromResetToken(request.getToken());
+			
+			Users user = userRepo.findByEmail(email)
+					.orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+
+			// Encriptar y actualizar contraseña
+			String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+			user.setPassword(encodedPassword);
+			userRepo.save(user);
+			
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid or expired token");
+		}
 	}
 
 	public void sendPasswordResetEmail(String email) {

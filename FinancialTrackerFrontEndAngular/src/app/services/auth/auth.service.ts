@@ -34,6 +34,14 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/change-password`, request);
   }
 
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(resetData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, resetData);
+  }
+
   // Métodos de autenticación
   setCurrentUser(user: User, token: string): void {
     localStorage.setItem('currentUser', JSON.stringify(user));

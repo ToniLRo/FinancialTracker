@@ -219,7 +219,8 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       account_number: '',
       account_type: 'CreditCard',
       initial_balance: 0,
-      currency: 'USD'
+      currency: 'USD',
+      good_thru: this.generateGoodThru() // NUEVO: Generar automáticamente
     };
     this.isEdit = false;
     this.showForm = true;
@@ -571,23 +572,43 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   // Métodos de formateo (mantener existentes pero simplificados)
-  formatCardNumber(accountType: string): string {
-    // Generar número basado en el tipo de cuenta
-    const prefixes = {
-      'CreditCard': '4567',
-      'BankAccount': '1234',
-      'Cash': '9999'
-    };
-    const prefix = prefixes[accountType as keyof typeof prefixes] || '0000';
-    return `${prefix} **** **** 3456`;
-  }
+  formatCardNumber(accountNumber: string, accountType?: string): string {
+    if (!accountNumber) {
+      // Si no hay número, generar uno de ejemplo basado en el tipo
+      const prefixes = {
+        'CreditCard': '4567',
+        'BankAccount': '1234',
+        'Cash': '9999'
+      };
+      const prefix = prefixes[accountNumber as keyof typeof prefixes];
+      return `${prefix} **** **** ${accountNumber.slice(-4)}`;
+    }
 
-  formatValidThru(): string {
-    const now = new Date();
-    const futureDate = new Date(now.getFullYear() + 3, now.getMonth());
-    const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
-    const year = futureDate.getFullYear().toString().slice(-2);
-    return `${month}/${year}`;
+    // Si hay número real, formatearlo según el tipo
+    const cleanNumber = accountNumber.replace(/\D/g, '');
+    
+    if (accountType === 'CreditCard') {
+      // Formato: 1234 5678 9012 3456
+      if (cleanNumber.length >= 16) {
+        return cleanNumber.replace(/(\d{4})(?=\d)/g, '$1 ');
+      } else {
+        // Mostrar parcialmente con asteriscos
+        return `${cleanNumber.substring(0, 4)} **** **** ${cleanNumber.slice(-4)}`;
+      }
+    } else if (accountType === 'BankAccount') {
+      // Formato: 1234-5678-9012
+      if (cleanNumber.length >= 10) {
+        return cleanNumber.replace(/(\d{4})(?=\d)/g, '$1-');
+      } else {
+        return `${cleanNumber.substring(0, 4)}-****-${cleanNumber.slice(-4)}`;
+      }
+    } else if (accountType === 'Cash') {
+      // Formato: CASH-1234
+      return accountNumber; // Ya viene formateado como CASH-1234
+    }
+
+    // Fallback
+    return accountNumber;
   }
 
   truncateText(text: string, maxLength: number): string {
@@ -678,6 +699,19 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     if (!account.holder_name || account.holder_name.trim() === '') {
       alert('El nombre del titular es obligatorio.');
       return false;
+    }
+
+    // NUEVA: Validación para good_thru
+    if ((account.account_type === 'CreditCard' || account.account_type === 'BankAccount')) {
+      if (!account.good_thru || account.good_thru.trim() === '') {
+        this.accountError = 'La fecha de vencimiento es obligatoria para tarjetas de crédito y cuentas bancarias.';
+        return false;
+      }
+
+      if (!this.validateGoodThru(account.good_thru)) {
+        this.accountError = 'Formato de fecha de vencimiento inválido o fecha expirada (use MM/AA).';
+        return false;
+      }
     }
 
     return true;
@@ -816,13 +850,98 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   * Formatear fecha de vencimiento MM/YY
+   */
+  formatGoodThru(value: string): string {
+    if (!value) return '';
+    
+    // Remover todo lo que no sean números
+    const numbers = value.replace(/\D/g, '');
+    
+    // Formatear como MM/YY
+    if (numbers.length >= 2) {
+      const month = numbers.substring(0, 2);
+      const year = numbers.substring(2, 4);
+      return year ? `${month}/${year}` : month;
+    }
+    
+    return numbers;
+  }
 
-  // ACTUALIZAR el método onAccountTypeChange (nuevo)
+  /**
+   * Manejar input del good_thru con formato automático
+   */
+  onGoodThruInput(event: any): void {
+    const input = event.target;
+    const formattedValue = this.formatGoodThru(input.value);
+    
+    // Actualizar el valor en el modelo y en el input
+    if (this.selectedAccount) {
+      this.selectedAccount.good_thru = formattedValue;
+    }
+    input.value = formattedValue;
+  }
+
+  /**
+   * Validar fecha de vencimiento MM/YY
+   */
+  validateGoodThru(goodThru: string): boolean {
+    if (!goodThru) return false;
+    
+    const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    if (!regex.test(goodThru)) return false;
+    
+    const [month, year] = goodThru.split('/');
+    const monthNum = parseInt(month);
+    const yearNum = parseInt(`20${year}`);
+    
+    // Verificar que el mes sea válido
+    if (monthNum < 1 || monthNum > 12) return false;
+    
+    // Verificar que la fecha no sea pasada
+    const now = new Date();
+    const expiry = new Date(yearNum, monthNum - 1);
+    
+    return expiry > now;
+  }
+
+  /**
+   * Generar good_thru automático (3 años en el futuro)
+   */
+  generateGoodThru(): string {
+    const now = new Date();
+    const futureDate = new Date(now.getFullYear() + 3, now.getMonth());
+    const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = futureDate.getFullYear().toString().slice(-2);
+    return `${month}/${year}`;
+  }
+
   onAccountTypeChange(): void {
     if (this.selectedAccount && !this.isEdit) {
       // Auto-generar número cuando cambia el tipo (solo en modo añadir)
       this.selectedAccount.account_number = this.generateAccountNumber(this.selectedAccount.account_type);
+      
+      // Auto-generar good_thru solo para CreditCard y BankAccount
+      if (this.selectedAccount.account_type === 'CreditCard' || this.selectedAccount.account_type === 'BankAccount') {
+        this.selectedAccount.good_thru = this.generateGoodThru();
+      } else {
+        this.selectedAccount.good_thru = '';
+      }
     }
+  }
+
+  formatValidThru(account?: Account): string {
+    if (account && account.good_thru) {
+      return account.good_thru;
+    }
+    
+    // Fallback al valor generado automáticamente
+    const now = new Date();
+    const futureDate = new Date(now.getFullYear() + 3, now.getMonth());
+    const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+    const year = futureDate.getFullYear().toString().slice(-2);
+    return `${month}/${year}`;
   }
 }
 

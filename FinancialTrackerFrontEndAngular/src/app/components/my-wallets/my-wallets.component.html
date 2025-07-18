@@ -152,8 +152,8 @@
                                     <div class="card-holder" [title]="account.holder_name">
                                         {{ truncateText(account.holder_name, 12) }}
                                     </div>
-                                    <div class="card-number">{{ formatCardNumber(account.account_type) }}</div>
-                                    <div class="card-valid">{{ formatValidThru() }}</div>
+                                    <div class="card-number">{{ formatCardNumber(account.account_number, account.account_type) }}</div>
+                                    <div class="card-valid">{{ formatValidThru(account) }}</div>
                                     <div class="card-balance" style="position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #fff;">
                                         {{ account.initial_balance | currency:account.currency }}
                                     </div>
@@ -293,14 +293,6 @@
               #accountNumber="ngModel"
               autocomplete="off"
               class="account-number-input">
-            <button 
-              type="button" 
-              class="generate-btn"
-              (click)="selectedAccount && (selectedAccount.account_number = generateAccountNumber(selectedAccount.account_type || 'CreditCard'))"
-              [disabled]="isProcessing || !selectedAccount"
-              title="Generate random number">
-              <i class="bi bi-arrow-clockwise"></i>
-            </button>
           </div>
           <div class="validation-message" *ngIf="accountNumber.invalid && accountNumber.touched">
             <small *ngIf="accountNumber.errors?.['required']">
@@ -359,6 +351,40 @@
             <option value="JPY">JPY - Japanese Yen</option>
             <option value="CAD">CAD - Canadian Dollar</option>
           </select>
+        </div>
+        
+        <!-- Good Thru (Valid Until) -->
+        <div class="form-group" *ngIf="selectedAccount?.account_type === 'CreditCard' || selectedAccount?.account_type === 'BankAccount'">
+          <label for="good_thru">Valid Until (MM/YY) *</label>
+          <div class="input-with-actions">
+            <input 
+              id="good_thru"
+              [(ngModel)]="selectedAccount!.good_thru" 
+              name="good_thru"     
+              required 
+              maxlength="5"
+              placeholder="MM/YY"
+              [disabled]="isProcessing"
+              (input)="onGoodThruInput($event)"
+              #goodThru="ngModel"
+              autocomplete="off"
+              class="good-thru-input">
+          </div>
+          <div class="validation-message" *ngIf="goodThru.invalid && goodThru.touched">
+            <small *ngIf="goodThru.errors?.['required']">
+              Valid until date is required
+            </small>
+          </div>
+          <div class="validation-message" *ngIf="selectedAccount && selectedAccount.good_thru && !validateGoodThru(selectedAccount.good_thru)">
+            <small class="error">           
+              Invalid date format or expired date (use MM/YY)
+            </small>
+          </div>
+          <div class="format-hint">
+            <small>
+              Format: MM/YY (e.g., 12/27 for December 2027)
+            </small>
+          </div>
         </div>
         
         <!-- Error Messages -->

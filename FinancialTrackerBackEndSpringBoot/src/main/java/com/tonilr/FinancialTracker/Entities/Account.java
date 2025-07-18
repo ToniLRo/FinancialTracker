@@ -43,17 +43,19 @@ public class Account {
 	@Column(nullable = false, updatable = true)
 	private Date creation_date;
 	
-	// ARREGLAR: Evitar serialización de transactions para evitar lazy loading
+	// NUEVO: Campo para fecha de vencimiento (MM/YY)
+	@Column(nullable = true, updatable = true, length = 5)
+	private String good_thru;
+	
 	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Transaction> transactions = new HashSet<Transaction>();
-
 
 	public Account() {
 	}
 
 	public Account(String holder_name, String account_number, AccountType account_type, double initial_balance, 
-			String currency, Date creation_date) {
+			String currency, Date creation_date, String good_thru) {
 		super();
 		this.holder_name = holder_name;
 		this.account_number = account_number;
@@ -61,6 +63,7 @@ public class Account {
 		this.initial_balance = initial_balance;
 		this.currency = currency;
 		this.creation_date = creation_date;
+		this.good_thru = good_thru;
 	}
 
 	// Getters y setters existentes...
@@ -118,6 +121,15 @@ public class Account {
 
 	public void setCreation_date(Date creation_date) {
 		this.creation_date = creation_date;
+	}
+
+	// NUEVO: Getter y setter para good_thru
+	public String getGood_thru() {
+		return good_thru;
+	}
+
+	public void setGood_thru(String good_thru) {
+		this.good_thru = good_thru;
 	}
 
 	// Getter y setter para transactions

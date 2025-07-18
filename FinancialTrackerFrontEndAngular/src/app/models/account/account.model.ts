@@ -8,6 +8,7 @@ export interface Account {
   initial_balance: number;
   currency: string;
   creation_date?: string;
+  good_thru?: string; // NUEVO: Campo para MM/YY
   
   // Campos opcionales para UI
   frozen?: boolean;

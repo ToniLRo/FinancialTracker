@@ -2,7 +2,9 @@ package com.tonilr.FinancialTracker.Controllers;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,15 +115,109 @@ public class TransactionController {
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<Transaction> updateTransaction(@RequestBody Transaction transaction) {
-		Transaction updateTransaction = transactionService.updateTransaction(transaction);
-		return new ResponseEntity<>(updateTransaction, HttpStatus.OK);
+	public ResponseEntity<TransactionDTO> updateTransaction(@RequestBody TransactionUpdateRequest request) {
+		try {
+			System.out.println("=== UPDATE TRANSACTION ===");
+			System.out.println("Received update request for transaction ID: " + request.getId());
+			
+			// Obtener usuario autenticado
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String username = authentication.getName();
+			Users user = usersService.findUserByUsername(username);
+			System.out.println("Authenticated user: " + username);
+			
+			// Buscar la transacción existente
+			Transaction existingTransaction = transactionService.findTransactionById(request.getId());
+			System.out.println("Found existing transaction: " + existingTransaction.getTransaction_Id());
+			
+			// Verificar que la transacción pertenece al usuario autenticado
+			if (existingTransaction.getUser() == null || !existingTransaction.getUser().getUser_Id().equals(user.getUser_Id())) {
+				System.err.println("Transaction does not belong to authenticated user");
+				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+			}
+			
+			// Validar que existe la cuenta (si se está cambiando)
+			Account account = accountService.findAccountById(request.getAccountId());
+			System.out.println("Account found: " + account.getAccount_Id());
+			
+			// Actualizar los campos de la transacción
+			existingTransaction.setAmount(request.getAmount());
+			existingTransaction.setDescription(request.getDescription());
+			existingTransaction.setType(request.getType());
+			existingTransaction.setReferenceId(request.getReferenceId());
+			
+			// Convertir fecha string a Date si se proporciona
+			if (request.getDate() != null && !request.getDate().isEmpty()) {
+				existingTransaction.setDate(Date.valueOf(request.getDate()));
+			}
+			
+			// Actualizar la cuenta si es diferente
+			if (!existingTransaction.getAccount().getAccount_Id().equals(request.getAccountId())) {
+				existingTransaction.setAccount(account);
+			}
+			
+			// Mantener el usuario y fecha de registro originales
+			// existingTransaction.setUser(user); // Mantener usuario original
+			// existingTransaction.setRegisterDate() // Mantener fecha registro original
+			
+			System.out.println("Updated transaction data:");
+			System.out.println("  - Amount: " + existingTransaction.getAmount());
+			System.out.println("  - Description: " + existingTransaction.getDescription());
+			System.out.println("  - Type: " + existingTransaction.getType());
+			System.out.println("  - Account ID: " + existingTransaction.getAccount().getAccount_Id());
+			
+			// Guardar transacción actualizada
+			Transaction updatedTransaction = transactionService.updateTransaction(existingTransaction);
+			System.out.println("Transaction updated successfully with ID: " + updatedTransaction.getTransaction_Id());
+			
+			// Convertir a DTO para evitar lazy loading
+			TransactionDTO responseDTO = convertToDTO(updatedTransaction);
+			
+			return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			System.err.println("Error updating transaction: " + e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 	}
 	
+
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<?> deleteTransaction(@PathVariable("id") Long id) {
-		transactionService.deleteTransaction(id);
-		return new ResponseEntity<>(HttpStatus.OK);
+		try {
+			System.out.println("=== DELETE TRANSACTION ===");
+			System.out.println("Received delete request for transaction ID: " + id);
+			
+			// Obtener usuario autenticado
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String username = authentication.getName();
+			Users user = usersService.findUserByUsername(username);
+			System.out.println("Authenticated user: " + username);
+			
+			// Buscar la transacción existente
+			Transaction existingTransaction = transactionService.findTransactionById(id);
+			System.out.println("Found transaction: " + existingTransaction.getTransaction_Id());
+			
+			// Verificar que la transacción pertenece al usuario autenticado
+			if (existingTransaction.getUser() == null || !existingTransaction.getUser().getUser_Id().equals(user.getUser_Id())) {
+				System.err.println("Transaction does not belong to authenticated user");
+				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+			}
+			
+			// Eliminar transacción
+			transactionService.deleteTransaction(id);
+			System.out.println("Transaction deleted successfully");
+			
+			Map<String, String> response = new HashMap<>();
+			response.put("message", "Transaction deleted successfully");
+			return new ResponseEntity<>(response, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			System.err.println("Error deleting transaction: " + e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@GetMapping("/account/{accountId}")
@@ -200,6 +296,39 @@ public class TransactionController {
 		private Long accountId;
 		
 		// Getters y setters
+		public String getDate() { return date; }
+		public void setDate(String date) { this.date = date; }
+		
+		public String getDescription() { return description; }
+		public void setDescription(String description) { this.description = description; }
+		
+		public double getAmount() { return amount; }
+		public void setAmount(double amount) { this.amount = amount; }
+		
+		public String getType() { return type; }
+		public void setType(String type) { this.type = type; }
+		
+		public String getReferenceId() { return referenceId; }
+		public void setReferenceId(String referenceId) { this.referenceId = referenceId; }
+		
+		public Long getAccountId() { return accountId; }
+		public void setAccountId(Long accountId) { this.accountId = accountId; }
+	}
+
+	// NUEVO: Clase interna para el request DTO de actualización
+	public static class TransactionUpdateRequest {
+		private Long id;
+		private String date;
+		private String description;
+		private double amount;
+		private String type;
+		private String referenceId;
+		private Long accountId;
+		
+		// Getters y setters
+		public Long getId() { return id; }
+		public void setId(Long id) { this.id = id; }
+		
 		public String getDate() { return date; }
 		public void setDate(String date) { this.date = date; }
 		

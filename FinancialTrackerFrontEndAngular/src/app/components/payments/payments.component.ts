@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TransactionService } from 'src/app/services/transaction/transaction.service';
 import { AccountService } from 'src/app/services/account/account.service';
 import { Transaction } from 'src/app/models/Transaction/transaction.model';
@@ -52,13 +53,57 @@ export class PaymentsComponent implements OnInit {
   public isLoading: boolean = false;
   public error: string | null = null;
 
+  // NUEVO: Edit/Delete properties
+  public editingTransaction: Transaction | null = null;
+  public deletingTransaction: Transaction | null = null;
+  public editTransactionForm!: FormGroup;
+  public isSaving: boolean = false;
+  public isDeleting: boolean = false;
+
   constructor(
     private transactionService: TransactionService,
-    private accountService: AccountService
-  ) { }
+    private accountService: AccountService,
+    private formBuilder: FormBuilder // NUEVO: FormBuilder para reactive forms
+  ) {
+    this.initializeEditForm();
+  }
 
   ngOnInit(): void {
     this.loadInitialData();
+  }
+
+  // NUEVO: Initialize edit form
+  private initializeEditForm(): void {
+    this.editTransactionForm = this.formBuilder.group({
+      date: ['', Validators.required],
+      type: ['', Validators.required],
+      description: ['', [Validators.required, Validators.minLength(3)]],
+      accountId: ['', Validators.required],
+      amount: ['', [Validators.required, this.validateAmount]], // CAMBIO: Validación personalizada
+      referenceId: ['']
+    });
+  }
+
+  // NUEVO: Validador personalizado para amount
+  private validateAmount(control: any) {
+    const value = control.value;
+    
+    // Debe ser un número y no puede ser 0
+    if (value === null || value === undefined || value === '' || value === 0) {
+      return { required: true };
+    }
+    
+    // Debe ser un número válido
+    if (isNaN(value)) {
+      return { invalid: true };
+    }
+    
+    // Puede ser positivo o negativo, pero no 0
+    if (Math.abs(value) < 0.01) {
+      return { tooSmall: true };
+    }
+    
+    return null; // Válido
   }
 
   async loadInitialData(): Promise<void> {
@@ -207,7 +252,7 @@ export class PaymentsComponent implements OnInit {
 
   changePage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
-      this.displayPage(page);
+      this.changePage(page);
     }
   }
 
@@ -315,5 +360,174 @@ export class PaymentsComponent implements OnInit {
   // Track by function for ngFor performance
   trackByTransactionId(index: number, transaction: Transaction): number {
     return transaction.id;
+  }
+
+  // NUEVO: Edit transaction
+  editTransaction(transaction: Transaction): void {
+    console.log('Editing transaction:', transaction);
+    
+    this.editingTransaction = { ...transaction }; // Clone to avoid reference issues
+    
+    // Populate form with transaction data - MANTENER SIGNO ORIGINAL
+    this.editTransactionForm.patchValue({
+      date: transaction.date,
+      type: transaction.type,
+      description: transaction.description,
+      accountId: transaction.accountId,
+      amount: transaction.amount, // CAMBIO: Remover Math.abs() para mantener negativo
+      referenceId: transaction.referenceId || ''
+    });
+
+    // Show modal
+    this.showEditModal();
+  }
+
+  // NUEVO: Save edited transaction
+  async saveTransaction(): Promise<void> {
+    if (this.editTransactionForm.invalid || !this.editingTransaction) {
+      console.log('Form is invalid or no transaction selected');
+      return;
+    }
+
+    // Validación adicional
+    const amount = this.editTransactionForm.value.amount;
+    if (amount === 0 || Math.abs(amount) < 0.01) {
+      console.log('Amount cannot be zero or too small');
+      return;
+    }
+
+    this.isSaving = true;
+    this.error = null; // Clear previous errors
+    
+    try {
+      const formValue = this.editTransactionForm.value;
+      
+      // Preparar objeto para actualización
+      const updateRequest = {
+        id: this.editingTransaction.id,
+        date: formValue.date,
+        type: formValue.type,
+        description: formValue.description,
+        accountId: formValue.accountId,
+        amount: formValue.amount,
+        referenceId: formValue.referenceId || null
+      };
+
+      console.log('Sending update request:', updateRequest);
+
+      // NUEVO: Llamar a la API para actualizar
+      const updatedTransaction = await this.transactionService.updateTransaction(updateRequest).toPromise();
+      
+      console.log('Transaction updated successfully:', updatedTransaction);
+      
+      // Actualizar la transacción en la lista local
+      const index = this.allTransactions.findIndex(t => t.id === this.editingTransaction!.id);
+      if (index !== -1) {
+        this.allTransactions[index] = updatedTransaction!;
+        this.applyFilters(); // Refresh filtered data
+      }
+
+      this.closeEditModal();
+      
+      // Mostrar mensaje de éxito (opcional - puedes agregar un toast/notification)
+      console.log('✅ Transaction updated successfully in database');
+      
+    } catch (error: any) {
+      console.error('❌ Error updating transaction:', error);
+      
+      // Manejar diferentes tipos de error
+      if (error.status === 403) {
+        this.error = 'You do not have permission to edit this transaction.';
+      } else if (error.status === 404) {
+        this.error = 'Transaction not found.';
+      } else if (error.status === 400) {
+        this.error = 'Invalid transaction data. Please check your inputs.';
+      } else {
+        this.error = 'Failed to update transaction. Please try again.';
+      }
+    } finally {
+      this.isSaving = false;
+    }
+  }
+
+  // NUEVO: Delete transaction
+  deleteTransaction(transaction: Transaction): void {
+    console.log('Requesting to delete transaction:', transaction);
+    this.deletingTransaction = transaction;
+    this.showDeleteModal();
+  }
+
+  // NUEVO: Confirm delete
+  async confirmDelete(): Promise<void> {
+    if (!this.deletingTransaction) return;
+
+    this.isDeleting = true;
+    this.error = null; // Clear previous errors
+    
+    try {
+      console.log('Deleting transaction:', this.deletingTransaction.id);
+
+      // NUEVO: Llamar a la API para eliminar
+      await this.transactionService.deleteTransaction(this.deletingTransaction.id).toPromise();
+      
+      console.log('Transaction deleted successfully from database');
+      
+      // Remover de la lista local
+      this.allTransactions = this.allTransactions.filter(t => t.id !== this.deletingTransaction!.id);
+      this.applyFilters(); // Refresh filtered data
+
+      this.closeDeleteModal();
+      
+      console.log('✅ Transaction removed from local list');
+      
+    } catch (error: any) {
+      console.error('❌ Error deleting transaction:', error);
+      
+      if (error.status === 403) {
+        this.error = 'You do not have permission to delete this transaction.';
+      } else if (error.status === 404) {
+        this.error = 'Transaction not found.';
+      } else {
+        this.error = 'Failed to delete transaction. Please try again.';
+      }
+    } finally {
+      this.isDeleting = false;
+    }
+  }
+
+  // NUEVO: Modal management
+  private showEditModal(): void {
+    // Using Bootstrap modal
+    const modal = new (window as any).bootstrap.Modal(document.getElementById('editTransactionModal'));
+    modal.show();
+  }
+
+  closeEditModal(): void {
+    this.editingTransaction = null;
+    this.editTransactionForm.reset();
+    
+    const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('editTransactionModal'));
+    if (modal) {
+      modal.hide();
+    }
+  }
+
+  private showDeleteModal(): void {
+    const modal = new (window as any).bootstrap.Modal(document.getElementById('deleteTransactionModal'));
+    modal.show();
+  }
+
+  closeDeleteModal(): void {
+    this.deletingTransaction = null;
+    
+    const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('deleteTransactionModal'));
+    if (modal) {
+      modal.hide();
+    }
+  }
+
+  // NUEVO: Get editable transaction types (exclude 'All')
+  getEditableTransactionTypes(): string[] {
+    return this.transactionTypes.filter(type => type !== 'All');
   }
 }

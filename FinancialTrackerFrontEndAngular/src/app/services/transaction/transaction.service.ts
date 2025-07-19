@@ -73,4 +73,36 @@ export class TransactionService {
       catchError(this.handleError.bind(this))
     );
   }
+
+  // Actualizar transacción existente
+  updateTransaction(transaction: any): Observable<Transaction> {
+    console.log('=== TRANSACTION SERVICE - UPDATE TRANSACTION ===');
+    console.log('Updating transaction:', transaction);
+    
+    return this.http.put<Transaction>(`${this.transactionApiUrl}/update`, transaction, { 
+      headers: this.getAuthHeaders() 
+    }).pipe(
+      tap(response => console.log('✅ Update Transaction Response:', response)),
+      catchError(error => {
+        console.error('❌ Update Transaction Error:', error);
+        return this.handleError(error);
+      })
+    );
+  }
+
+  // Eliminar transacción
+  deleteTransaction(transactionId: number): Observable<any> {
+    console.log('=== TRANSACTION SERVICE - DELETE TRANSACTION ===');
+    console.log('Deleting transaction ID:', transactionId);
+    
+    return this.http.delete<any>(`${this.transactionApiUrl}/delete/${transactionId}`, { 
+      headers: this.getAuthHeaders() 
+    }).pipe(
+      tap(response => console.log('✅ Delete Transaction Response:', response)),
+      catchError(error => {
+        console.error('❌ Delete Transaction Error:', error);
+        return this.handleError(error);
+      })
+    );
+  }
 }

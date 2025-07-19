@@ -10,7 +10,7 @@
       <div class="stat-card">
         <h6>Total Transactions</h6>
         <span class="stat-number">{{ filteredTransactions.length }}</span>
-      </div>
+  </div>
       <div class="stat-card">
         <h6>Showing</h6>
         <span class="stat-number">{{ paginatedTransactions.length }}</span>
@@ -87,7 +87,7 @@
             {{ type }}
           </option>
         </select>
-      </div>
+    </div>
 
       <!-- Date from -->
       <div class="filter-group">
@@ -109,7 +109,7 @@
           class="form-control" 
           [value]="filters.dateTo || ''"
           (change)="onDateToChange($event)">
-      </div>
+    </div>
 
       <!-- Minimum amount -->
       <div class="filter-group">
@@ -140,10 +140,10 @@
             step="0.01"
             [value]="filters.amountMax || ''"
             (input)="onAmountMaxChange($event)">
-        </div>
-      </div>
     </div>
-  </div>
+      </div>
+          </div>
+        </div>
 
   <!-- Transactions Table -->
   <div class="table-section" *ngIf="!isLoading && !error">
@@ -174,6 +174,7 @@
             <th><i class="fa-solid fa-euro-sign me-2"></i>Amount</th>
             <th><i class="fa-solid fa-receipt me-2"></i>Reference</th>
             <th><i class="fa-solid fa-clock me-2"></i>Registered</th>
+            <th><i class="fa-solid fa-cog me-2"></i>Actions</th> <!-- NUEVA COLUMNA -->
           </tr>
         </thead>
         <tbody>
@@ -208,9 +209,25 @@
             <td class="register-date-cell">
               {{ formatDate(transaction.registerDate || transaction.date) }}
             </td>
-          </tr>
+            <td class="actions-cell"> <!-- NUEVA CELDA DE ACCIONES -->
+              <div class="action-buttons">
+                <button 
+                  class="btn btn-sm btn-outline-primary me-1" 
+                  (click)="editTransaction(transaction)"
+                  [title]="'Edit transaction'">
+                  <i class="fa-solid fa-edit"></i>
+                </button>
+                <button 
+                  class="btn btn-sm btn-outline-danger" 
+                  (click)="deleteTransaction(transaction)"
+                  [title]="'Delete transaction'">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </td>
+            </tr>
         </tbody>
-      </table>
+          </table>
     </div>
 
     <!-- Pagination -->
@@ -255,10 +272,181 @@
             <button class="page-link" (click)="nextPage()">
               Next
               <i class="fa-solid fa-chevron-right"></i>
-            </button>
+              </button>
           </li>
         </ul>
       </nav>
     </div>
   </div>
-</div>
+
+  <!-- NUEVO: Edit Transaction Modal -->
+  <div class="modal fade custom-modal" id="editTransactionModal" tabindex="-1" *ngIf="editingTransaction">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content custom-modal-content">
+        <div class="modal-header custom-modal-header">
+          <h5 class="modal-title">
+            <i class="fa-solid fa-edit me-2"></i>Edit Transaction
+          </h5>
+          <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+        </div>
+        <div class="modal-body custom-modal-body">
+          <form [formGroup]="editTransactionForm" (ngSubmit)="saveTransaction()">
+            <div class="row">
+              <!-- Date -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Transaction Date</label>
+                <input 
+                  type="date" 
+                  class="form-control custom-input" 
+                  formControlName="date"
+                  [class.is-invalid]="editTransactionForm.get('date')?.invalid && editTransactionForm.get('date')?.touched">
+                <div class="invalid-feedback">
+                  Date is required
+                </div>
+              </div>
+
+              <!-- Type -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Transaction Type</label>
+                <select 
+                  class="form-select custom-select" 
+                  formControlName="type"
+                  [class.is-invalid]="editTransactionForm.get('type')?.invalid && editTransactionForm.get('type')?.touched">
+                  <option value="">Select type...</option>
+                  <option *ngFor="let type of getEditableTransactionTypes()" [value]="type">
+                    {{ type }}
+                  </option>
+                </select>
+                <div class="invalid-feedback">
+                  Transaction type is required
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="col-12 mb-3">
+                <label class="form-label">Description</label>
+                <input 
+                  type="text" 
+                  class="form-control custom-input" 
+                  formControlName="description"
+                  placeholder="Enter transaction description..."
+                  [class.is-invalid]="editTransactionForm.get('description')?.invalid && editTransactionForm.get('description')?.touched">
+                <div class="invalid-feedback">
+                  Description is required
+                </div>
+              </div>
+
+              <!-- Account -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Account</label>
+                <select 
+                  class="form-select custom-select" 
+                  formControlName="accountId"
+                  [class.is-invalid]="editTransactionForm.get('accountId')?.invalid && editTransactionForm.get('accountId')?.touched">
+                  <option value="">Select account...</option>
+                  <option *ngFor="let account of accounts" [value]="account.account_Id">
+                    {{ account.holder_name }} - {{ account.account_number }}
+                  </option>
+                </select>
+                <div class="invalid-feedback">
+                  Account is required
+                </div>
+              </div>
+
+              <!-- Amount -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Amount (€)</label>
+                <input 
+                  type="number" 
+                  class="form-control custom-input" 
+                  formControlName="amount"
+                  placeholder="0.00"
+                  step="0.01"
+                  [class.is-invalid]="editTransactionForm.get('amount')?.invalid && editTransactionForm.get('amount')?.touched">
+                <div class="invalid-feedback">
+                  <!-- NUEVO: Mensajes de error más específicos -->
+                  <span *ngIf="editTransactionForm.get('amount')?.errors?.['required']">
+                    Amount is required
+                  </span>
+                  <span *ngIf="editTransactionForm.get('amount')?.errors?.['invalid']">
+                    Please enter a valid number
+                  </span>
+                  <span *ngIf="editTransactionForm.get('amount')?.errors?.['tooSmall']">
+                    Amount must be at least €0.01 (positive or negative)
+                  </span>
+                </div>
+              </div>
+
+              <!-- Reference ID -->
+              <div class="col-12 mb-3">
+                <label class="form-label">Reference ID (Optional)</label>
+                <input 
+                  type="text" 
+                  class="form-control custom-input" 
+                  formControlName="referenceId"
+                  placeholder="Enter reference ID...">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer custom-modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
+            <i class="fa-solid fa-times me-1"></i>Cancel
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            (click)="saveTransaction()"
+            [disabled]="editTransactionForm.invalid || isSaving">
+            <i class="fa-solid fa-save me-1"></i>
+            <span *ngIf="!isSaving">Save Changes</span>
+            <span *ngIf="isSaving">Saving...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NUEVO: Delete Confirmation Modal -->
+  <div class="modal fade custom-modal" id="deleteTransactionModal" tabindex="-1" *ngIf="deletingTransaction">
+    <div class="modal-dialog">
+      <div class="modal-content custom-modal-content">
+        <div class="modal-header custom-modal-header">
+          <h5 class="modal-title">
+            <i class="fa-solid fa-trash me-2 text-danger"></i>Delete Transaction
+          </h5>
+          <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body custom-modal-body">
+          <div class="alert alert-warning">
+            <i class="fa-solid fa-exclamation-triangle me-2"></i>
+            <strong>Warning:</strong> This action cannot be undone.
+          </div>
+          <p>Are you sure you want to delete this transaction?</p>
+          <div class="transaction-preview">
+            <strong>{{ deletingTransaction.description }}</strong><br>
+            <small class="text-muted">
+              {{ formatDate(deletingTransaction.date) }} • 
+              {{ formatAmount(deletingTransaction.amount) }} • 
+              {{ deletingTransaction.type }}
+            </small>
+          </div>
+        </div>
+        <div class="modal-footer custom-modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
+            <i class="fa-solid fa-times me-1"></i>Cancel
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-danger" 
+            (click)="confirmDelete()"
+            [disabled]="isDeleting">
+            <i class="fa-solid fa-trash me-1"></i>
+            <span *ngIf="!isDeleting">Delete Transaction</span>
+            <span *ngIf="isDeleting">Deleting...</span>
+          </button>
+        </div>
+      </div>
+          </div>
+        </div>
+      </div>

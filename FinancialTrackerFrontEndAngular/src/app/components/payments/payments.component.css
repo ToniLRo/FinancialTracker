@@ -584,3 +584,301 @@ body, html {
 .fa-question-circle {
   color: var(--text-muted) !important;
 }
+
+/* Actions Column - MEJORADO */
+:host .actions-cell {
+  min-width: 120px;
+  text-align: center;
+}
+
+:host .action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+:host .action-buttons .btn {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  border-width: 1.5px !important; /* AGREGADO: Mejor grosor de borde */
+}
+
+.btn-outline-primary {
+  color: #007bff !important;
+  background-color: transparent !important;
+  border: 1px solid #007bff !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff !important;
+  color: white !important;
+  border-color: #007bff !important;
+}
+
+:host .action-buttons .btn-outline-danger {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+  background-color: transparent !important;
+}
+
+:host .action-buttons .btn-outline-danger:hover {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border-color: #dc3545 !important;
+}
+
+/* CORREGIDO: Modal Styles - Forzar fondo oscuro */
+.modal-content {
+  background-color: rgba(33,37,41,255) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background-color: rgba(33,37,41,255) !important;
+}
+
+.modal-body {
+  background-color: rgba(33,37,41,255) !important;
+  color: white !important;
+}
+
+.modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background-color: rgba(33,37,41,255) !important;
+}
+
+.modal-title {
+  color: white !important;
+}
+
+.btn-close {
+  filter: invert(1) !important;
+  opacity: 0.8 !important;
+}
+
+.btn-close:hover {
+  opacity: 1 !important;
+}
+
+/* CORREGIDO: Form Styles in Modal - Más específico */
+.modal .form-label {
+  color: white !important;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.modal .form-control,
+.modal .form-select {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.modal .form-control:focus,
+.modal .form-select:focus {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #21be72 !important;
+  box-shadow: 0 0 0 0.2rem rgba(33, 190, 114, 0.25) !important;
+  color: white !important;
+}
+
+.modal .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.modal .form-select option {
+  background-color: rgba(33,37,41,255) !important;
+  color: white !important;
+}
+
+.modal .is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.modal .invalid-feedback {
+  color: #dc3545 !important;
+  font-size: 0.85rem;
+}
+
+/* CORREGIDO: Transaction Preview in Delete Modal */
+.transaction-preview {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #dc3545;
+  margin-top: 15px;
+}
+
+.transaction-preview strong {
+  color: white !important;
+}
+
+.transaction-preview .text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* CORREGIDO: Alert in Modal */
+.modal .alert-warning {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  color: #ffc107 !important;
+}
+
+/* CORREGIDO: Modal Buttons */
+.modal .btn-primary {
+  background-color: #21be72 !important;
+  border-color: #21be72 !important;
+  color: white !important;
+}
+
+.modal .btn-primary:hover {
+  background-color: #1da85f !important;
+  border-color: #1da85f !important;
+}
+
+.modal .btn-secondary {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}
+
+.modal .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: white !important;
+}
+
+.modal .btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+.modal .btn-danger:hover {
+  background-color: #c82333 !important;
+  border-color: #c82333 !important;
+}
+
+/* CORREGIDO: Disabled state */
+.modal .btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+/* NUEVO: Forzar overlay del modal */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* NUEVO: Asegurar que el modal esté por encima */
+.modal {
+  z-index: 1055 !important;
+}
+
+.modal-dialog {
+  margin: 1.75rem auto !important;
+}
+
+/* NUEVO: Estilos adicionales para inputs */
+.modal input[type="date"] {
+  color-scheme: dark !important;
+}
+
+.modal input[type="number"] {
+  color-scheme: dark !important;
+}
+
+/* Responsive Actions */
+@media (max-width: 768px) {
+  :host .actions-cell {
+    min-width: 100px;
+  }
+  
+  :host .action-buttons {
+    flex-direction: column;
+    gap: 3px;
+  }
+  
+  :host .action-buttons .btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .modal-dialog {
+    margin: 0.5rem !important;
+    max-width: calc(100% - 1rem) !important;
+  }
+}
+
+/* NUEVO: Estilos globales para modales (si es necesario) */
+body .modal-content {
+  background-color: rgba(33,37,41,255) !important;
+  color: white !important;
+}
+
+body .modal-header,
+body .modal-body,
+body .modal-footer {
+  background-color: rgba(33,37,41,255) !important;
+  color: white !important;
+}
+
+/* NUEVO: Fix para select options en modo oscuro */
+body .modal select option {
+  background-color: rgba(33,37,41,255) !important;
+  color: white !important;
+}
+
+/* NUEVO: Estilos específicos para modales custom */
+.custom-modal .custom-modal-content {
+  background-color: rgba(33,37,41,255) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border-radius: 12px !important;
+}
+
+.custom-modal-header {
+  background-color: rgba(33,37,41,255) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.custom-modal-body {
+  background-color: rgba(33,37,41,255) !important;
+  color: white !important;
+}
+
+.custom-modal-footer {
+  background-color: rgba(33,37,41,255) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0 0 12px 12px !important;
+}
+
+.custom-input,
+.custom-select {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border-radius: 8px !important;
+}
+
+.custom-input:focus,
+.custom-select:focus {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: #21be72 !important;
+  box-shadow: 0 0 0 0.2rem rgba(33, 190, 114, 0.25) !important;
+  color: white !important;
+}
+
+.custom-input::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.custom-select option {
+  background-color: rgba(33,37,41,255) !important;
+  color: white !important;
+}

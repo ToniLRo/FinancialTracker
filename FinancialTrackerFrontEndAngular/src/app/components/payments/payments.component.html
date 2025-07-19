@@ -1,170 +1,264 @@
 
 <div class="content">
+  <!-- Header -->
   <div class="header">
     <div class="title">
-      <h2>Payments</h2>
+      <h2><i class="fa-solid fa-credit-card me-2"></i>Payment History</h2>
+      <p class="subtitle">All your transactions in one place</p>
+    </div>
+    <div class="stats">
+      <div class="stat-card">
+        <h6>Total Transactions</h6>
+        <span class="stat-number">{{ filteredTransactions.length }}</span>
+      </div>
+      <div class="stat-card">
+        <h6>Showing</h6>
+        <span class="stat-number">{{ paginatedTransactions.length }}</span>
+      </div>
     </div>
   </div>
-  <div class="filters">
-    <div class="filter">
-      <div><h6 class="text-white">Titulo</h6></div>
-      <div class="inputwithicon">
-        <i class="fa-solid fa-magnifying-glass icon" ></i>
-        <input class="input-field" type="text" placeholder="Search X cosa de la tabla">
-      </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
-    <div class="filter">
-      <div><h6 class="text-white">Titulo</h6></div>
-      <div>
-        <div class="input">
-          <label class="select" for="slct">
-            <select id="slct" required="required">
-              <option value="" disabled="disabled" selected="selected">Select option</option>
-              <option value="#">One</option>
-              <option value="#">Two</option>
-              <option value="#">Three</option>
-              <option value="#">Four</option>
-              <option value="#">Five</option>
-              <option value="#">Six</option>
-              <option value="#">Seven</option>
-            </select>
-            <svg>
-              <use xlink:href="#select-arrow-down"></use>
-            </svg>
-          </label>
-          <!-- SVG Sprites-->
-          <svg class="sprites">
-            <symbol id="select-arrow-down" viewbox="0 0 10 6">
-              <polyline points="1 1 5 5 9 1"></polyline>
-            </symbol>
-          </svg>
+    <p class="mt-2 text-white">Loading transactions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    <i class="fa-solid fa-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button class="btn btn-outline-danger btn-sm ms-2" (click)="loadInitialData()">
+      <i class="fa-solid fa-refresh me-1"></i>Retry
+    </button>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section" *ngIf="!isLoading && !error">
+    <div class="filters-header">
+      <h5><i class="fa-solid fa-filter me-2"></i>Filters</h5>
+      <button class="btn btn-outline-secondary btn-sm" (click)="clearFilters()">
+        <i class="fa-solid fa-eraser me-1"></i>Clear Filters
+      </button>
+    </div>
+    
+    <div class="filters-grid">
+      <!-- Search by description -->
+      <div class="filter-group">
+        <label class="filter-label">Search Description</label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-magnifying-glass icon"></i>
+          <input 
+            #searchInput
+            type="text" 
+            class="form-control" 
+            placeholder="Search by description..." 
+            [value]="filters.searchDescription || ''"
+            (input)="onSearchChange($event)">
+        </div>
+      </div>
+
+      <!-- Filter by account -->
+      <div class="filter-group">
+        <label class="filter-label">Account</label>
+        <select 
+          #accountSelect
+          class="form-select" 
+          [value]="filters.accountId || ''"
+          (change)="onAccountFilterChange($event)">
+          <option value="">All accounts</option>
+          <option *ngFor="let account of accounts" [value]="account.account_Id">
+            {{ account.holder_name }} - {{ account.account_number }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Filter by type -->
+      <div class="filter-group">
+        <label class="filter-label">Transaction Type</label>
+        <select 
+          #typeSelect
+          class="form-select" 
+          [value]="filters.type || ''"
+          (change)="onTypeFilterChange($event)">
+          <option *ngFor="let type of transactionTypes" [value]="type === 'All' ? '' : type">
+            {{ type }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Date from -->
+      <div class="filter-group">
+        <label class="filter-label">Date From</label>
+        <input 
+          #dateFromInput
+          type="date" 
+          class="form-control" 
+          [value]="filters.dateFrom || ''"
+          (change)="onDateFromChange($event)">
+      </div>
+
+      <!-- Date to -->
+      <div class="filter-group">
+        <label class="filter-label">Date To</label>
+        <input 
+          #dateToInput
+          type="date" 
+          class="form-control" 
+          [value]="filters.dateTo || ''"
+          (change)="onDateToChange($event)">
+      </div>
+
+      <!-- Minimum amount -->
+      <div class="filter-group">
+        <label class="filter-label">Minimum Amount</label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-euro-sign icon"></i>
+          <input 
+            #amountMinInput
+            type="number" 
+            class="form-control" 
+            placeholder="0.00" 
+            step="0.01"
+            [value]="filters.amountMin || ''"
+            (input)="onAmountMinChange($event)">
+        </div>
+      </div>
+
+      <!-- Maximum amount -->
+      <div class="filter-group">
+        <label class="filter-label">Maximum Amount</label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-euro-sign icon"></i>
+          <input 
+            #amountMaxInput
+            type="number" 
+            class="form-control" 
+            placeholder="0.00" 
+            step="0.01"
+            [value]="filters.amountMax || ''"
+            (input)="onAmountMaxChange($event)">
         </div>
       </div>
     </div>
-    <div class="filter">
-      <div><h6 class="text-white">Titulo</h6></div>
-      <div class="inputwithicon">
-        <i class="fa-solid fa-magnifying-glass icon" ></i>
-        <input type="text" class="input-field" placeholder="Search X cosa de la tabla">
+  </div>
+
+  <!-- Transactions Table -->
+  <div class="table-section" *ngIf="!isLoading && !error">
+    <div class="table-header">
+      <h5><i class="fa-solid fa-list me-2"></i>Transactions</h5>
+      <div class="pagination-info">
+        Page {{ currentPage }} of {{ totalPages }} 
+        ({{ filteredTransactions.length }} results)
       </div>
     </div>
-    <div class="filter">
-      <div><h6 class="text-white">Titulo</h6></div>
-      <div>
-        <div class="input">
-          <label class="select" for="slct">
-            <select id="slct" required="required">
-              <option value="" disabled="disabled" selected="selected">Select option</option>
-              <option value="#">One</option>
-              <option value="#">Two</option>
-              <option value="#">Three</option>
-              <option value="#">Four</option>
-              <option value="#">Five</option>
-              <option value="#">Six</option>
-              <option value="#">Seven</option>
-            </select>
-            <svg>
-              <use xlink:href="#select-arrow-down"></use>
-            </svg>
-          </label>
-          <!-- SVG Sprites-->
-          <svg class="sprites">
-            <symbol id="select-arrow-down" viewbox="0 0 10 6">
-              <polyline points="1 1 5 5 9 1"></polyline>
-            </symbol>
-          </svg>
-        </div>
-      </div>
+
+    <!-- No transactions message -->
+    <div *ngIf="filteredTransactions.length === 0" class="no-data">
+      <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No transactions found</h5>
+      <p class="text-muted">Try adjusting the filters or add new transactions.</p>
     </div>
-    <div class="filter">
-      <div><h6 class="text-white">Titulo</h6></div>
-      <div class="inputwithicon">
-        <i class="fa-solid fa-magnifying-glass icon" ></i>
-        <input type="text" class="input-field" placeholder="Search X cosa de la tabla"></div>
-      </div>
-      <div class="filter">
-        <div><h6 class="text-white">Titulo</h6></div>
-        <div>
-          <div class="input">
-            <label class="select" for="slct">
-              <select id="slct" required="required">
-                <option value="" disabled="disabled" selected="selected">Select option</option>
-                <option value="#">One</option>
-                <option value="#">Two</option>
-                <option value="#">Three</option>
-                <option value="#">Four</option>
-                <option value="#">Five</option>
-                <option value="#">Six</option>
-                <option value="#">Seven</option>
-              </select>
-              <svg>
-                <use xlink:href="#select-arrow-down"></use>
-              </svg>
-            </label>
-            <!-- SVG Sprites-->
-            <svg class="sprites">
-              <symbol id="select-arrow-down" viewbox="0 0 10 6">
-                <polyline points="1 1 5 5 9 1"></polyline>
-              </symbol>
-            </svg>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="table-data text-white">
-      <table class="fl-table">
+
+    <!-- Transactions table -->
+    <div *ngIf="filteredTransactions.length > 0" class="table-responsive">
+      <table class="transactions-table">
         <thead>
           <tr>
-            <th>Header 1</th>
-            <th>Header 2</th>
-            <th>Header 3</th>
-            <th>Header 4</th>
-            <th>Header 5</th>
+            <th><i class="fa-solid fa-calendar me-2"></i>Date</th>
+            <th><i class="fa-solid fa-tag me-2"></i>Type</th>
+            <th><i class="fa-solid fa-align-left me-2"></i>Description</th>
+            <th><i class="fa-solid fa-credit-card me-2"></i>Account</th>
+            <th><i class="fa-solid fa-euro-sign me-2"></i>Amount</th>
+            <th><i class="fa-solid fa-receipt me-2"></i>Reference</th>
+            <th><i class="fa-solid fa-clock me-2"></i>Registered</th>
           </tr>
         </thead>
         <tbody>
-          @for (row of paginatedRows; track row) {
-            <tr>
-              <td>{{ row[0] }}</td>
-              <td>{{ row[1] }}</td>
-              <td>{{ row[2] }}</td>
-              <td>{{ row[3] }}</td>
-              <td>{{ row[4] }}</td>
-            </tr>
-          }
-          <tbody>
-          </table>
-          <div class="pagination">
-            <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+          <tr *ngFor="let transaction of paginatedTransactions; trackBy: trackByTransactionId" 
+              class="transaction-row">
+            <td class="date-cell">
+              {{ formatDate(transaction.date) }}
+            </td>
+            <td class="type-cell">
+              <span class="transaction-type">
+                <i [class]="'fa-solid ' + getTransactionIcon(transaction.type)"></i>
+                {{ transaction.type }}
+              </span>
+            </td>
+            <td class="description-cell">
+              <span [title]="transaction.description">{{ transaction.description }}</span>
+            </td>
+            <td class="account-cell">
+              <div class="account-info">
+                <div class="account-name">{{ getAccountName(transaction.accountId!) }}</div>
+                <div class="account-number">{{ getAccountNumber(transaction.accountId!) }}</div>
+              </div>
+            </td>
+            <td class="amount-cell">
+              <span [class]="'amount ' + getAmountClass(transaction.amount)">
+                {{ formatAmount(transaction.amount) }}
+              </span>
+            </td>
+            <td class="reference-cell">
+              <span class="reference">{{ transaction.referenceId || 'N/A' }}</span>
+            </td>
+            <td class="register-date-cell">
+              {{ formatDate(transaction.registerDate || transaction.date) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-            <!-- Mostrar siempre el primer número de página -->
-            @if (pages[0] !== getVisiblePages()[0]) {
-              <button (click)="changePage(1)" [class.active]="currentPage === 1">1</button>
-            }
+    <!-- Pagination -->
+    <div class="pagination-section" *ngIf="totalPages > 1">
+      <nav aria-label="Transaction pagination">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="previousPage()">
+              <i class="fa-solid fa-chevron-left"></i>
+              Previous
+            </button>
+          </li>
 
-            <!-- Mostrar '...' si hay un salto de páginas antes de las páginas visibles -->
-            @if (getVisiblePages()[0] > 2) {
-              <span>...</span>
-            }
+          <!-- First page -->
+          <li *ngIf="pages[0] !== getVisiblePages()[0]" class="page-item">
+            <button class="page-link" (click)="changePage(1)" [class.active]="currentPage === 1">1</button>
+          </li>
 
-            <!-- Páginas visibles -->
-            @for (page of getVisiblePages(); track page) {
-              <button (click)="changePage(page)" [class.active]="page === currentPage">
-                {{ page }}
-              </button>
-            }
+          <!-- Ellipsis before visible pages -->
+          <li *ngIf="getVisiblePages()[0] > 2" class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
 
-            <!-- Mostrar '...' si hay un salto de páginas después de las páginas visibles -->
-            @if (getVisiblePages().slice(-1)[0] < pages.length - 1) {
-              <span>...</span>
-            }
+          <!-- Visible pages -->
+          <li *ngFor="let page of getVisiblePages()" class="page-item" [class.active]="page === currentPage">
+            <button class="page-link" (click)="changePage(page)">{{ page }}</button>
+          </li>
 
-            <!-- Mostrar siempre el último número de página -->
-            @if (pages[pages.length - 1] !== getVisiblePages()[getVisiblePages().length - 1]) {
-              <button (click)="changePage(pages.length)" [class.active]="currentPage === pages.length">{{ pages.length }}</button>
-            }
+          <!-- Ellipsis after visible pages -->
+          <li *ngIf="getVisiblePages().slice(-1)[0] < pages.length - 1" class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
 
-            <button (click)="nextPage()" [disabled]="currentPage === pages.length">Siguiente</button>
-          </div>
-        </div>
-      </div>
+          <!-- Last page -->
+          <li *ngIf="pages[pages.length - 1] !== getVisiblePages()[getVisiblePages().length - 1]" class="page-item">
+            <button class="page-link" (click)="changePage(pages.length)" [class.active]="currentPage === pages.length">
+              {{ pages.length }}
+            </button>
+          </li>
+
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="nextPage()">
+              Next
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

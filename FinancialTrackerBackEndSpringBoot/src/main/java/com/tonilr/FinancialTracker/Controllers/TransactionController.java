@@ -219,6 +219,40 @@ public class TransactionController {
 		public void setAccountId(Long accountId) { this.accountId = accountId; }
 	}
 
+	// NUEVO: Endpoint para obtener todas las transacciones del usuario autenticado
+	@GetMapping("/user")
+	public ResponseEntity<List<TransactionDTO>> getTransactionsByUser() {
+		try {
+			System.out.println("=== GET ALL USER TRANSACTIONS ===");
+			
+			// Obtener usuario autenticado
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String username = authentication.getName();
+			Users user = usersService.findUserByUsername(username);
+			
+			System.out.println("Authenticated user: " + username);
+			System.out.println("User ID: " + user.getUser_Id());
+			
+			// Buscar todas las transacciones del usuario
+			List<Transaction> transactions = transactionService.findTransactionsByUserId(user.getUser_Id());
+			System.out.println("Found " + transactions.size() + " transactions for user");
+			
+			// Convertir a DTOs
+			List<TransactionDTO> transactionDTOs = transactions.stream()
+				.map(this::convertToDTO)
+				.collect(Collectors.toList());
+			
+			System.out.println("Returning " + transactionDTOs.size() + " transaction DTOs");
+			return new ResponseEntity<>(transactionDTOs, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			System.err.println("ERROR in getTransactionsByUser:");
+			System.err.println("Error message: " + e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	// NUEVO: Método para convertir Transaction a DTO
 	private TransactionDTO convertToDTO(Transaction transaction) {
 		TransactionDTO dto = new TransactionDTO();

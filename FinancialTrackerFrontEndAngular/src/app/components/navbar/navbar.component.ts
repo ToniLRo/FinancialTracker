@@ -1,8 +1,9 @@
-import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, ViewChild, OnInit } from '@angular/core';
 import { Chart, CategoryScale, LinearScale, BarController, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { UsersService } from '../../services/users/users.service';
 import { AuthService } from '../../services/auth/auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'navbar',
@@ -10,17 +11,38 @@ import { AuthService } from '../../services/auth/auth.service';
     styleUrls: ['./navbar.component.css'],
     standalone: false
 })
-export class NavbarComponent implements AfterViewInit {
+export class NavbarComponent implements AfterViewInit, OnInit {
 
   @ViewChild('myChart', { static: false }) myChart!: ElementRef<HTMLCanvasElement>;
   @ViewChild('navLink') navLink!: ElementRef;
 
+  // Mapa de rutas para identificar qué enlace debe estar activo
+  private routeToNavMap: { [key: string]: string } = {
+    '/Home': 'Dashboard',
+    '/MyWallets': 'My Wallets', 
+    '/Payments': 'Payments',
+    '/Profile': 'Perfil'
+  };
+
   constructor(
     public usersService: UsersService,
-    private router: Router,
+    public router: Router,
     public authService: AuthService
   ) { 
     Chart.register(CategoryScale, LinearScale, BarController, BarElement, Title, Tooltip, Legend);
+  }
+
+  ngOnInit(): void {
+    // Detectar ruta actual al inicializar
+    this.updateActiveNavOnRouteChange();
+    
+    // Escuchar cambios de ruta
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      console.log('Route changed to:', event.url);
+      this.updateActiveNavOnRouteChange();
+    });
   }
 
   ngAfterViewInit(){
@@ -57,6 +79,64 @@ export class NavbarComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Actualiza la clase 'active' en los enlaces de navegación basándose en la ruta actual
+   */
+  private updateActiveNavOnRouteChange(): void {
+    const currentRoute = this.router.url;
+    console.log('Current route:', currentRoute);
+    
+    // Remover clase active de todos los enlaces
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+    });
+    
+    // Encontrar y activar el enlace correspondiente a la ruta actual
+    const activeNavText = this.routeToNavMap[currentRoute];
+    if (activeNavText) {
+      const activeLink = Array.from(navLinks).find(link => 
+        link.textContent?.trim().includes(activeNavText)
+      );
+      
+      if (activeLink) {
+        activeLink.classList.add('active');
+        console.log('Activated nav link for:', activeNavText);
+      }
+    }
+    
+    // Si no hay match exacto, intentar match parcial (para rutas con parámetros)
+    if (!activeNavText) {
+      if (currentRoute.startsWith('/Home')) {
+        this.activateNavByText('Dashboard');
+      } else if (currentRoute.startsWith('/MyWallets')) {
+        this.activateNavByText('My Wallets');
+      } else if (currentRoute.startsWith('/Payments')) {
+        this.activateNavByText('Payments');
+      } else if (currentRoute.startsWith('/Profile')) {
+        this.activateNavByText('Perfil');
+      }
+    }
+  }
+
+  /**
+   * Activa un enlace de navegación por su texto
+   */
+  private activateNavByText(navText: string): void {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const targetLink = Array.from(navLinks).find(link => 
+      link.textContent?.trim().includes(navText)
+    );
+    
+    if (targetLink) {
+      targetLink.classList.add('active');
+      console.log('Activated nav link by text:', navText);
+    }
+  }
+
+  /**
+   * Maneja el clic en los enlaces de navegación
+   */
   onLinkClick(event: Event) {
     // Remover clase active de todos los enlaces
     const navLinks = document.querySelectorAll('.nav-link');
@@ -67,6 +147,8 @@ export class NavbarComponent implements AfterViewInit {
     // Agregar clase active al enlace clickeado
     const clickedLink = event.target as HTMLElement;
     clickedLink.classList.add('active');
+    
+    console.log('Nav link clicked:', clickedLink.textContent?.trim());
   }
 
   logout(): void {

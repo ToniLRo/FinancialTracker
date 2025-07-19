@@ -5,7 +5,7 @@ export interface Account {
   holder_name: string;
   account_number: string;
   account_type: 'Cash' | 'BankAccount' | 'CreditCard';
-  initial_balance: number;
+  balance: number;
   currency: string;
   creation_date?: string;
   good_thru?: string; // NUEVO: Campo para MM/YY

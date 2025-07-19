@@ -40,6 +40,12 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   // AÑADIR esta propiedad
   accountError: string = '';
 
+  // NUEVAS propiedades para withdraw/deposit
+  showWithdrawModal = false;
+  showDepositModal = false;
+  withdrawForm = { amount: 0, description: '' };
+  depositForm = { amount: 0, description: '' };
+
   constructor(private renderer: Renderer2, private accountService: AccountService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
@@ -218,7 +224,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       holder_name: '',
       account_number: '',
       account_type: 'CreditCard',
-      initial_balance: 0,
+      balance: 0,
       currency: 'USD',
       good_thru: this.generateGoodThru() // NUEVO: Generar automáticamente
     };
@@ -381,12 +387,6 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  freezeAccount(account: Account) {
-    account.frozen = !account.frozen;
-    // Aquí puedes añadir una llamada al backend para actualizar el estado
-    console.log(`Account ${account.frozen ? 'frozen' : 'unfrozen'}`);
-  }
-
   openTransactionForm(account: Account) {
     this.selectedAccount = account;
     this.transactionForm = { 
@@ -415,7 +415,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.showWithdrawForm = true;
   }
 
-  openDepositForm(account: Account) {
+  openDepositForm(account: Account) { 
     this.selectedAccount = account;
     this.transactionForm = { 
       date: new Date().toISOString().split('T')[0], 
@@ -445,8 +445,8 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
 
     // Validación específica para retiros y gastos
     if (this.transactionForm.transactionType === 'withdraw' || this.transactionForm.transactionType === 'expense') {
-      if (amount > this.selectedAccount!.initial_balance) {
-        this.setError(`Insufficient funds. Available balance: ${this.selectedAccount!.initial_balance.toFixed(2)} ${this.selectedAccount!.currency}`);
+      if (amount > this.selectedAccount!.balance) {
+        this.setError(`Insufficient funds. Available balance: ${this.selectedAccount!.balance.toFixed(2)} ${this.selectedAccount!.currency}`);
         return false;
       }
     }
@@ -506,7 +506,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
         next: (newTransaction) => {
           console.log('Transaction created successfully:', newTransaction); // Debug
           // Actualizar balance de la cuenta
-          this.selectedAccount!.initial_balance += finalAmount;
+          this.selectedAccount!.balance += finalAmount;
           
           // Añadir transacción a la lista
           if (!this.selectedAccount!.transactions) {
@@ -560,8 +560,12 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.showTransactionForm = false;
     this.showWithdrawForm = false;
     this.showDepositForm = false;
+    this.showWithdrawModal = false; // NUEVO
+    this.showDepositModal = false;  // NUEVO
     this.transactionForm = { date: '', description: '', amount: 0, type: '', transactionType: 'expense' };
-    this.currentReferenceId = ''; // Limpiar el reference ID
+    this.withdrawForm = { amount: 0, description: '' }; // NUEVO
+    this.depositForm = { amount: 0, description: '' };  // NUEVO
+    this.currentReferenceId = '';
     this.clearErrors();
     this.isProcessing = false;
   }
@@ -634,11 +638,11 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
 
   // Métodos helper para el template
   getFormattedBalance(account: Account): string {
-    return `${account.initial_balance.toFixed(2)} ${account.currency}`;
+    return `${account.balance.toFixed(2)} ${account.currency}`;
   }
 
   getBalanceColor(account: Account): string {
-    return account.initial_balance >= 0 ? '#21be72' : '#ff4757';
+    return account.balance >= 0 ? '#21be72' : '#ff4757';
   }
 
   getTransactionColor(transaction: Transaction): string {
@@ -681,13 +685,13 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       return false;
     }
 
-    if (account.initial_balance === null || account.initial_balance === undefined) {
-      alert('El balance inicial es obligatorio.');
+    if (account.balance === null || account.balance === undefined) {
+      this.accountError = 'El balance es obligatorio.';
       return false;
     }
 
-    if (account.initial_balance < 0) {
-      alert('El balance inicial no puede ser negativo.');
+    if (account.balance < 0) {
+      this.accountError = 'El balance no puede ser negativo.';
       return false;
     }
 
@@ -942,6 +946,210 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
     const year = futureDate.getFullYear().toString().slice(-2);
     return `${month}/${year}`;
+  }
+
+  // NUEVOS métodos para Withdraw
+  openWithdrawModal() {
+    const activeAccount = this.getActiveAccount();
+    if (!activeAccount) {
+      alert('Por favor selecciona una cuenta para retirar dinero.');
+      return;
+    }
+    
+    this.withdrawForm = { amount: 0, description: '' };
+    this.showWithdrawModal = true;
+    this.clearErrors();
+  }
+
+  closeWithdrawModal() {
+    this.showWithdrawModal = false;
+    this.withdrawForm = { amount: 0, description: '' };
+    this.clearErrors();
+    this.isProcessing = false;
+  }
+
+  processWithdraw() {
+    if (!this.validateWithdraw()) return;
+
+    this.isProcessing = true;
+    this.clearErrors();
+
+    const activeAccount = this.getActiveAccount();
+    if (!activeAccount || !activeAccount.account_Id) {
+      this.setError('Error: No se pudo identificar la cuenta.');
+      this.isProcessing = false;
+      return;
+    }
+
+    // Verificar si hay suficiente balance
+    if (activeAccount.balance < this.withdrawForm.amount) {
+      this.setError('Fondos insuficientes para realizar este retiro.');
+      this.isProcessing = false;
+      return;
+    }
+
+    // Crear transacción de retiro (amount negativo)
+    const withdrawTransaction = {
+      date: new Date().toISOString().split('T')[0],
+      description: this.withdrawForm.description || 'ATM Withdrawal',
+      amount: -Math.abs(this.withdrawForm.amount), // Siempre negativo
+      type: 'Withdraw',
+      referenceId: this.generateReferenceId(),
+      accountId: activeAccount.account_Id
+    };
+
+    console.log('Processing withdraw:', withdrawTransaction);
+
+    this.accountService.addTransaction(withdrawTransaction).subscribe({
+      next: (savedTransaction) => {
+        console.log('✅ Withdraw transaction saved:', savedTransaction);
+
+        // Actualizar balance local
+        activeAccount.balance -= this.withdrawForm.amount;
+
+        // Añadir transacción a la lista local
+        if (!activeAccount.transactions) {
+          activeAccount.transactions = [];
+        }
+        const newTransaction = {
+          ...savedTransaction,
+          referenceId: withdrawTransaction.referenceId
+        };
+        activeAccount.transactions.unshift(newTransaction);
+
+        // Actualizar balance en backend
+        this.updateAccountBalance(activeAccount);
+
+        // Actualizar la lista visible
+        this.activeAccountTransactions = [...activeAccount.transactions];
+
+        this.closeWithdrawModal();
+        alert(`Retiro exitoso: ${this.withdrawForm.amount} ${activeAccount.currency}`);
+      },
+      error: (error) => {
+        console.error('Error processing withdraw:', error);
+        this.handleTransactionError(error);
+      }
+    });
+  }
+
+  validateWithdraw(): boolean {
+    if (!this.withdrawForm.amount || this.withdrawForm.amount <= 0) {
+      this.setError('Debe ingresar un monto válido mayor a 0.');
+      return false;
+    }
+
+    if (this.withdrawForm.amount > 999999) {
+      this.setError('El monto no puede exceder 999,999.');
+      return false;
+    }
+
+    return true;
+  }
+
+  // NUEVOS métodos para Deposit
+  openDepositModal() {
+    const activeAccount = this.getActiveAccount();
+    if (!activeAccount) {
+      alert('Por favor selecciona una cuenta para depositar dinero.');
+      return;
+    }
+    
+    this.depositForm = { amount: 0, description: '' };
+    this.showDepositModal = true;
+    this.clearErrors();
+  }
+
+  closeDepositModal() {
+    this.showDepositModal = false;
+    this.depositForm = { amount: 0, description: '' };
+    this.clearErrors();
+    this.isProcessing = false;
+  }
+
+  processDeposit() {
+    if (!this.validateDeposit()) return;
+
+    this.isProcessing = true;
+    this.clearErrors();
+
+    const activeAccount = this.getActiveAccount();
+    if (!activeAccount || !activeAccount.account_Id) {
+      this.setError('Error: No se pudo identificar la cuenta.');
+      this.isProcessing = false;
+      return;
+    }
+
+    // Crear transacción de depósito (amount positivo)
+    const depositTransaction = {
+      date: new Date().toISOString().split('T')[0],
+      description: this.depositForm.description || 'Cash Deposit',
+      amount: Math.abs(this.depositForm.amount), // Siempre positivo
+      type: 'Deposit',
+      referenceId: this.generateReferenceId(),
+      accountId: activeAccount.account_Id
+    };
+
+    console.log('Processing deposit:', depositTransaction);
+
+    this.accountService.addTransaction(depositTransaction).subscribe({
+      next: (savedTransaction) => {
+        console.log('✅ Deposit transaction saved:', savedTransaction);
+
+        // Actualizar balance local
+        activeAccount.balance += this.depositForm.amount;
+
+        // Añadir transacción a la lista local
+        if (!activeAccount.transactions) {
+          activeAccount.transactions = [];
+        }
+        const newTransaction = {
+          ...savedTransaction,
+          referenceId: depositTransaction.referenceId
+        };
+        activeAccount.transactions.unshift(newTransaction);
+
+        // Actualizar balance en backend
+        this.updateAccountBalance(activeAccount);
+
+        // Actualizar la lista visible
+        this.activeAccountTransactions = [...activeAccount.transactions];
+
+        this.closeDepositModal();
+        alert(`Depósito exitoso: +${this.depositForm.amount} ${activeAccount.currency}`);
+      },
+      error: (error) => {
+        console.error('Error processing deposit:', error);
+        this.handleTransactionError(error);
+      }
+    });
+  }
+
+  validateDeposit(): boolean {
+    if (!this.depositForm.amount || this.depositForm.amount <= 0) {
+      this.setError('Debe ingresar un monto válido mayor a 0.');
+      return false;
+    }
+
+    if (this.depositForm.amount > 999999) {
+      this.setError('El monto no puede exceder 999,999.');
+      return false;
+    }
+
+    return true;
+  }
+
+  // NUEVO método helper para manejar errores de transacciones
+  private handleTransactionError(error: any) {
+    this.isProcessing = false;
+    
+    if (error.status === 403) {
+      this.setError('Error de autenticación. Por favor, inicia sesión nuevamente.');
+    } else if (error.status === 400) {
+      this.setError('Datos inválidos. Verifica la información e intenta nuevamente.');
+    } else {
+      this.setError('Error al procesar la transacción. Por favor, intenta nuevamente.');
+    }
   }
 }
 

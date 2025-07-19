@@ -514,6 +514,9 @@ pointer-events: auto;
   summary .plus {
     color: #289672;
   }
+  summary .minus {
+    color: #ff4757;
+  }
 
   .transactions{
     height: 50vh; 
@@ -1379,5 +1382,143 @@ text-align: center;
 .good-thru-input.expired {
   border-color: #ff4757;
   background-color: rgba(255, 71, 87, 0.1);
+}
+
+/* NUEVOS estilos para modales de Withdraw/Deposit */
+.withdraw-modal .modal-header h3 {
+  color: #ff4757;
+}
+
+.deposit-modal .modal-header h3 {
+  color: #21be72;
+}
+
+.account-info {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.account-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-name {
+  font-weight: bold;
+  color: #fff;
+}
+
+.account-balance {
+  color: #21be72;
+  font-weight: bold;
+}
+
+.amount-input-container {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.currency-symbol {
+  background: rgba(33, 190, 114, 0.8);
+  color: white;
+  padding: 10px 12px;
+  font-weight: bold;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.amount-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #fff;
+  padding: 10px;
+  font-size: 16px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.amount-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.description-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.balance-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 71, 87, 0.1);
+  border: 1px solid rgba(255, 71, 87, 0.3);
+  color: #ff4757;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.balance-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(33, 190, 114, 0.1);
+  border: 1px solid rgba(33, 190, 114, 0.3);
+  color: #21be72;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.btn-danger {
+  background-color: #ff4757;
+  border-color: #ff4757;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #ff3742;
+  border-color: #ff3742;
+}
+
+.btn-success {
+  background-color: #21be72;
+  border-color: #21be72;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: #1ea663;
+  border-color: #1ea663;
+}
+
+/* NUEVO: Balance preview para withdraw (rojo) */
+.balance-preview-withdraw {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 71, 87, 0.1);
+  border: 1px solid rgba(255, 71, 87, 0.3);
+  color: #ff4757;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.balance-preview-withdraw i {
+  color: #ff4757;
 }
 

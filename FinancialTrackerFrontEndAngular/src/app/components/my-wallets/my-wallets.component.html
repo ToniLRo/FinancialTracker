@@ -56,15 +56,6 @@
                 </div>
             </div>
             <div class="action-button">
-                <button class="button-27" role="button" title="Freeze/Unfreeze" [disabled]="!selectedAccount" (click)="freezeAccount(selectedAccount!)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-snow" viewBox="0 0 16 16">
-                        <path d="M8 16a.5.5 0 0 1-.5-.5v-1.293l-.646.647a.5.5 0 0 1-.707-.708L7.5 12.793V8.866l-3.4 1.963-.496 1.85a.5.5 0 1 1-.966-.26l.237-.882-1.12.646a.5.5 0 0 1-.5-.866l1.12-.646-.884-.237a.5.5 0 1 1 .26-.966l1.848.495L7 8 3.6 6.037l-1.85.495a.5.5 0 0 1-.258-.966l.883-.237-1.12-.646a.5.5 0 1 1 .5-.866l1.12.646-.237-.883a.5.5 0 1 1 .966-.258l.495 1.849L7.5 7.134V3.207L6.147 1.854a.5.5 0 1 1 .707-.708l.646.647V.5a.5.5 0 1 1 1 0v1.293l.647-.647a.5.5 0 1 1 .707.708L8.5 3.207v3.927l3.4-1.963.496-1.85a.5.5 0 1 1 .966.26l-.236.882 1.12-.646a.5.5 0 0 1 .5.866l-1.12.646.883.237a.5.5 0 1 1-.26.966l-1.848-.495L9 8l3.4 1.963 1.849-.495a.5.5 0 0 1 .259.966l-.883.237 1.12.646a.5.5 0 0 1-.5.866l-1.12-.646.236.883a.5.5 0 1 1-.966.258l-.495-1.849-3.4-1.963v3.927l1.353 1.353a.5.5 0 0 1-.707.708l-.647-.647V15.5a.5.5 0 0 1-.5.5z"/>
-                    </svg>                </button>
-                <div class="button-description"  style="text-align: center;">
-                    Freeze
-                </div>
-            </div>
-            <div class="action-button">
                 <button title="Add Transaction/Transfer" class="button-27" role="button" [disabled]="!selectedAccount" (click)="openTransactionForm(selectedAccount!)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -75,7 +66,9 @@
                 </div>
             </div>
             <div class="action-button">
-                <button title="Withdraw" class="button-27" role="button">
+                <button title="Withdraw" class="button-27" role="button" 
+                [disabled]="!getActiveAccount() || isProcessing"
+                (click)="openWithdrawModal()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-reply-all-fill" viewBox="0 0 16 16">
                         <path d="M8.021 11.9 3.453 8.62a.72.72 0 0 1 0-1.238L8.021 4.1a.716.716 0 0 1 1.079.619V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z"/>
                         <path d="M5.232 4.293a.5.5 0 0 1-.106.7L1.114 7.945l-.042.028a.147.147 0 0 0 0 .252l.042.028 4.012 2.954a.5.5 0 1 1-.593.805L.539 9.073a1.147 1.147 0 0 1 0-1.946l3.994-2.94a.5.5 0 0 1 .699.106"/>
@@ -86,7 +79,9 @@
                 </div>
             </div>
             <div class="action-button">
-                    <button title="Deposit" class="button-27" role="button">
+                    <button title="Deposit" class="button-27" role="button" 
+                    [disabled]="!getActiveAccount() || isProcessing"
+                    (click)="openDepositModal()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-cash-stack" viewBox="0 0 16 16">
                             <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
                             <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/>
@@ -155,7 +150,7 @@
                                     <div class="card-number">{{ formatCardNumber(account.account_number, account.account_type) }}</div>
                                     <div class="card-valid">{{ formatValidThru(account) }}</div>
                                     <div class="card-balance" style="position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #fff;">
-                                        {{ account.initial_balance | currency:account.currency }}
+                                        {{ account.balance | currency:account.currency }}
                                     </div>
                                     <div class="card-status" *ngIf="account.frozen" style="position: absolute; top: 10px; right: 15px; background: rgba(255,0,0,0.8); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px;">
                                         FROZEN
@@ -315,14 +310,14 @@
           </div>
         </div>
         
-        <!-- Initial Balance -->
+        <!-- Balance -->
         <div class="form-group">
-          <label for="initial_balance">{{ isEdit ? 'Current Balance' : 'Initial Balance' }} *</label>
+          <label for="balance">{{ isEdit ? 'Current Balance' : 'Initial Balance' }} *</label>
           <input 
-            id="initial_balance"
+            id="balance"
             type="number" 
-            [(ngModel)]="selectedAccount!.initial_balance" 
-            name="initial_balance" 
+            [(ngModel)]="selectedAccount!.balance" 
+            name="balance" 
             required 
             step="0.01"
             min="0"
@@ -432,9 +427,205 @@
           <option value="Entertainment">Entertainment</option>
           <option value="Income">Income</option>
           <option value="Gift">Gift</option>
+          <option value="Bills">Bills</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Education">Education</option>
+          <!-- NO incluir Withdraw ni Deposit aquí -->
         </select>
         <button type="submit" class="btn btn-success">Add</button>
         <button type="button" class="btn btn-secondary" (click)="closeAllForms()">Cancel</button>
       </form>
     </div>
   </div>
+
+<!-- Modal for Withdraw -->
+<div class="modal" *ngIf="showWithdrawModal">
+    <div class="modal-content withdraw-modal">
+      <div class="modal-header">
+        <h3>
+          <i class="bi bi-arrow-down-circle text-danger"></i>
+          Withdraw Money
+        </h3>
+        <button type="button" class="close-btn" (click)="closeWithdrawModal()" [disabled]="isProcessing">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="account-info" *ngIf="getActiveAccount()">
+        <div class="account-summary">
+          <span class="account-name">{{ getActiveAccount()?.holder_name }}</span>
+          <span class="account-balance">
+            Current Balance: {{ getActiveAccount()?.balance | currency:getActiveAccount()?.currency }}
+          </span>
+        </div>
+      </div>
+      
+      <form (ngSubmit)="processWithdraw()" #withdrawFormRef="ngForm">
+        <div class="form-group">
+          <label for="withdraw_amount">Amount to Withdraw *</label>
+          <div class="amount-input-container">
+            <span class="currency-symbol">{{ getActiveAccount()?.currency || 'USD' }}</span>
+            <input 
+              id="withdraw_amount"
+              type="number" 
+              [(ngModel)]="withdrawForm.amount" 
+              name="withdraw_amount" 
+              required 
+              min="0.01"
+              max="999999"
+              step="0.01"
+              placeholder="0.00"
+              [disabled]="isProcessing"
+              #withdrawAmount="ngModel"
+              class="amount-input">
+          </div>
+          <div class="validation-message" *ngIf="withdrawAmount.invalid && withdrawAmount.touched">
+            <small *ngIf="withdrawAmount.errors?.['required']">Amount is required</small>
+            <small *ngIf="withdrawAmount.errors?.['min']">Amount must be greater than 0</small>
+            <small *ngIf="withdrawAmount.errors?.['max']">Amount cannot exceed 999,999</small>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="withdraw_description">Description (Optional)</label>
+          <input 
+            id="withdraw_description"
+            [(ngModel)]="withdrawForm.description" 
+            name="withdraw_description" 
+            maxlength="100"
+            placeholder="e.g., ATM Withdrawal, Cash needed"
+            [disabled]="isProcessing"
+            class="description-input">
+        </div>
+        
+        <!-- New Balance Preview for Withdraw -->
+        <div class="balance-preview-withdraw" *ngIf="withdrawForm.amount > 0 && withdrawForm.amount <= (getActiveAccount()?.balance || 0)">
+          <i class="bi bi-arrow-down"></i>
+          <span>New Balance: {{ (getActiveAccount()?.balance || 0) - withdrawForm.amount | currency:getActiveAccount()?.currency }}</span>
+        </div>
+        
+        <!-- Available Balance Warning -->
+        <div class="balance-warning" *ngIf="withdrawForm.amount > (getActiveAccount()?.balance || 0)">
+          <i class="bi bi-exclamation-triangle"></i>
+          <span>Insufficient funds! Available: {{ getActiveAccount()?.balance | currency:getActiveAccount()?.currency }}</span>
+        </div>
+        
+        <!-- Error Messages -->
+        <div class="error-message" *ngIf="withdrawError">
+          {{ withdrawError }}
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="modal-buttons">
+          <button 
+            type="submit" 
+            class="btn btn-danger" 
+            [disabled]="!withdrawFormRef.valid || isProcessing || withdrawForm.amount > (getActiveAccount()?.balance || 0)">
+            <span *ngIf="isProcessing" class="spinner"></span>
+            <i class="bi bi-arrow-down-circle" *ngIf="!isProcessing"></i>
+            {{ isProcessing ? 'Processing...' : 'Withdraw' }}
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="closeWithdrawModal()"
+            [disabled]="isProcessing">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+</div>
+
+<!-- Modal for Deposit -->
+<div class="modal" *ngIf="showDepositModal">
+    <div class="modal-content deposit-modal">
+      <div class="modal-header">
+        <h3>
+          <i class="bi bi-arrow-up-circle text-success"></i>
+          Deposit Money
+        </h3>
+        <button type="button" class="close-btn" (click)="closeDepositModal()" [disabled]="isProcessing">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="account-info" *ngIf="getActiveAccount()">
+        <div class="account-summary">
+          <span class="account-name">{{ getActiveAccount()?.holder_name }}</span>
+          <span class="account-balance">
+            Current Balance: {{ getActiveAccount()?.balance | currency:getActiveAccount()?.currency }}
+          </span>
+        </div>
+      </div>
+      
+      <form (ngSubmit)="processDeposit()" #depositFormRef="ngForm">
+        <div class="form-group">
+          <label for="deposit_amount">Amount to Deposit *</label>
+          <div class="amount-input-container">
+            <span class="currency-symbol">{{ getActiveAccount()?.currency || 'USD' }}</span>
+            <input 
+              id="deposit_amount"
+              type="number" 
+              [(ngModel)]="depositForm.amount" 
+              name="deposit_amount" 
+              required 
+              min="0.01"
+              max="999999"
+              step="0.01"
+              placeholder="0.00"
+              [disabled]="isProcessing"
+              #depositAmount="ngModel"
+              class="amount-input">
+          </div>
+          <div class="validation-message" *ngIf="depositAmount.invalid && depositAmount.touched">
+            <small *ngIf="depositAmount.errors?.['required']">Amount is required</small>
+            <small *ngIf="depositAmount.errors?.['min']">Amount must be greater than 0</small>
+            <small *ngIf="depositAmount.errors?.['max']">Amount cannot exceed 999,999</small>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="deposit_description">Description (Optional)</label>
+          <input 
+            id="deposit_description"
+            [(ngModel)]="depositForm.description" 
+            name="deposit_description" 
+            maxlength="100"
+            placeholder="e.g., Cash Deposit, Salary, Gift"
+            [disabled]="isProcessing"
+            class="description-input">
+        </div>
+        
+        <!-- New Balance Preview -->
+        <div class="balance-preview" *ngIf="depositForm.amount > 0">
+          <i class="bi bi-arrow-right"></i>
+          <span>New Balance: {{ (getActiveAccount()?.balance || 0) + depositForm.amount | currency:getActiveAccount()?.currency }}</span>
+        </div>
+        
+        <!-- Error Messages -->
+        <div class="error-message" *ngIf="depositError">
+          {{ depositError }}
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="modal-buttons">
+          <button 
+            type="submit" 
+            class="btn btn-success" 
+            [disabled]="!depositFormRef.valid || isProcessing">
+            <span *ngIf="isProcessing" class="spinner"></span>
+            <i class="bi bi-arrow-up-circle" *ngIf="!isProcessing"></i>
+            {{ isProcessing ? 'Processing...' : 'Deposit' }}
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="closeDepositModal()"
+            [disabled]="isProcessing">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+</div>

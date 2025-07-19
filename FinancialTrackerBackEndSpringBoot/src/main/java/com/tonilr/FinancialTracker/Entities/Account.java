@@ -35,7 +35,7 @@ public class Account {
 	private AccountType account_type;
 	
 	@Column(nullable = false, updatable = true)
-	private double initial_balance;
+	private double balance;
 	
 	@Column(nullable = false, updatable = true)
 	private String currency;
@@ -54,13 +54,13 @@ public class Account {
 	public Account() {
 	}
 
-	public Account(String holder_name, String account_number, AccountType account_type, double initial_balance, 
+	public Account(String holder_name, String account_number, AccountType account_type, double balance, 
 			String currency, Date creation_date, String good_thru) {
 		super();
 		this.holder_name = holder_name;
 		this.account_number = account_number;
 		this.account_type = account_type;
-		this.initial_balance = initial_balance;
+		this.balance = balance;
 		this.currency = currency;
 		this.creation_date = creation_date;
 		this.good_thru = good_thru;
@@ -99,12 +99,12 @@ public class Account {
 		this.account_type = account_type;
 	}
 
-	public double getInitial_balance() {
-		return initial_balance;
+	public double getBalance() {
+		return balance;
 	}
 
-	public void setInitial_balance(double initial_balance) {
-		this.initial_balance = initial_balance;
+	public void setBalance(double balance) {
+		this.balance = balance;
 	}
 	
 	public String getCurrency() {

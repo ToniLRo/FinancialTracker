@@ -1522,3 +1522,93 @@ text-align: center;
   color: #ff4757;
 }
 
+/* NUEVOS: Estilos para iconos de transacciones */
+.transaction-icon-container {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.transaction-icon-container i {
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+}
+
+/* Clases para diferentes tipos de transacciones */
+.transaction-icon.positive {
+  animation: pulse-positive 2s infinite;
+}
+
+.transaction-icon.negative {
+  animation: pulse-negative 2s infinite;
+}
+
+.transaction-icon.neutral {
+  transition: transform 0.3s ease;
+}
+
+.transaction-icon.neutral:hover {
+  transform: scale(1.1);
+}
+
+/* Animaciones sutiles */
+@keyframes pulse-positive {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(33, 190, 114, 0.4); 
+  }
+  50% { 
+    box-shadow: 0 0 0 8px rgba(33, 190, 114, 0); 
+  }
+}
+
+@keyframes pulse-negative {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); 
+  }
+  50% { 
+    box-shadow: 0 0 0 8px rgba(255, 71, 87, 0); 
+  }
+}
+
+/* Estilo para la categoría en los detalles */
+.transaction-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.transaction-category i {
+  font-size: 14px;
+}
+
+/* MEJORAR: Hover effect en transaction summary */
+.transactions details summary:hover .transaction-icon-container {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* MEJORAR: No transactions message */
+.no-transactions {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.no-transactions p {
+  margin: 0;
+  font-size: 14px;
+}
+

@@ -45,17 +45,6 @@
                 </div>
             </div>
             <div class="action-button">
-                <button title="Show Details" class="button-27" role="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
-                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
-                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
-                    </svg>
-                </button>
-                <div class="button-description"  style="text-align: center;">
-                    Show Details
-                </div>
-            </div>
-            <div class="action-button">
                 <button title="Add Transaction/Transfer" class="button-27" role="button" [disabled]="!selectedAccount" (click)="openTransactionForm(selectedAccount!)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -179,13 +168,11 @@
                 <details *ngFor="let transaction of activeAccountTransactions; trackBy: trackByTransactionId">
                     <summary>
                         <div>
-                            <span [style.background-color]="getTransactionIconColor(transaction.type)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" fill="currentColor" viewBox="0 0 256 256">
-                                    <rect width="256" height="256" fill="none"></rect>
-                                    <path d="M192,120h27.05573a8,8,0,0,0,7.15542-4.42229l18.40439-36.80878a8,8,0,0,0-3.18631-10.52366L192,40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-                                    <path d="M64,120H36.94427a8,8,0,0,1-7.15542-4.42229L11.38446,78.76893a8,8,0,0,1,3.18631-10.52366L64,40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-                                    <path d="M160,40a32,32,0,0,1-64,0H64V208a8,8,0,0,0,8,8H184a8,8,0,0,0,8-8V40Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path>
-                                </svg>
+                            <!-- ACTUALIZAR: Icono dinámico según el tipo -->
+                            <span class="transaction-icon-container" 
+                                  [style.background-color]="getTransactionIconColor(transaction.type)">
+                                <i [class]="getTransactionIcon(transaction.type)" 
+                                   [ngClass]="getTransactionIconClass(transaction.type)"></i>
                             </span>
                             <h3>
                                 <strong>{{ transaction.description }}</strong>
@@ -210,12 +197,22 @@
                                 <dt>Reference ID</dt>
                                 <dd>{{ getCurrentReferenceId() }}</dd>
                             </div>
+                            <div>
+                                <dt>Category</dt>
+                                <dd>
+                                    <span class="transaction-category">
+                                        <i [class]="getTransactionIcon(transaction.type)"></i>
+                                        {{ transaction.type }}
+                                    </span>
+                                </dd>
+                            </div>
                         </dl>
                     </div>
                 </details>
                 
                 <!-- Mensaje cuando no hay transacciones -->
                 <div *ngIf="!activeAccountTransactions?.length" class="no-transactions">
+                    <i class="bi bi-inbox" style="font-size: 48px; opacity: 0.5; margin-bottom: 10px;"></i>
                     <p>No transactions found for this card.</p>
                 </div>
             </div>

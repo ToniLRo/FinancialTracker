@@ -620,16 +620,76 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   }
 
+  // NUEVO: Método para obtener el icono según el tipo de transacción
+  getTransactionIcon(type: string): string {
+    const icons: { [key: string]: string } = {
+      // Iconos para tipos de gasto
+      'Food': 'bi-cup-straw',
+      'Transport': 'bi-car-front',
+      'Shopping': 'bi-bag-fill',
+      'Entertainment': 'bi-controller',
+      'Bills': 'bi-receipt',
+      'Healthcare': 'bi-heart-pulse',
+      'Education': 'bi-book',
+      'Gift': 'bi-gift',
+      
+      // Iconos para tipos de ingreso/movimientos
+      'Income': 'bi-cash-coin',
+      'Deposit': 'bi-arrow-up-circle-fill',
+      'Withdraw': 'bi-arrow-down-circle-fill',
+      
+      // Iconos adicionales
+      'Transfer': 'bi-arrow-left-right',
+      'Investment': 'bi-graph-up-arrow',
+      'Salary': 'bi-briefcase',
+      'Freelance': 'bi-laptop',
+      'Bonus': 'bi-star-fill',
+      'Refund': 'bi-arrow-clockwise'
+    };
+    
+    return icons[type] || 'bi-circle-fill'; // Icono por defecto
+  }
+
+  // ACTUALIZAR: Método para obtener clase CSS según el tipo
+  getTransactionIconClass(type: string): string {
+    const positiveTypes = ['Income', 'Deposit', 'Salary', 'Freelance', 'Bonus', 'Refund', 'Gift'];
+    const negativeTypes = ['Withdraw'];
+    
+    if (positiveTypes.includes(type)) {
+      return 'transaction-icon positive';
+    } else if (negativeTypes.includes(type)) {
+      return 'transaction-icon negative';
+    } else {
+      return 'transaction-icon neutral';
+    }
+  }
+
+  // MEJORAR: El método existente de color de icono
   getTransactionIconColor(type: string): string {
     const colors: { [key: string]: string } = {
-      'Food': '#FF6B6B',
-      'Transport': '#4ECDC4',
-      'Shopping': '#45B7D1',
-      'Entertainment': '#96CEB4',
-      'Income': '#21be72',
-      'Cash': '#FFA07A'
+      // Colores específicos por tipo
+      'Food': '#FF6B6B',           // Rojo suave
+      'Transport': '#4ECDC4',      // Azul turquesa
+      'Shopping': '#45B7D1',       // Azul
+      'Entertainment': '#96CEB4',   // Verde menta
+      'Bills': '#FECA57',          // Amarillo
+      'Healthcare': '#FF9FF3',     // Rosa
+      'Education': '#54A0FF',      // Azul claro
+      'Gift': '#5F27CD',           // Morado
+      
+      // Colores para ingresos/movimientos
+      'Income': '#21be72',         // Verde principal
+      'Deposit': '#21be72',        // Verde
+      'Withdraw': '#ff4757',       // Rojo
+      'Salary': '#2ed573',         // Verde claro
+      'Freelance': '#3742fa',      // Azul oscuro
+      'Bonus': '#ffa502',          // Naranja
+      'Transfer': '#747d8c',       // Gris
+      'Investment': '#7bed9f',     // Verde agua
+      'Refund': '#70a1ff'          // Azul suave
     };
-    return colors[type] || '#666';
+    
+    return colors[type] || '#666'; // Color por defecto
   }
 
   generateReferenceId(): string {

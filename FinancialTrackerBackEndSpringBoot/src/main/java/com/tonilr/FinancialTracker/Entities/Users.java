@@ -13,6 +13,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "Users")
@@ -31,10 +33,18 @@ public class Users {
 	@Column(nullable = false, updatable = true)
 	private Date register_date;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	// AGREGAR @JsonIgnore para evitar serialización lazy
+	@JsonIgnore
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private Set<Transaction> transactions = new HashSet<Transaction>();
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Category> categories = new HashSet<Category>();
+
+	// AGREGAR @JsonIgnore para evitar serialización lazy
+	@JsonIgnore
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	private Set<Account> accounts = new HashSet<Account>();
 
 	
 	public Users() {
@@ -103,4 +113,12 @@ public class Users {
 		this.categories = categories;
 	}
 
+	// NUEVO: Getter y setter para accounts
+	public Set<Account> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Set<Account> accounts) {
+		this.accounts = accounts;
+	}
 }

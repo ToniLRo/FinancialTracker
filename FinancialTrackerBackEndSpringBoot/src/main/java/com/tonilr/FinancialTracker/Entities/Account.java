@@ -15,6 +15,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.FetchType;
 import java.util.HashSet;
 import java.util.Set;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "Account")
@@ -47,6 +49,12 @@ public class Account {
 	@Column(nullable = true, updatable = true, length = 5)
 	private String good_thru;
 	
+	// NUEVO: Relación Many-to-One con Users
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "user_Id", nullable = true)
+	@JsonIgnore  // AGREGAR esta línea si da problemas de serialización
+	private Users user;
+	
 	@JsonIgnore
 	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Transaction> transactions = new HashSet<Transaction>();
@@ -55,7 +63,7 @@ public class Account {
 	}
 
 	public Account(String holder_name, String account_number, AccountType account_type, double balance, 
-			String currency, Date creation_date, String good_thru) {
+			String currency, Date creation_date, String good_thru, Users user) {
 		super();
 		this.holder_name = holder_name;
 		this.account_number = account_number;
@@ -64,6 +72,7 @@ public class Account {
 		this.currency = currency;
 		this.creation_date = creation_date;
 		this.good_thru = good_thru;
+		this.user = user;
 	}
 
 	// Getters y setters existentes...
@@ -130,6 +139,15 @@ public class Account {
 
 	public void setGood_thru(String good_thru) {
 		this.good_thru = good_thru;
+	}
+
+	// NUEVO: Getter y setter para user
+	public Users getUser() {
+		return user;
+	}
+
+	public void setUser(Users user) {
+		this.user = user;
 	}
 
 	// Getter y setter para transactions

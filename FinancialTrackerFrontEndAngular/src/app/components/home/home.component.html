@@ -5,617 +5,241 @@
                         <h2>Dashboard</h2>
                     </div>
                 </div>
+                
+                <!-- Financial Data Cards -->
                 <div class="financialData">
                     <div class="grid-item-yellow balance text-white">
                         <div class="header-data">
                             <div class="icon-item-yellow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-224c0-35.3-28.7-64-64-64L80 128c-8.8 0-16-7.2-16-16s7.2-16 16-16l368 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L64 32zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512">
+                                    <path d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-224c0-35.3-28.7-64-64-64L80 128c-8.8 0-16-7.2-16-16s7.2-16 16-16l368 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L64 32zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+                                </svg>
                             </div>
                             <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>                            
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 512">
+                                    <path fill="#ffffff" d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/>
+                                </svg>
                             </div>
                         </div>
                         <div class="content-data">
                             <h5>Balance</h5>
                             <div class="footer-data">
-                                <a href="" class="text-decoration-none text-white">3000</a>
+                                <a href="" class="text-decoration-none text-white">
+                                    {{ formatBalance(dashboardData.totalBalance) }}
+                                </a>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
+                    
                     <div class="grid-item-green income text-white">
                         <div class="header-data">
                             <div class="icon-item-green">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M470.7 9.4c3 3.1 5.3 6.6 6.9 10.3s2.4 7.8 2.4 12.2c0 0 0 .1 0 .1c0 0 0 0 0 0l0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-18.7L310.6 214.6c-11.8 11.8-30.8 12.6-43.5 1.7L176 138.1 84.8 216.3c-13.4 11.5-33.6 9.9-45.1-3.5s-9.9-33.6 3.5-45.1l112-96c12-10.3 29.7-10.3 41.7 0l89.5 76.7L370.7 64 352 64c-17.7 0-32-14.3-32-32s14.3-32 32-32l96 0s0 0 0 0c8.8 0 16.8 3.6 22.6 9.3l.1 .1zM0 304c0-26.5 21.5-48 48-48l416 0c26.5 0 48 21.5 48 48l0 160c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 304zM48 416l0 48 48 0c0-26.5-21.5-48-48-48zM96 304l-48 0 0 48c26.5 0 48-21.5 48-48zM464 416c-26.5 0-48 21.5-48 48l48 0 0-48zM416 304c0 26.5 21.5 48 48 48l0-48-48 0zm-96 80a64 64 0 1 0 -128 0 64 64 0 1 0 128 0z"/></svg>                        
-                            </div>  
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512">
+                                    <path d="M470.7 9.4c3 3.1 5.3 6.6 6.9 10.3s2.4 7.8 2.4 12.2c0 0 0 .1 0 .1c0 0 0 0 0 0l0 96c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-18.7L310.6 214.6c-11.8 11.8-30.8 12.6-43.5 1.7L176 138.1 84.8 216.3c-13.4 11.5-33.6 9.9-45.1-3.5s-9.9-33.6 3.5-45.1l112-96c12-10.3 29.7-10.3 41.7 0l89.5 76.7L370.7 64 352 64c-17.7 0-32-14.3-32-32s14.3-32 32-32l96 0s0 0 0 0c8.8 0 16.8 3.6 22.6 9.3l.1 .1zM0 304c0-26.5 21.5-48 48-48l416 0c26.5 0 48 21.5 48 48l0 160c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 304zM48 416l0 48 48 0c0-26.5-21.5-48-48-48zM96 304l-48 0 0 48c26.5 0 48-21.5 48-48zM464 416c-26.5 0-48 21.5-48 48l48 0 0-48zM416 304c0 26.5 21.5 48 48 48l0-48-48 0zm-96 80a64 64 0 1 0 -128 0 64 64 0 1 0 128 0z"/>
+                                </svg>
+                            </div>
                             <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>                            
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 512">
+                                    <path fill="#ffffff" d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/>
+                                </svg>
                             </div>
                         </div>
                         <div class="content-data">
                             <h5>Income</h5>
-                                <div class="footer-data">
-                                    <a href="" class="text-decoration-none text-white">3000</a>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
-                                    </svg>
-                                </div>
+                            <div class="footer-data">
+                                <a href="" class="text-decoration-none text-white">
+                                    {{ formatBalance(dashboardData.monthlyIncome) }}
+                                </a>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
+                                </svg>
+                            </div>
                         </div>
-                        </div>
-                    <div class="grid-item-yellow expenses text-white ">
+                    </div>
+                    
+                    <div class="grid-item-yellow expenses text-white">
                         <div class="header-data">
                             <div class="icon-item-yellow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 640 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64l241.9 0c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5 608 384c0 35.3-28.7 64-64 64l-241.9 0c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5 32 128c0-35.3 28.7-64 64-64zm64 64l-64 0 0 64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64l64 0 0-64zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg>                        
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 640 512">
+                                    <path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64l241.9 0c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5 608 384c0 35.3-28.7 64-64 64l-241.9 0c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5 32 128c0-35.3 28.7-64 64-64zm64 64l-64 0 0 64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64l64 0 0-64zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/>
+                                </svg>
                             </div>
                             <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>                            
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 512">
+                                    <path fill="#ffffff" d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/>
+                                </svg>
                             </div>
                         </div>
                         <div class="content-data">
                             <h5>Expenses</h5>
                             <div class="footer-data">
-                                <a href="" class="text-decoration-none text-white">3000</a>
+                                <a href="" class="text-decoration-none text-white">
+                                    {{ formatBalance(dashboardData.monthlyExpenses) }}
+                                </a>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
+                    
                     <div class="grid-item-blue savings text-white">
                         <div class="header-data">
                             <div class="icon-item-blue">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-piggy-bank-fill text-black" viewBox="0 0 16 16">
-                                <path d="M7.964 1.527c-2.977 0-5.571 1.704-6.32 4.125h-.55A1 1 0 0 0 .11 6.824l.254 1.46a1.5 1.5 0 0 0 1.478 1.243h.263c.3.513.688.978 1.145 1.382l-.729 2.477a.5.5 0 0 0 .48.641h2a.5.5 0 0 0 .471-.332l.482-1.351c.635.173 1.31.267 2.011.267.707 0 1.388-.095 2.028-.272l.543 1.372a.5.5 0 0 0 .465.316h2a.5.5 0 0 0 .478-.645l-.761-2.506C13.81 9.895 14.5 8.559 14.5 7.069q0-.218-.02-.431c.261-.11.508-.266.705-.444.315.306.815.306.815-.417 0 .223-.5.223-.461-.026a1 1 0 0 0 .09-.255.7.7 0 0 0-.202-.645.58.58 0 0 0-.707-.098.74.74 0 0 0-.375.562c-.024.243.082.48.32.654a2 2 0 0 1-.259.153c-.534-2.664-3.284-4.595-6.442-4.595m7.173 3.876a.6.6 0 0 1-.098.21l-.044-.025c-.146-.09-.157-.175-.152-.223a.24.24 0 0 1 .117-.173c.049-.027.08-.021.113.012a.2.2 0 0 1 .064.199m-8.999-.65a.5.5 0 1 1-.276-.96A7.6 7.6 0 0 1 7.964 3.5c.763 0 1.497.11 2.18.315a.5.5 0 1 1-.287.958A6.6 6.6 0 0 0 7.964 4.5c-.64 0-1.255.09-1.826.254ZM5 6.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0"/>
+                                    <path d="M7.964 1.527c-2.977 0-5.571 1.704-6.32 4.125h-.55A1 1 0 0 0 .11 6.824l.254 1.46a1.5 1.5 0 0 0 1.478 1.243h.263c.3.513.688.978 1.145 1.382l-.729 2.477a.5.5 0 0 0 .48.641h2a.5.5 0 0 0 .471-.332l.482-1.351c.635.173 1.31.267 2.011.267.707 0 1.388-.095 2.028-.272l.543 1.372a.5.5 0 0 0 .465.316h2a.5.5 0 0 0 .478-.645l-.761-2.506C13.81 9.895 14.5 8.559 14.5 7.069q0-.218-.02-.431c.261-.11.508-.266.705-.444.315.306.815.306.815-.417 0 .223-.5.223-.461-.026a1 1 0 0 0 .09-.255.7.7 0 0 0-.202-.645.58.58 0 0 0-.707-.098.74.74 0 0 0-.375.562c-.024.243.082.48.32.654a2 2 0 0 1-.259.153c-.534-2.664-3.284-4.595-6.442-4.595m7.173 3.876a.6.6 0 0 1-.098.21l-.044-.025c-.146-.09-.157-.175-.152-.223a.24.24 0 0 1 .117-.173c.049-.027.08-.021.113.012a.2.2 0 0 1 .064.199m-8.999-.65a.5.5 0 1 1-.276-.96A7.6 7.6 0 0 1 7.964 3.5c.763 0 1.497.11 2.18.315a.5.5 0 1 1-.287.958A6.6 6.6 0 0 0 7.964 4.5c-.64 0-1.255.09-1.826.254ZM5 6.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0"/>
                                 </svg>
                             </div>
                             <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ffffff" d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>                            
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 512">
+                                    <path fill="#ffffff" d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/>
+                                </svg>
                             </div>
                         </div>
                         <div class="content-data">
                             <h5>Savings</h5>
                             <div class="footer-data">
-                                <a href="" class="text-decoration-none text-white">3000</a>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5"/>
+                                <a href="" class="text-decoration-none text-white">
+                                    {{ formatBalance(dashboardData.savings) }}
+                                </a>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Chart and Cards Section -->
                 <div class="graphicAndCardData">
                     <div class="grid-item-blue graphic text-white">
+                        <h6 class="chart-title">Income vs Expenses (Last 12 Months)</h6>
                         <canvas #myChart class="myChart"></canvas>
                     </div>
+                    
                     <div class="grid-item-green cards text-white">
                         <h5>My Cards</h5>
                         <div class="wrapper" #wrapper>
                             <i id="left" #arrowLeft class="bi bi-chevron-left"></i>
                             <div class="carousel" #carousel>
-                                
-                                    <div class="card">
-                                        <div class="card-inner">
-                                            <div class="card-front">  
+                                <div class="card" *ngFor="let account of dashboardData.accounts">
+                                    <div class="card-inner">
+                                        <div class="card-front">  
                                             <div class="card-bg"></div>
                                             <div class="card-glow"></div>
-                                            <svg
-                                                width="72"
-                                                height="24"
-                                                viewBox="0 0 72 24"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="logo"
-                                            >
-                                                <path
-                                                fill-rule="evenodd"
-                                                clip-rule="evenodd"
-                                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                                fill="white"
-                                                />
+                                            <svg width="72" height="24" viewBox="0 0 72 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo">
+                                                <path fill-rule="evenodd" clip-rule="evenodd" d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z" fill="white"/>
                                             </svg>
                                             <div class="card-contactless">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                                <path
-                                                    fill="none"
-                                                    stroke="#f9f9f9"
-                                                    stroke-width="6"
-                                                    stroke-linecap="round"
-                                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                                />
+                                                    <path fill="none" stroke="#f9f9f9" stroke-width="6" stroke-linecap="round" d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5 0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"/>
                                                 </svg>
                                             </div>
                                             <div class="card-chip"></div>
-                                            <div class="card-holder">Prueba4</div>
-                                            <div class="card-number">1234 5678 9000 1234</div>
-                                            <div class="card-valid">12/24</div>
-                                            </div>
-                                            <div class="card-back">
-                                            <div class="card-signature">Prueba4</div>
-                                            <div class="card-seccode">123</div>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                    <div class="card">
-                                        <div class="card-inner">
-                                            <div class="card-front">
-                                            <div class="card-bg"></div>
-                                            <div class="card-glow"></div>
-                                            <svg
-                                                width="72"
-                                                height="24"
-                                                viewBox="0 0 72 24"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="logo"
-                                            >
-                                                <path
-                                                fill-rule="evenodd"
-                                                clip-rule="evenodd"
-                                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                                fill="white"
-                                                />
-                                            </svg>
-                                            <div class="card-contactless">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                                <path
-                                                    fill="none"
-                                                    stroke="#f9f9f9"
-                                                    stroke-width="6"
-                                                    stroke-linecap="round"
-                                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                                />
-                                                </svg>
-                                            </div>
-                                            <div class="card-chip"></div>
-                                            <div class="card-holder">Prueba3</div>
-                                            <div class="card-number">1234 5678 9000 1234</div>
-                                            <div class="card-valid">12/24</div>
-                                            </div>
-                                            <div class="card-back">
-                                            <div class="card-signature">Prueba3</div>
-                                            <div class="card-seccode">123</div>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                    <div class="card">
-                                        <div class="card-inner">
-                                            <div class="card-front">
-                                            <div class="card-bg"></div>
-                                            <div class="card-glow"></div>
-                                            <svg
-                                                width="72"
-                                                height="24"
-                                                viewBox="0 0 72 24"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="logo"
-                                            >
-                                                <path
-                                                fill-rule="evenodd"
-                                                clip-rule="evenodd"
-                                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                                fill="white"
-                                                />
-                                            </svg>
-                                            <div class="card-contactless">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                                <path
-                                                    fill="none"
-                                                    stroke="#f9f9f9"
-                                                    stroke-width="6"
-                                                    stroke-linecap="round"
-                                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                                />
-                                                </svg>
-                                            </div>
-                                            <div class="card-chip"></div>
-                                            <div class="card-holder">John Doe</div>
-                                            <div class="card-number">1234 5678 9000 1234</div>
-                                            <div class="card-valid">12/24</div>
-                                            </div>
-                                            <div class="card-back">
-                                            <div class="card-signature">John Doe</div>
-                                            <div class="card-seccode">123</div>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                    <div class="card">
-                                        <div class="card-inner">
-                                            <div class="card-front">
-                                            <div class="card-bg"></div>
-                                            <div class="card-glow"></div>
-                                            <svg
-                                                width="72"
-                                                height="24"
-                                                viewBox="0 0 72 24"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="logo"
-                                            >
-                                                <path
-                                                fill-rule="evenodd"
-                                                clip-rule="evenodd"
-                                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                                fill="white"
-                                                />
-                                            </svg>
-                                            <div class="card-contactless">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                                <path
-                                                    fill="none"
-                                                    stroke="#f9f9f9"
-                                                    stroke-width="6"
-                                                    stroke-linecap="round"
-                                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                                />
-                                                </svg>
-                                            </div>
-                                            <div class="card-chip"></div>
-                                            <div class="card-holder">Prueba2</div>
-                                            <div class="card-number">1234 5678 9000 1234</div>
-                                            <div class="card-valid">12/24</div>
-                                            </div>
-                                            <div class="card-back">
-                                            <div class="card-signature">Prueba2</div>
-                                            <div class="card-seccode">123</div>
-                                            </div>
-                                        </div>
-                                    </div> 
-                                    <div class="card">
-                                        <div class="card-inner">
-                                            <div class="card-front">
-                                            <div class="card-bg"></div>
-                                            <div class="card-glow"></div>
-                                            <svg
-                                                width="72"
-                                                height="24"
-                                                viewBox="0 0 72 24"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="logo"
-                                            >
-                                                <path
-                                                fill-rule="evenodd"
-                                                clip-rule="evenodd"
-                                                d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                                fill="white"
-                                                />
-                                            </svg>
-                                            <div class="card-contactless">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                                <path
-                                                    fill="none"
-                                                    stroke="#f9f9f9"
-                                                    stroke-width="6"
-                                                    stroke-linecap="round"
-                                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                                                    0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                                />
-                                                </svg>
-                                            </div>
-                                            <div class="card-chip"></div>
-                                            <div class="card-holder">John Doe</div>
-                                            <div class="card-number">1234 5678 9000 1234</div>
-                                            <div class="card-valid">12/24</div>
+                                            <div class="card-holder">{{ truncateText(account.holder_name, 15) }}</div>
+                                            <div class="card-number">{{ formatCardNumber(account.account_number) }}</div>
+                                            <div class="card-valid">{{ account.good_thru }}</div>
+                                            <div class="card-balance">{{ formatBalance(account.balance) }}</div>
                                         </div>
                                         <div class="card-back">
-                                            <div class="card-signature">John Doe</div>
-                                            <div class="card-seccode">123</div>
+                                            <div class="card-signature">{{ account.holder_name }}</div>
+                                            <div class="card-seccode">***</div>
                                         </div>
-                                        </div>
-                                    </div> 
-                                    <div class="card">
-                                        <div class="card-inner">
-                                            <div class="card-front">
-                                            <div class="card-bg"></div>
-                                            <div class="card-glow"></div>
-                                            <svg
-                                                width="72"
-                                                height="24"
-                                                viewBox="0 0 72 24"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="logo"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    clip-rule="evenodd"
-                                                    d="M52.3973 1.01093L51.5588 5.99054C49.0448 4.56717 43.3231 4.23041 43.3231 6.85138C43.3231 7.89285 44.6177 8.60913 46.178 9.47241C48.5444 10.7817 51.5221 12.4291 51.5221 16.062C51.5221 21.8665 45.4731 24 41.4645 24C37.4558 24 34.8325 22.6901 34.8325 22.6901L35.7065 17.4848C38.1115 19.4688 45.4001 20.032 45.4001 16.8863C45.4001 15.5645 43.9656 14.785 42.3019 13.8811C40.0061 12.6336 37.2742 11.1491 37.2742 7.67563C37.2742 1.30988 44.1978 0 47.1132 0C49.8102 0 52.3973 1.01093 52.3973 1.01093ZM66.6055 23.6006H72L67.2966 0.414276H62.5732C60.3923 0.414276 59.8612 2.14215 59.8612 2.14215L51.0996 23.6006H57.2234L58.4481 20.1566H65.9167L66.6055 23.6006ZM60.1406 15.399L63.2275 6.72235L64.9642 15.399H60.1406ZM14.7942 16.3622L20.3951 0.414917H26.7181L17.371 23.6012H11.2498L6.14551 3.45825C2.83215 1.41281 0 0.807495 0 0.807495L0.108643 0.414917H9.36816C11.9161 0.414917 12.1552 2.50314 12.1552 2.50314L14.1313 12.9281L14.132 12.9294L14.7942 16.3622ZM25.3376 23.6006H31.2126L34.8851 0.414917H29.0095L25.3376 23.6006Z"
-                                                    fill="white"
-                                                />
-                                            </svg>
-                                            <div class="card-contactless">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="56">
-                                                    <path
-                                                    fill="none"
-                                                    stroke="#f9f9f9"
-                                                    stroke-width="6"
-                                                    stroke-linecap="round"
-                                                    d="m35,3a50,50 0 0,1 0,50M24,8.5a39,39 0 0,1 0,39M13.5,13.55a28.2,28.5
-                                        0 0,1 0,28.5M3,19a18,17 0 0,1 0,18"
-                                                />
-                                                </svg>
-                                            </div>
-                                            <div class="card-chip"></div>
-                                            <div class="card-holder">Prueba1</div>
-                                            <div class="card-number">1234 5678 9000 1234</div>
-                                            <div class="card-valid">12/24</div>
-                                            </div>
-                                            <div class="card-back">
-                                            <div class="card-signature">Prueba1</div>
-                                            <div class="card-seccode">123</div>
-                                            </div>
-                                        </div>
-                                    </div> 
+                                    </div>
+                                </div>
                             </div>
                             <i id="right" #arrowRight class="bi bi-chevron-right"></i>
                         </div>
                     </div>
                 </div>
-                <div class="APIsData">
-                    <div class="grid-item-yellow crypto text-white">
-                        <h2>Cryptocurrencies Prices</h2>
-                            <table class="fl-table">
+                
+                <!-- Market Data Tables -->
+                <div class="marketData">
+                    <!-- Cryptocurrencies Prices -->
+                    <div class="market-table crypto-table">
+                        <h5>Cryptocurrencies Prices</h5>
+                        <div class="table-container">
+                            <table class="table table-dark table-striped">
                                 <thead>
-                                <tr>
-                                    <th>Header 1</th>
-                                    <th>Header 2</th>
-                                    <th>Header 3</th>
-                                    <th>Header 4</th>
-                                    <th>Header 5</th>
-                                </tr>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Price (USD)</th>
+                                        <th>24h Change</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>Content 1</td>
-                                    <td>Content 1</td>
-                                    <td>Content 1</td>
-                                    <td>Content 1</td>
-                                    <td>Content 1</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 2</td>
-                                    <td>Content 2</td>
-                                    <td>Content 2</td>
-                                    <td>Content 2</td>
-                                    <td>Content 2</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 3</td>
-                                    <td>Content 3</td>
-                                    <td>Content 3</td>
-                                    <td>Content 3</td>
-                                    <td>Content 3</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 4</td>
-                                    <td>Content 4</td>
-                                    <td>Content 4</td>
-                                    <td>Content 4</td>
-                                    <td>Content 4</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 5</td>
-                                    <td>Content 5</td>
-                                    <td>Content 5</td>
-                                    <td>Content 5</td>
-                                    <td>Content 5</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 6</td>
-                                    <td>Content 6</td>
-                                    <td>Content 6</td>
-                                    <td>Content 6</td>
-                                    <td>Content 6</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 7</td>
-                                    <td>Content 7</td>
-                                    <td>Content 7</td>
-                                    <td>Content 7</td>
-                                    <td>Content 7</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 8</td>
-                                    <td>Content 8</td>
-                                    <td>Content 8</td>
-                                    <td>Content 8</td>
-                                    <td>Content 8</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 9</td>
-                                    <td>Content 9</td>
-                                    <td>Content 9</td>
-                                    <td>Content 9</td>
-                                    <td>Content 9</td>
-                                </tr>
-                                <tr>
-                                    <td>Content 10</td>
-                                    <td>Content 10</td>
-                                    <td>Content 10</td>
-                                    <td>Content 10</td>
-                                    <td>Content 10</td>
-                                </tr>
-                                <tbody>
+                                    <tr *ngFor="let crypto of cryptoPrices; let i = index">
+                                        <td class="symbol-cell">
+                                            <span class="crypto-icon">₿</span>
+                                            {{ crypto.symbol }}
+                                        </td>
+                                        <td class="price-cell">${{ crypto.price }}</td>
+                                        <td class="change-cell" [ngClass]="getChangeClass(crypto.change || '+0.0%')">
+                                            {{ crypto.change || '+0.0%' }}
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
+                        </div>
                     </div>
-                    <div class="grid-item-yellow bolsa text-white">
-                        <h2>Stocks Prices</h2>
-                        <table class="fl-table">
-                            <thead>
-                            <tr>
-                                <th>Header 1</th>
-                                <th>Header 2</th>
-                                <th>Header 3</th>
-                                <th>Header 4</th>
-                                <th>Header 5</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>Content 1</td>
-                                <td>Content 1</td>
-                                <td>Content 1</td>
-                                <td>Content 1</td>
-                                <td>Content 1</td>
-                            </tr>
-                            <tr>
-                                <td>Content 2</td>
-                                <td>Content 2</td>
-                                <td>Content 2</td>
-                                <td>Content 2</td>
-                                <td>Content 2</td>
-                            </tr>
-                            <tr>
-                                <td>Content 3</td>
-                                <td>Content 3</td>
-                                <td>Content 3</td>
-                                <td>Content 3</td>
-                                <td>Content 3</td>
-                            </tr>
-                            <tr>
-                                <td>Content 4</td>
-                                <td>Content 4</td>
-                                <td>Content 4</td>
-                                <td>Content 4</td>
-                                <td>Content 4</td>
-                            </tr>
-                            <tr>
-                                <td>Content 5</td>
-                                <td>Content 5</td>
-                                <td>Content 5</td>
-                                <td>Content 5</td>
-                                <td>Content 5</td>
-                            </tr>
-                            <tr>
-                                <td>Content 6</td>
-                                <td>Content 6</td>
-                                <td>Content 6</td>
-                                <td>Content 6</td>
-                                <td>Content 6</td>
-                            </tr>
-                            <tr>
-                                <td>Content 7</td>
-                                <td>Content 7</td>
-                                <td>Content 7</td>
-                                <td>Content 7</td>
-                                <td>Content 7</td>
-                            </tr>
-                            <tr>
-                                <td>Content 8</td>
-                                <td>Content 8</td>
-                                <td>Content 8</td>
-                                <td>Content 8</td>
-                                <td>Content 8</td>
-                            </tr>
-                            <tr>
-                                <td>Content 9</td>
-                                <td>Content 9</td>
-                                <td>Content 9</td>
-                                <td>Content 9</td>
-                                <td>Content 9</td>
-                            </tr>
-                            <tr>
-                                <td>Content 10</td>
-                                <td>Content 10</td>
-                                <td>Content 10</td>
-                                <td>Content 10</td>
-                                <td>Content 10</td>
-                            </tr>
-                            <tbody>
-                        </table>
+                    
+                    <!-- Stocks Prices -->
+                    <div class="market-table stock-table">
+                        <h5>Stocks Prices</h5>
+                        <div class="table-container">
+                            <table class="table table-dark table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Price (USD)</th>
+                                        <th>24h Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let stock of stockPrices; let i = index">
+                                        <td class="symbol-cell">
+                                            <span class="stock-icon">📈</span>
+                                            {{ stock.symbol }}
+                                        </td>
+                                        <td class="price-cell">${{ stock.price }}</td>
+                                        <td class="change-cell" [ngClass]="getChangeClass(stock.change)">
+                                            {{ stock.change }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="grid-item-yellow divisas text-white">
-                        <h2>Currencies Prices</h2>
-                        <table class="fl-table">
-                            <thead>
-                            <tr>
-                                <th>Header 1</th>
-                                <th>Header 2</th>
-                                <th>Header 3</th>
-                                <th>Header 4</th>
-                                <th>Header 5</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>Content 1</td>
-                                <td>Content 1</td>
-                                <td>Content 1</td>
-                                <td>Content 1</td>
-                                <td>Content 1</td>
-                            </tr>
-                            <tr>
-                                <td>Content 2</td>
-                                <td>Content 2</td>
-                                <td>Content 2</td>
-                                <td>Content 2</td>
-                                <td>Content 2</td>
-                            </tr>
-                            <tr>
-                                <td>Content 3</td>
-                                <td>Content 3</td>
-                                <td>Content 3</td>
-                                <td>Content 3</td>
-                                <td>Content 3</td>
-                            </tr>
-                            <tr>
-                                <td>Content 4</td>
-                                <td>Content 4</td>
-                                <td>Content 4</td>
-                                <td>Content 4</td>
-                                <td>Content 4</td>
-                            </tr>
-                            <tr>
-                                <td>Content 5</td>
-                                <td>Content 5</td>
-                                <td>Content 5</td>
-                                <td>Content 5</td>
-                                <td>Content 5</td>
-                            </tr>
-                            <tr>
-                                <td>Content 6</td>
-                                <td>Content 6</td>
-                                <td>Content 6</td>
-                                <td>Content 6</td>
-                                <td>Content 6</td>
-                            </tr>
-                            <tr>
-                                <td>Content 7</td>
-                                <td>Content 7</td>
-                                <td>Content 7</td>
-                                <td>Content 7</td>
-                                <td>Content 7</td>
-                            </tr>
-                            <tr>
-                                <td>Content 8</td>
-                                <td>Content 8</td>
-                                <td>Content 8</td>
-                                <td>Content 8</td>
-                                <td>Content 8</td>
-                            </tr>
-                            <tr>
-                                <td>Content 9</td>
-                                <td>Content 9</td>
-                                <td>Content 9</td>
-                                <td>Content 9</td>
-                                <td>Content 9</td>
-                            </tr>
-                            <tr>
-                                <td>Content 10</td>
-                                <td>Content 10</td>
-                                <td>Content 10</td>
-                                <td>Content 10</td>
-                                <td>Content 10</td>
-                            </tr>
-                            <tbody>
-                        </table>
+                    
+                    <!-- Currencies Prices -->
+                    <div class="market-table currency-table">
+                        <h5>Currencies Prices</h5>
+                        <div class="table-container">
+                            <table class="table table-dark table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Pair</th>
+                                        <th>Rate</th>
+                                        <th>24h Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let currency of currencyPrices; let i = index">
+                                        <td class="symbol-cell">
+                                            <span class="currency-icon">💱</span>
+                                            {{ currency.symbol }}
+                                        </td>
+                                        <td class="price-cell">{{ currency.price }}</td>
+                                        <td class="change-cell" [ngClass]="getChangeClass(currency.change)">
+                                            {{ currency.change }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

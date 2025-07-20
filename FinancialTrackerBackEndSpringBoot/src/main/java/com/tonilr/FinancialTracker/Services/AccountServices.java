@@ -2,6 +2,7 @@ package com.tonilr.FinancialTracker.Services;
 
 import java.util.List;
 import java.sql.Date;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,5 +61,19 @@ public class AccountServices {
 
 	public void deleteAccount(Long id) {
 		accountRepo.deleteById(id);
+	}
+
+	public List<Account> findAccountsByUserId(Long userId) {
+		System.out.println("Finding accounts for userId: " + userId);
+		try {
+			List<Account> accounts = accountRepo.findByUserId(userId);
+			System.out.println("Found " + accounts.size() + " accounts for user " + userId);
+			return accounts;
+		} catch (Exception e) {
+			System.err.println("Error finding accounts for user " + userId + ": " + e.getMessage());
+			e.printStackTrace();
+			// Retornar lista vacía en caso de error
+			return new ArrayList<>();
+		}
 	}
 }

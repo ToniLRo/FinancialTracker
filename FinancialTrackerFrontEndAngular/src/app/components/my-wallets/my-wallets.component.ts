@@ -105,6 +105,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     console.log('Loading accounts');
     this.accountService.getAccounts().subscribe({
       next: (accounts) => {
+        console.log('✅ Loaded user accounts:', accounts);
         this.accounts = accounts;
         
         // Debug cada cuenta individualmente
@@ -136,7 +137,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
         setTimeout(() => this.initSwiper(), 100);
       },
       error: (error) => {
-        console.error('Error loading accounts:', error);
+        console.error('❌ Error loading accounts:', error);
       }
     });
   }

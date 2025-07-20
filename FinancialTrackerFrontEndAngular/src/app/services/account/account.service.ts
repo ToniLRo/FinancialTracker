@@ -19,6 +19,7 @@ export interface Transaction {
 export class AccountService {
   private accountApiUrl = 'http://localhost:8080/account';
   private transactionApiUrl = 'http://localhost:8080/transaction';
+  private dashboardApiUrl = 'http://localhost:8080/dashboard';
 
   constructor(private http: HttpClient) {}
 
@@ -47,9 +48,24 @@ export class AccountService {
 
   // Métodos de Account (existentes)
   getAccounts(): Observable<Account[]> {
+    console.log('🔄 Getting user accounts...');
+    const token = localStorage.getItem('jwt_token');
+    console.log('Token present:', !!token);
+    
     return this.http.get<Account[]>(`${this.accountApiUrl}/all`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
+      tap(accounts => {
+        console.log('✅ Received accounts:', accounts);
+        console.log('Number of accounts:', accounts.length);
+        accounts.forEach((account, index) => {
+          console.log(`Account ${index}:`, {
+            id: account.account_Id,
+            name: account.holder_name,
+            userId: account.userId
+          });
+        });
+      }),
       catchError(this.handleError.bind(this))
     );
   }
@@ -136,5 +152,31 @@ export class AccountService {
       .pipe(
         catchError(this.handleError)
       );
+  }
+
+  // NUEVOS métodos para dashboard
+  getDashboardData(): Observable<any> {
+    const token = this.getToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    
+    return this.http.get<any>(`${this.dashboardApiUrl}/data`, { headers });
+  }
+
+  getCryptoPrices(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.accountApiUrl}/marketdata/getTop10Crypto`);
+  }
+
+  getStockPrices(): Observable<any[]> {
+    // Para implementar cuando tengamos el endpoint
+    return this.http.get<any[]>(`${this.accountApiUrl}/marketdata/stocks`);
+  }
+
+  getCurrencyPrices(): Observable<any[]> {
+    // Para implementar cuando tengamos el endpoint
+    return this.http.get<any[]>(`${this.accountApiUrl}/marketdata/currencies`);
+  }
+
+  private getToken(): string {
+    return localStorage.getItem('jwt_token') || '';
   }
 }

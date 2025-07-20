@@ -1742,3 +1742,450 @@ text-align: center;
   }
 }
 
+/* NUEVO: Estilos específicos para el modal de Inspect Mode */
+.inspect-modal {
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: #1a1a1a !important;
+  border: 2px solid #21be72 !important;
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+}
+
+.inspect-modal .modal-header {
+  background: linear-gradient(135deg, #21be72, #1da85f) !important;
+  border-bottom: 2px solid #21be72 !important;
+  border-radius: 13px 13px 0 0 !important;
+  padding: 20px 25px !important;
+}
+
+.inspect-modal .modal-header h3 {
+  color: white !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  font-size: 1.4rem !important;
+}
+
+.inspect-modal .modal-header .close-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 35px !important;
+  height: 35px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  transition: all 0.3s ease !important;
+}
+
+.inspect-modal .modal-header .close-btn:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: scale(1.1) !important;
+}
+
+.inspect-modal .modal-body {
+  background-color: #1a1a1a !important;
+  padding: 25px !important;
+  color: white !important;
+}
+
+.inspect-modal .modal-footer {
+  background-color: #1a1a1a !important;
+  border-top: 2px solid #333 !important;
+  border-radius: 0 0 13px 13px !important;
+  padding: 20px 25px !important;
+}
+
+/* Secciones específicas del modal de inspección */
+.inspect-modal .account-details-section,
+.inspect-modal .account-stats-section,
+.inspect-modal .recent-transactions-section {
+  margin-bottom: 30px;
+  background-color: #222 !important;
+  border-radius: 10px !important;
+  padding: 20px !important;
+  border: 1px solid #333 !important;
+}
+
+.inspect-modal .account-details-section h4,
+.inspect-modal .account-stats-section h4,
+.inspect-modal .recent-transactions-section h4 {
+  color: #21be72 !important;
+  margin-bottom: 20px !important;
+  font-weight: 600 !important;
+  font-size: 1.2rem !important;
+  border-bottom: 2px solid #21be72 !important;
+  padding-bottom: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+/* Grid de detalles específico para inspect */
+.inspect-modal .detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.inspect-modal .detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #2a2a2a, #1f1f1f) !important;
+  border-radius: 8px;
+  border-left: 4px solid #21be72 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.inspect-modal .detail-item:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.inspect-modal .detail-item label {
+  font-weight: 600 !important;
+  color: #ccc !important;
+  font-size: 0.9rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.inspect-modal .detail-item span {
+  color: white !important;
+  font-weight: 500 !important;
+  font-size: 1rem !important;
+}
+
+/* Badges específicos para inspect */
+.inspect-modal .account-type-badge {
+  background: linear-gradient(135deg, #21be72, #1da85f) !important;
+  color: white !important;
+  padding: 6px 15px !important;
+  border-radius: 20px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 2px 4px rgba(33, 190, 114, 0.3) !important;
+}
+
+.inspect-modal .account-number {
+  font-family: 'Courier New', monospace !important;
+  background: linear-gradient(135deg, #333, #2a2a2a) !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: 0.9rem !important;
+  border: 1px solid #444 !important;
+  color: #21be72 !important;
+  font-weight: 600 !important;
+}
+
+.inspect-modal .balance {
+  font-weight: bold !important;
+  font-size: 1.2rem !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+}
+
+.inspect-modal .balance.positive {
+  color: #21be72 !important;
+  background-color: rgba(33, 190, 114, 0.1) !important;
+  border: 1px solid rgba(33, 190, 114, 0.3) !important;
+}
+
+.inspect-modal .balance.negative {
+  color: #ff4757 !important;
+  background-color: rgba(255, 71, 87, 0.1) !important;
+  border: 1px solid rgba(255, 71, 87, 0.3) !important;
+}
+
+.inspect-modal .status-badge {
+  padding: 6px 15px !important;
+  border-radius: 20px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.inspect-modal .status-badge.active {
+  background: linear-gradient(135deg, #21be72, #1da85f) !important;
+  color: white !important;
+}
+
+.inspect-modal .status-badge.frozen {
+  background: linear-gradient(135deg, #ff4757, #e63946) !important;
+  color: white !important;
+}
+
+/* Grid de estadísticas específico para inspect */
+.inspect-modal .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.inspect-modal .stat-card {
+  display: flex;
+  align-items: center;
+  padding: 25px 20px;
+  background: linear-gradient(135deg, #2a2a2a, #1f1f1f) !important;
+  border-radius: 12px;
+  border: 1px solid #333 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.inspect-modal .stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #21be72, #1da85f) !important;
+}
+
+.inspect-modal .stat-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  border-color: #21be72 !important;
+}
+
+.inspect-modal .stat-icon {
+  font-size: 2.5rem !important;
+  margin-right: 20px !important;
+  opacity: 0.9 !important;
+  width: 50px !important;
+  text-align: center !important;
+}
+
+.inspect-modal .stat-content {
+  flex: 1;
+}
+
+.inspect-modal .stat-value {
+  font-size: 1.8rem !important;
+  font-weight: bold !important;
+  color: white !important;
+  margin-bottom: 5px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.inspect-modal .stat-label {
+  font-size: 0.9rem !important;
+  color: #ccc !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  font-weight: 500 !important;
+}
+
+/* Lista de transacciones recientes específica para inspect */
+.inspect-modal .transactions-list {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #1a1a1a !important;
+  border-radius: 8px !important;
+  border: 1px solid #333 !important;
+}
+
+.inspect-modal .transaction-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #2a2a2a, #1f1f1f) !important;
+  border-radius: 8px;
+  border-left: 4px solid #21be72 !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+.inspect-modal .transaction-item:hover {
+  background: linear-gradient(135deg, #333, #2a2a2a) !important;
+  transform: translateX(5px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.inspect-modal .transaction-icon {
+  font-size: 1.3rem !important;
+  margin-right: 20px !important;
+  width: 35px !important;
+  text-align: center !important;
+  padding: 8px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 50% !important;
+}
+
+.inspect-modal .transaction-info {
+  flex: 1;
+}
+
+.inspect-modal .transaction-description {
+  font-weight: 600 !important;
+  color: white !important;
+  margin-bottom: 5px !important;
+  font-size: 1rem !important;
+}
+
+.inspect-modal .transaction-meta {
+  font-size: 0.85rem !important;
+  color: #ccc !important;
+  font-style: italic !important;
+}
+
+.inspect-modal .transaction-amount {
+  font-weight: bold !important;
+  font-size: 1.1rem !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  min-width: 100px !important;
+  text-align: center !important;
+}
+
+.inspect-modal .transaction-amount.positive {
+  color: #21be72 !important;
+  background-color: rgba(33, 190, 114, 0.1) !important;
+  border: 1px solid rgba(33, 190, 114, 0.3) !important;
+}
+
+.inspect-modal .transaction-amount.negative {
+  color: #ff4757 !important;
+  background-color: rgba(255, 71, 87, 0.1) !important;
+  border: 1px solid rgba(255, 71, 87, 0.3) !important;
+}
+
+.inspect-modal .no-transactions {
+  text-align: center !important;
+  padding: 50px 20px !important;
+  color: #ccc !important;
+  background-color: #1a1a1a !important;
+  border-radius: 8px !important;
+  border: 2px dashed #333 !important;
+}
+
+.inspect-modal .no-transactions i {
+  font-size: 3.5rem !important;
+  margin-bottom: 20px !important;
+  opacity: 0.5 !important;
+  color: #666 !important;
+}
+
+.inspect-modal .no-transactions p {
+  font-size: 1.1rem !important;
+  margin: 0 !important;
+  color: #999 !important;
+}
+
+/* Botones específicos del modal de inspect */
+.inspect-modal .modal-footer .btn {
+  padding: 12px 25px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-size: 0.9rem !important;
+}
+
+.inspect-modal .modal-footer .btn-secondary {
+  background: linear-gradient(135deg, #666, #555) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.inspect-modal .modal-footer .btn-secondary:hover {
+  background: linear-gradient(135deg, #777, #666) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.inspect-modal .modal-footer .btn-primary {
+  background: linear-gradient(135deg, #21be72, #1da85f) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.inspect-modal .modal-footer .btn-primary:hover {
+  background: linear-gradient(135deg, #1da85f, #189a54) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(33, 190, 114, 0.3) !important;
+}
+
+/* Scrollbar personalizado para el modal */
+.inspect-modal .transactions-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.inspect-modal .transactions-list::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.inspect-modal .transactions-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #21be72, #1da85f);
+  border-radius: 4px;
+}
+
+.inspect-modal .transactions-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #1da85f, #189a54);
+}
+
+/* Responsive específico para inspect modal */
+@media (max-width: 768px) {
+  .inspect-modal {
+    max-width: 95vw !important;
+    margin: 10px !important;
+    max-height: 95vh !important;
+  }
+  
+  .inspect-modal .detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .inspect-modal .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .inspect-modal .stat-card {
+    padding: 20px 15px !important;
+  }
+  
+  .inspect-modal .stat-value {
+    font-size: 1.4rem !important;
+  }
+  
+  .inspect-modal .modal-body {
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .inspect-modal .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .inspect-modal .detail-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  
+  .inspect-modal .transaction-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+  
+  .inspect-modal .transaction-amount {
+    align-self: flex-end !important;
+  }
+}
+

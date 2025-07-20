@@ -45,6 +45,16 @@
                 </div>
             </div>
             <div class="action-button">
+              <button class="button-27" role="button" title="View Details" 
+                      [disabled]="!getActiveAccount() || isProcessing" 
+                      (click)="openInspectModal()">
+                <i class="bi bi-eye" style="color: white; font-size: 25px;"></i>
+              </button>
+              <div class="button-description" style="text-align: center;">
+                View Details
+              </div>
+            </div>
+            <div class="action-button">
                 <button title="Add Transaction/Transfer" class="button-27" role="button" [disabled]="!selectedAccount" (click)="openTransactionForm(selectedAccount!)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -716,6 +726,151 @@
       </form>
     </div>
 </div>
+
+<!-- NUEVO: Modal de Inspect Mode con fondo opaco -->
+<div class="modal" *ngIf="showInspectModal" style="background-color: rgba(0, 0, 0, 0.9) !important; backdrop-filter: blur(5px);">
+    <div class="modal-content inspect-modal">
+        <div class="modal-header">
+            <h3>
+                <i class="bi bi-eye text-info"></i>
+                Account Details
+            </h3>
+            <button type="button" class="close-btn" (click)="closeInspectModal()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body" *ngIf="getActiveAccount()">
+            <!-- Información de la cuenta -->
+            <div class="account-details-section">
+                <h4><i class="bi bi-info-circle me-2"></i>Account Information</h4>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label>Account ID:</label>
+                        <span>{{ getActiveAccount()?.account_Id }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Holder Name:</label>
+                        <span>{{ getActiveAccount()?.holder_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Account Type:</label>
+                        <span class="account-type-badge">{{ getActiveAccount()?.account_type }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Account Number:</label>
+                        <span class="account-number">{{ formatCardNumber(getActiveAccount()?.account_number || '', getActiveAccount()?.account_type || '') }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Current Balance:</label>
+                        <span class="balance" [class.positive]="(getActiveAccount()?.balance || 0) >= 0" [class.negative]="(getActiveAccount()?.balance || 0) < 0">
+                            {{ getActiveAccount()?.balance | currency:getActiveAccount()?.currency }}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Currency:</label>
+                        <span>{{ getActiveAccount()?.currency }}</span>
+                    </div>
+                    <div class="detail-item" *ngIf="getActiveAccount()?.good_thru">
+                        <label>Valid Until:</label>
+                        <span>{{ getActiveAccount()?.good_thru }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Creation Date:</label>
+                        <span>{{ getActiveAccount()?.creation_date | date:'mediumDate' }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Status:</label>
+                        <span class="status-badge" [class.active]="!getActiveAccount()?.frozen" [class.frozen]="getActiveAccount()?.frozen">
+                            {{ getActiveAccount()?.frozen ? 'FROZEN' : 'ACTIVE' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas de la cuenta -->
+            <div class="account-stats-section">
+                <h4><i class="bi bi-graph-up me-2"></i>Account Statistics</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-arrow-up-circle text-success"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">{{ getTotalIncome() | currency:getActiveAccount()?.currency }}</div>
+                            <div class="stat-label">Total Income</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-arrow-down-circle text-danger"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">{{ getTotalExpenses() | currency:getActiveAccount()?.currency }}</div>
+                            <div class="stat-label">Total Expenses</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-graph-up text-info"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">{{ getActiveAccount()?.transactions?.length || 0 }}</div>
+                            <div class="stat-label">Total Transactions</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-calendar-event text-warning"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">{{ getDaysSinceCreation() }}</div>
+                            <div class="stat-label">Days Active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transacciones recientes -->
+            <div class="recent-transactions-section">
+                <h4><i class="bi bi-clock-history me-2"></i>Recent Transactions (Last 5)</h4>
+                <div class="transactions-list" *ngIf="getActiveAccount()?.transactions?.length; else noTransactions">
+                    <div *ngFor="let transaction of getRecentTransactions()" class="transaction-item">
+                        <div class="transaction-icon">
+                            <i [class]="getTransactionIcon(transaction.type)" 
+                               [style.color]="getTransactionIconColor(transaction.type)"></i>
+                        </div>
+                        <div class="transaction-info">
+                            <div class="transaction-description">{{ transaction.description }}</div>
+                            <div class="transaction-meta">
+                                {{ transaction.type }} • {{ transaction.date | date:'shortDate' }}
+                            </div>
+                        </div>
+                        <div class="transaction-amount" [class.positive]="transaction.amount > 0" [class.negative]="transaction.amount < 0">
+                            {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount | currency:getActiveAccount()?.currency }}
+                        </div>
+                    </div>
+                </div>
+                <ng-template #noTransactions>
+                    <div class="no-transactions">
+                        <i class="bi bi-inbox"></i>
+                        <p>No transactions found for this account.</p>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeInspectModal()">
+                <i class="bi bi-x-lg me-1"></i>Close
+            </button>
+            <button type="button" class="btn btn-primary" (click)="openEditFormForActiveAccount(); closeInspectModal()">
+                <i class="bi bi-pencil-square me-1"></i>Edit Account
+            </button>
+        </div>
+    </div>
+</div>
+
 
 <!-- Modal for Deposit -->
 <div class="modal" *ngIf="showDepositModal">

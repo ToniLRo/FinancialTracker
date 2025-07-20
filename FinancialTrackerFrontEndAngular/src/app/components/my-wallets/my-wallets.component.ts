@@ -29,6 +29,10 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   withdrawError = '';
   depositError = '';
   isProcessing = false;
+
+  showInspectModal = false;
+  inspectingAccount: Account | null = null;
+
   
   // NUEVA: Variable para guardar el reference ID fijo para cada transacción
   currentReferenceId = '';
@@ -1414,6 +1418,64 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     console.log('✅ Success:', message);
     // Ejemplo con alert temporal:
     // alert(message);
+  }
+
+  openInspectModal() {
+    const activeAccount = this.getActiveAccount();
+    if (!activeAccount) {
+      alert('No hay cuenta seleccionada para inspeccionar.');
+      return;
+    }
+    
+    this.showInspectModal = true;
+  }
+
+    // NUEVO: Cerrar modal de inspección
+    closeInspectModal() {
+      this.showInspectModal = false;
+    }
+  
+    // NUEVO: Obtener total de ingresos
+    getTotalIncome(): number {
+      const account = this.getActiveAccount();
+      if (!account?.transactions) return 0;
+      
+      return account.transactions
+        .filter(t => t.amount > 0)
+        .reduce((sum, t) => sum + t.amount, 0);
+    }
+  
+    // NUEVO: Obtener total de gastos
+    getTotalExpenses(): number {
+      const account = this.getActiveAccount();
+      if (!account?.transactions) return 0;
+      
+      return Math.abs(account.transactions
+        .filter(t => t.amount < 0)
+        .reduce((sum, t) => sum + t.amount, 0));
+    }
+
+  // NUEVO: Obtener transacciones recientes (últimas 5)
+  getRecentTransactions(): any[] {
+    const account = this.getActiveAccount();
+    if (!account?.transactions) return [];
+    
+    return account.transactions
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
+  }
+
+  // NUEVO: Calcular días desde la creación
+  getDaysSinceCreation(): number {
+    const account = this.getActiveAccount();
+    if (!account?.creation_date) return 0;
+    
+    const creationDate = new Date(account.creation_date);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - creationDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
   }
 }
 

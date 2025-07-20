@@ -732,3 +732,784 @@ overflow-x: hidden;}
         right: 20px;
     }
 }
+
+/* ====== RESPONSIVE DASHBOARD LAYOUT ====== */
+.content {
+    position: relative;
+    min-height: 100vh; /* CAMBIO: min-height en lugar de height fijo */
+    width: 100%;
+    background-color: rgba(33,37,41,255);
+    padding: 20px;
+    overflow-y: auto; /* NUEVO: Permitir scroll vertical */
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 2rem; /* MEJORADO: Más espacio */
+}
+
+.title {
+    width: fit-content;
+    color: white;
+}
+
+.title h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+/* ====== FINANCIAL DATA CARDS - RESPONSIVE GRID ====== */
+.financialData {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* MEJORADO: Responsive */
+    gap: 1.5rem; /* NUEVO: Gap consistente */
+    margin-bottom: 2rem;
+    padding: 0; /* LIMPIO: Sin padding extra */
+}
+
+/* ====== CHART AND CARDS SECTION ====== */
+.graphicAndCardData {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* MEJORADO: Proporciones iguales */
+    gap: 2rem; /* NUEVO: Espaciado consistente */
+    margin-bottom: 2rem;
+    align-items: start; /* NUEVO: Alineación superior */
+}
+
+/* ====== MARKET DATA SECTION - RESPONSIVE GRID ====== */
+.APIsData {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* MEJORADO: Responsive */
+    gap: 1.5rem; /* NUEVO: Espaciado consistente */
+    margin-bottom: 2rem;
+}
+
+/* ====== CARD IMPROVEMENTS ====== */
+.grid-item-yellow, .grid-item-green, .grid-item-blue {
+    border-radius: 1.5rem;
+    font-size: 30px;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 1.5rem; /* MEJORADO: Padding responsive */
+    margin: 0; /* LIMPIO: Sin margen individual */
+    min-height: 160px; /* NUEVO: Altura mínima */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.grid-item-yellow {
+    background: linear-gradient(135deg, rgba(33,37,41,255) 30%, rgba(222,184,135,1) 100%);
+}
+
+.grid-item-green {
+    background: linear-gradient(135deg, rgba(33,37,41,255) 30%, #21be72 100%);
+}
+
+.grid-item-blue {
+    background: linear-gradient(135deg, rgba(33,37,41,255) 30%, cornflowerblue 100%);
+}
+
+/* ====== CHART CONTAINER ====== */
+.cards {
+    max-width: 100%; /* MEJORADO: Usar todo el ancho disponible */
+    height: auto;
+    min-height: 300px; /* NUEVO: Altura mínima */
+    max-height: 400px; /* AJUSTADO: Altura máxima mayor */
+    margin: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.myChart {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 250px; /* NUEVO: Altura mínima */
+    max-height: 350px; /* AJUSTADO: Altura máxima mayor */
+}
+
+/* ====== MY CARDS SECTION IMPROVEMENTS ====== */
+.wrapper {
+    max-width: 100%; /* MEJORADO: Usar todo el ancho */
+    width: 100%;
+    position: relative;
+    padding: 1rem 0; /* MEJORADO: Padding vertical */
+}
+
+/* ====== MARKET TABLES - RESPONSIVE ====== */
+.market-table {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-radius: 15px;
+    padding: 1.5rem; /* MEJORADO: Padding consistente */
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    min-height: 400px; /* NUEVO: Altura mínima */
+    display: flex;
+    flex-direction: column;
+}
+
+.market-table h5 {
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.table-container {
+    flex: 1; /* NUEVO: Usar espacio disponible */
+    max-height: none; /* REMOVIDO: Límite de altura */
+    min-height: 300px; /* NUEVO: Altura mínima */
+    overflow-y: auto;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ====== TABLE IMPROVEMENTS ====== */
+.table-dark {
+    background: transparent;
+    font-size: 0.9rem;
+    margin: 0;
+    width: 100%;
+}
+
+.table-dark th {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    padding: 12px 8px; /* MEJORADO: Más padding */
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    position: sticky; /* NUEVO: Header fijo */
+    top: 0;
+    z-index: 10;
+}
+
+.table-dark td {
+    border: none;
+    padding: 12px 8px; /* MEJORADO: Más padding */
+    vertical-align: middle;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* NUEVO: Separadores sutiles */
+}
+
+.table-dark tbody tr:hover {
+    background: rgba(255, 255, 255, 0.1); /* NUEVO: Hover effect */
+    transition: background 0.2s ease;
+}
+
+/* ====== SCROLLBAR STYLING ====== */
+.table-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* ====== RESPONSIVE BREAKPOINTS ====== */
+
+/* Tablets */
+@media screen and (max-width: 1200px) {
+    .financialData {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    
+    .graphicAndCardData {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .APIsData {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+}
+
+/* Mobile Large */
+@media screen and (max-width: 768px) {
+    .content {
+        padding: 15px;
+    }
+    
+    .financialData {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .graphicAndCardData {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .APIsData {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .grid-item-yellow, .grid-item-green, .grid-item-blue {
+        min-height: 140px;
+        padding: 1rem;
+    }
+    
+    .market-table {
+        padding: 1rem;
+        min-height: 350px;
+    }
+    
+    .table-dark th,
+    .table-dark td {
+        padding: 8px 6px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Mobile Small */
+@media screen and (max-width: 480px) {
+    .content {
+        padding: 10px;
+    }
+    
+    .title h2 {
+        font-size: 1.5rem;
+    }
+    
+    .grid-item-yellow, .grid-item-green, .grid-item-blue {
+        min-height: 120px;
+        padding: 0.8rem;
+        font-size: 24px;
+    }
+    
+    .market-table {
+        padding: 0.8rem;
+        min-height: 300px;
+    }
+    
+    .market-table h5 {
+        font-size: 1rem;
+    }
+    
+    .table-dark th,
+    .table-dark td {
+        padding: 6px 4px;
+        font-size: 0.75rem;
+    }
+    
+    .symbol-cell {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .crypto-icon, .stock-icon, .currency-icon {
+        font-size: 1rem;
+    }
+}
+
+/* ====== UTILITY CLASSES ====== */
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+.flex-1 { flex: 1; }
+.text-center { text-align: center; }
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+
+/* ====== LOADING AND EMPTY STATES ====== */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+.empty-state {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+}
+
+.empty-state h6 {
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ====== PERFORMANCE OPTIMIZATIONS ====== */
+.market-table,
+.grid-item-yellow,
+.grid-item-green,
+.grid-item-blue {
+    will-change: transform;
+    transform: translateZ(0); /* Hardware acceleration */
+}
+
+/* ====== ACCESSIBILITY IMPROVEMENTS ====== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ====== FOCUS STYLES ====== */
+.table-dark tbody tr:focus-within {
+    outline: 2px solid #21be72;
+    outline-offset: 2px;
+}
+
+/* ====== PRINT STYLES ====== */
+@media print {
+    .content {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .grid-item-yellow,
+    .grid-item-green,
+    .grid-item-blue,
+    .market-table {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+}
+
+/* Hacer todo más compacto */
+.content {
+    height: 100vh; /* Volver a altura fija */
+    padding: 15px; /* Reducir padding */
+    overflow: hidden; /* Sin scroll */
+}
+
+/* Cards financieras más pequeñas */
+.grid-item-yellow, .grid-item-green, .grid-item-blue {
+    min-height: 120px; /* Reducir altura mínima */
+    padding: 1rem;
+    font-size: 24px; /* Texto más pequeño */
+}
+
+/* Gráfico más compacto */
+.cards {
+    max-height: 250px; /* Altura más pequeña */
+    min-height: 200px;
+}
+
+/* Tablas más compactas */
+.market-table {
+    min-height: 300px; /* Reducir altura mínima */
+    padding: 1rem;
+}
+
+.table-dark th,
+.table-dark td {
+    padding: 8px 6px; /* Reducir padding */
+    font-size: 0.85rem; /* Texto más pequeño */
+}
+
+/* Carrusel de tarjetas más pequeño */
+.card {
+    width: 280px; /* Tarjetas más pequeñas */
+    height: 170px;
+}
+
+/* Espaciado más compacto */
+.financialData,
+.graphicAndCardData,
+.APIsData {
+    gap: 1rem; /* Reducir gaps */
+    margin-bottom: 1rem;
+}
+
+/* ====== SCROLL ESPECÍFICO PARA TABLAS ====== */
+.market-table {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    height: 350px; /* Altura fija para mantener layout */
+    display: flex;
+    flex-direction: column;
+}
+
+.market-table h5 {
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+    font-size: 1.1rem;
+    flex-shrink: 0; /* El título no se reduce */
+}
+
+.table-container {
+    flex: 1; /* Toma el espacio restante */
+    overflow-y: auto; /* Scroll vertical */
+    overflow-x: auto; /* Scroll horizontal si es necesario */
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    min-height: 0; /* Permite que el flex funcione correctamente */
+}
+
+/* ====== ESTILOS DE TABLA OPTIMIZADOS ====== */
+.table-dark {
+    background: transparent;
+    font-size: 0.85rem; /* Texto más compacto */
+    margin: 0;
+    width: 100%;
+    min-width: 280px; /* Ancho mínimo para scroll horizontal */
+}
+
+.table-dark th {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    padding: 10px 8px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    position: sticky; /* Header fijo durante scroll */
+    top: 0;
+    z-index: 10;
+    white-space: nowrap; /* Evita que el texto se corte */
+}
+
+.table-dark td {
+    border: none;
+    padding: 8px 6px; /* Padding compacto */
+    vertical-align: middle;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap; /* Evita que el texto se corte */
+}
+
+.table-dark tbody tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.2s ease;
+}
+
+/* ====== SCROLLBARS PERSONALIZADOS ====== */
+.table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.table-container::-webkit-scrollbar-corner {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ====== ESTILOS PARA CELDAS ESPECÍFICAS ====== */
+.symbol-cell {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 80px; /* Ancho mínimo para símbolos */
+}
+
+.price-cell {
+    font-weight: 600;
+    color: #f8f9fa;
+    min-width: 100px; /* Ancho mínimo para precios */
+    font-family: 'Courier New', monospace; /* Fuente monospace para números */
+}
+
+.change-cell {
+    font-weight: 600;
+    min-width: 80px; /* Ancho mínimo para cambios */
+}
+
+.change-cell.positive {
+    color: #21be72;
+}
+
+.change-cell.negative {
+    color: #ff4757;
+}
+
+/* ====== ICONOS EN LAS CELDAS ====== */
+.crypto-icon, .stock-icon, .currency-icon {
+    font-size: 1rem;
+    flex-shrink: 0; /* Los iconos no se reducen */
+}
+
+/* ====== INDICADORES DE SCROLL ====== */
+.table-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.1) 50%);
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.table-container:hover::before {
+    opacity: 1;
+}
+
+/* ====== RESPONSIVE PARA TABLAS ====== */
+@media screen and (max-width: 1200px) {
+    .market-table {
+        height: 320px; /* Altura ligeramente menor en tablets */
+    }
+    
+    .table-dark {
+        font-size: 0.8rem;
+    }
+    
+    .table-dark th,
+    .table-dark td {
+        padding: 8px 4px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .market-table {
+        height: 300px; /* Altura menor en móviles */
+        padding: 1rem;
+    }
+    
+    .table-dark {
+        font-size: 0.75rem;
+        min-width: 250px; /* Ancho mínimo menor en móviles */
+    }
+    
+    .table-dark th,
+    .table-dark td {
+        padding: 6px 3px;
+    }
+    
+    .symbol-cell {
+        min-width: 60px;
+        gap: 4px;
+    }
+    
+    .price-cell {
+        min-width: 80px;
+    }
+    
+    .change-cell {
+        min-width: 60px;
+    }
+    
+    .crypto-icon, .stock-icon, .currency-icon {
+        font-size: 0.9rem;
+    }
+}
+
+/* ====== LOADING STATE PARA TABLAS ====== */
+.table-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.table-loading .spinner-border {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* ====== EMPTY STATE PARA TABLAS ====== */
+.table-empty {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.table-empty h6 {
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ====== MEJORAS DE ACCESIBILIDAD ====== */
+.table-container:focus-within {
+    outline: 2px solid #21be72;
+    outline-offset: 2px;
+}
+
+.table-dark tbody tr:focus-within {
+    background: rgba(33, 190, 114, 0.2);
+    outline: none;
+}
+
+/* ====== SMOOTH SCROLLING ====== */
+.table-container {
+    scroll-behavior: smooth;
+}
+
+/* ====== SCROLL SHADOWS (EFECTO VISUAL) ====== */
+.table-container {
+    position: relative;
+}
+
+.table-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: linear-gradient(to bottom, rgba(30, 60, 114, 0.8), transparent);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.table-container.scrolled::after {
+    opacity: 1;
+}
+
+/* ====== CATEGORIES SECTION - IGUAL QUE CHART SECTION ====== */
+.grid-item-green.categories {
+    background: linear-gradient(135deg, #1a1d23 0%, #2d3748 50%, #21be72 100%);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.grid-item-green.categories h5 {
+    position: relative;
+    z-index: 2;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+    text-align: center; /* IGUAL que el otro gráfico */
+}
+
+/* REMOVER: categories-chart-container específico */
+/* USAR: .cards igual que el otro gráfico */
+
+/* REMOVER: categoriesChart específico */
+/* USAR: .myChart igual que el otro gráfico */
+
+/* ====== REMOVER CATEGORY SUMMARY ====== */
+/* Comentar o eliminar todo el CSS de category-summary */
+/*
+.category-summary {
+    margin-top: 1rem;
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0 0.5rem;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+... resto del CSS de category-summary ...
+*/
+
+/* ====== LOADING AND ERROR STATES ====== */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    min-height: 200px;
+}
+
+.error-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    min-height: 200px;
+}
+
+.error-state p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1rem;
+}
+
+.error-state button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.error-state button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ====== RESPONSIVE ADJUSTMENTS ====== */
+@media screen and (max-width: 768px) {
+    .categories-chart-container {
+        min-height: 180px;
+    }
+    
+    .categoriesChart {
+        max-width: 240px;
+        max-height: 240px;
+    }
+    
+    .category-item {
+        padding: 6px 10px;
+        margin-bottom: 4px;
+    }
+    
+    .category-name,
+    .category-amount {
+        font-size: 0.8rem;
+    }
+    
+    .category-icon {
+        font-size: 1rem;
+        width: 20px;
+    }
+    
+    .category-summary {
+        max-height: 120px;
+    }
+}

@@ -15,11 +15,11 @@
 
 /* Main Container */
 .content {
-  position: relative;
+      position: relative;
   min-height: 100vh;
-  width: 100%;
+      width: 100%;
   background-color: var(--bg-dark) !important;
-  padding: 20px;
+      padding: 20px;
   color: var(--text-light) !important;
 }
 
@@ -73,9 +73,9 @@
 
 /* Loading & Error States */
 .loading-container {
-  display: flex;
+      display: flex;
   flex-direction: column;
-  align-items: center;
+      align-items: center;
   justify-content: center;
   padding: 60px 20px;
 }
@@ -96,8 +96,8 @@
 }
 
 .filters-header {
-  display: flex;
-  justify-content: space-between;
+display: flex;
+justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
@@ -199,7 +199,7 @@
 
 /* No Data State */
 .no-data {
-  text-align: center;
+      text-align: center;
   padding: 60px 20px;
 }
 
@@ -220,7 +220,7 @@
 
 .transactions-table {
   width: 100%;
-  border-collapse: collapse;
+    border-collapse: collapse;
   background-color: rgba(255, 255, 255, 0.03) !important;
   font-size: 0.9rem;
 }
@@ -282,7 +282,7 @@
 
 .description-cell span {
   display: block;
-  white-space: nowrap;
+    white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--text-light) !important;
@@ -881,4 +881,4 @@ body .modal select option {
 .custom-select option {
   background-color: rgba(33,37,41,255) !important;
   color: white !important;
-}
+  }

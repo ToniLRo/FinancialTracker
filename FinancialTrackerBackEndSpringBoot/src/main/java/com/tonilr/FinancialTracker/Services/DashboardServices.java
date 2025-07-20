@@ -107,12 +107,41 @@ public class DashboardServices {
         return monthlyData;
     }
     
+    // CORREGIR: getCategoryData para usar las transacciones REALES del usuario
     private Map<String, Double> getCategoryData(List<Transaction> transactions) {
-        return transactions.stream()
-            .filter(t -> t.getAmount() < 0) // Solo gastos
+        System.out.println("=== GET CATEGORY DATA ===");
+        System.out.println("Total user transactions received: " + transactions.size());
+        
+        // Debug cada transacción
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction t = transactions.get(i);
+            System.out.println("Transaction " + i + ":");
+            System.out.println("  - ID: " + t.getTransaction_Id());
+            System.out.println("  - Amount: " + t.getAmount());
+            System.out.println("  - Description: " + t.getDescription());
+            System.out.println("  - Type: " + t.getType());
+            System.out.println("  - Date: " + t.getDate());
+        }
+        
+        // Agrupar TODAS las transacciones por tipo (usar valores absolutos para el gráfico)
+        Map<String, Double> categoryData = transactions.stream()
             .collect(Collectors.groupingBy(
-                t -> t.getType() != null ? t.getType() : "Other",
-                Collectors.summingDouble(t -> Math.abs(t.getAmount()))
+                t -> {
+                    String type = t.getType();
+                    // Si el tipo es null o vacío, usar "Other"
+                    if (type == null || type.trim().isEmpty()) {
+                        return "Other";
+                    }
+                    return type; // Usar el tipo exacto como está en BD
+                },
+                Collectors.summingDouble(t -> Math.abs(t.getAmount())) // Valores absolutos
             ));
+        
+        System.out.println("Category breakdown result:");
+        categoryData.forEach((category, amount) -> {
+            System.out.println("- " + category + ": " + amount);
+        });
+        
+        return categoryData;
     }
 }

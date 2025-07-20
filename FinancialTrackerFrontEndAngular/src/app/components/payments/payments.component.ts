@@ -304,17 +304,33 @@ export class PaymentsComponent implements OnInit {
   }
 
   getTransactionIcon(type: string): string {
-    const iconMap: { [key: string]: string } = {
-      'Withdraw': 'fa-arrow-down text-danger',
-      'Deposit': 'fa-arrow-up text-success',
-      'Food': 'fa-utensils text-warning',
-      'Transport': 'fa-car text-info',
-      'Entertainment': 'fa-gamepad text-purple',
-      'Shopping': 'fa-shopping-cart text-primary',
-      'Bills': 'fa-file-invoice text-secondary',
-      'Other': 'fa-question-circle text-muted'
+    const icons: { [key: string]: string } = {
+      // Iconos para tipos de gasto
+      'Food': 'bi-cup-straw',
+      'Transport': 'bi-car-front',
+      'Shopping': 'bi-bag-fill',
+      'Entertainment': 'bi-controller',
+      'Bills': 'bi-receipt',
+      'Healthcare': 'bi-heart-pulse',
+      'Education': 'bi-book',
+      'Gift': 'bi-gift',
+      
+      // Iconos para tipos de ingreso/movimientos
+      'Income': 'bi-cash-coin',
+      'Deposit': 'bi-arrow-up-circle-fill',
+      'Withdraw': 'bi-arrow-down-circle-fill',
+      
+      // Iconos adicionales
+      'Transfer': 'bi-arrow-left-right',
+      'Investment': 'bi-graph-up-arrow',
+      'Salary': 'bi-briefcase',
+      'Freelance': 'bi-laptop',
+      'Bonus': 'bi-star-fill',
+      'Refund': 'bi-arrow-clockwise',
+      'Other': 'bi-question-circle'
     };
-    return iconMap[type] || 'fa-circle text-muted';
+    
+    return icons[type] || 'bi-circle-fill'; // Icono por defecto
   }
 
   getAmountClass(amount: number): string {
@@ -402,6 +418,19 @@ export class PaymentsComponent implements OnInit {
     try {
       const formValue = this.editTransactionForm.value;
       
+      // NUEVO: Calcular la diferencia en el balance
+      const originalAmount = this.editingTransaction.amount;
+      const newAmount = formValue.amount;
+      const balanceDifference = newAmount - originalAmount;
+      
+      // NUEVO: Obtener la cuenta afectada
+      const affectedAccount = this.accounts.find(acc => acc.account_Id === formValue.accountId);
+      if (!affectedAccount) {
+        this.error = 'Account not found for this transaction.';
+        this.isSaving = false;
+        return;
+      }
+      
       // Preparar objeto para actualización
       const updateRequest = {
         id: this.editingTransaction.id,
@@ -420,6 +449,13 @@ export class PaymentsComponent implements OnInit {
       
       console.log('Transaction updated successfully:', updatedTransaction);
       
+      // NUEVO: Actualizar el balance de la cuenta
+      affectedAccount.balance += balanceDifference;
+      
+      // NUEVO: Guardar el balance actualizado en la base de datos
+      await this.accountService.updateAccount(affectedAccount).toPromise();
+      console.log('✅ Account balance updated in database');
+      
       // Actualizar la transacción en la lista local
       const index = this.allTransactions.findIndex(t => t.id === this.editingTransaction!.id);
       if (index !== -1) {
@@ -429,8 +465,8 @@ export class PaymentsComponent implements OnInit {
 
       this.closeEditModal();
       
-      // Mostrar mensaje de éxito (opcional - puedes agregar un toast/notification)
-      console.log('✅ Transaction updated successfully in database');
+      // Mostrar mensaje de éxito con información del balance
+      console.log(`✅ Transaction updated successfully. Balance adjusted: ${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${affectedAccount.currency}`);
       
     } catch (error: any) {
       console.error('❌ Error updating transaction:', error);
@@ -467,10 +503,28 @@ export class PaymentsComponent implements OnInit {
     try {
       console.log('Deleting transaction:', this.deletingTransaction.id);
 
+      // NUEVO: Calcular el impacto en el balance (revertir la transacción)
+      const balanceImpact = -this.deletingTransaction.amount; // Revertir el monto
+      
+      // NUEVO: Obtener la cuenta afectada
+      const affectedAccount = this.accounts.find(acc => acc.account_Id === this.deletingTransaction!.accountId);
+      if (!affectedAccount) {
+        this.error = 'Account not found for this transaction.';
+        this.isDeleting = false;
+        return;
+      }
+
       // NUEVO: Llamar a la API para eliminar
       await this.transactionService.deleteTransaction(this.deletingTransaction.id).toPromise();
       
       console.log('Transaction deleted successfully from database');
+      
+      // NUEVO: Actualizar el balance de la cuenta
+      affectedAccount.balance += balanceImpact;
+      
+      // NUEVO: Guardar el balance actualizado en la base de datos
+      await this.accountService.updateAccount(affectedAccount).toPromise();
+      console.log('✅ Account balance updated in database');
       
       // Remover de la lista local
       this.allTransactions = this.allTransactions.filter(t => t.id !== this.deletingTransaction!.id);
@@ -478,7 +532,8 @@ export class PaymentsComponent implements OnInit {
 
       this.closeDeleteModal();
       
-      console.log('✅ Transaction removed from local list');
+      // Mostrar mensaje de éxito con información del balance
+      console.log(`✅ Transaction deleted successfully. Balance adjusted: ${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${affectedAccount.currency}`);
       
     } catch (error: any) {
       console.error('❌ Error deleting transaction:', error);

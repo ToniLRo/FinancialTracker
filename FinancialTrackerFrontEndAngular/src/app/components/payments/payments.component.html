@@ -3,7 +3,7 @@
   <!-- Header -->
   <div class="header">
     <div class="title">
-      <h2><i class="fa-solid fa-credit-card me-2"></i>Payment History</h2>
+      <h2><i class="bi bi-credit-card me-2"></i>Payment History</h2>
       <p class="subtitle">All your transactions in one place</p>
     </div>
     <div class="stats">
@@ -28,19 +28,19 @@
 
   <!-- Error State -->
   <div *ngIf="error" class="alert alert-danger" role="alert">
-    <i class="fa-solid fa-exclamation-triangle me-2"></i>
+    <i class="bi bi-exclamation-triangle me-2"></i>
     {{ error }}
     <button class="btn btn-outline-danger btn-sm ms-2" (click)="loadInitialData()">
-      <i class="fa-solid fa-refresh me-1"></i>Retry
+      <i class="bi bi-arrow-clockwise me-1"></i>Retry
     </button>
   </div>
 
   <!-- Filters Section -->
   <div class="filters-section" *ngIf="!isLoading && !error">
     <div class="filters-header">
-      <h5><i class="fa-solid fa-filter me-2"></i>Filters</h5>
+      <h5><i class="bi bi-funnel me-2"></i>Filters</h5>
       <button class="btn btn-outline-secondary btn-sm" (click)="clearFilters()">
-        <i class="fa-solid fa-eraser me-1"></i>Clear Filters
+        <i class="bi bi-eraser me-1"></i>Clear Filters
       </button>
     </div>
     
@@ -49,7 +49,7 @@
       <div class="filter-group">
         <label class="filter-label">Search Description</label>
         <div class="input-with-icon">
-          <i class="fa-solid fa-magnifying-glass icon"></i>
+          <i class="bi bi-search icon"></i>
           <input 
             #searchInput
             type="text" 
@@ -115,7 +115,7 @@
       <div class="filter-group">
         <label class="filter-label">Minimum Amount</label>
         <div class="input-with-icon">
-          <i class="fa-solid fa-euro-sign icon"></i>
+          <i class="bi bi-currency-euro icon"></i>
           <input 
             #amountMinInput
             type="number" 
@@ -131,7 +131,7 @@
       <div class="filter-group">
         <label class="filter-label">Maximum Amount</label>
         <div class="input-with-icon">
-          <i class="fa-solid fa-euro-sign icon"></i>
+          <i class="bi bi-currency-euro icon"></i>
           <input 
             #amountMaxInput
             type="number" 
@@ -148,7 +148,7 @@
   <!-- Transactions Table -->
   <div class="table-section" *ngIf="!isLoading && !error">
     <div class="table-header">
-      <h5><i class="fa-solid fa-list me-2"></i>Transactions</h5>
+      <h5><i class="bi bi-list me-2"></i>Transactions</h5>
       <div class="pagination-info">
         Page {{ currentPage }} of {{ totalPages }} 
         ({{ filteredTransactions.length }} results)
@@ -157,7 +157,7 @@
 
     <!-- No transactions message -->
     <div *ngIf="filteredTransactions.length === 0" class="no-data">
-      <i class="fa-solid fa-inbox fa-3x text-muted mb-3"></i>
+      <i class="bi bi-inbox-fill fa-3x text-muted mb-3"></i>
       <h5 class="text-muted">No transactions found</h5>
       <p class="text-muted">Try adjusting the filters or add new transactions.</p>
     </div>
@@ -167,14 +167,14 @@
       <table class="transactions-table">
         <thead>
           <tr>
-            <th><i class="fa-solid fa-calendar me-2"></i>Date</th>
-            <th><i class="fa-solid fa-tag me-2"></i>Type</th>
-            <th><i class="fa-solid fa-align-left me-2"></i>Description</th>
-            <th><i class="fa-solid fa-credit-card me-2"></i>Account</th>
-            <th><i class="fa-solid fa-euro-sign me-2"></i>Amount</th>
-            <th><i class="fa-solid fa-receipt me-2"></i>Reference</th>
-            <th><i class="fa-solid fa-clock me-2"></i>Registered</th>
-            <th><i class="fa-solid fa-cog me-2"></i>Actions</th> <!-- NUEVA COLUMNA -->
+            <th><i class="bi bi-calendar me-2"></i>Date</th>
+            <th><i class="bi bi-tag me-2"></i>Type</th>
+            <th><i class="bi bi-text-left me-2"></i>Description</th>
+            <th><i class="bi bi-credit-card me-2"></i>Account</th>
+            <th><i class="bi bi-currency-euro me-2"></i>Amount</th>
+            <th><i class="bi bi-receipt me-2"></i>Reference</th>
+            <th><i class="bi bi-clock me-2"></i>Registered</th>
+            <th><i class="bi bi-gear me-2"></i>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -185,7 +185,7 @@
             </td>
             <td class="type-cell">
               <span class="transaction-type">
-                <i [class]="'fa-solid ' + getTransactionIcon(transaction.type)"></i>
+                <i [class]="'bi ' + getTransactionIcon(transaction.type)"></i>
                 {{ transaction.type }}
               </span>
             </td>
@@ -215,13 +215,13 @@
                   class="btn btn-sm btn-outline-primary me-1" 
                   (click)="editTransaction(transaction)"
                   [title]="'Edit transaction'">
-                  <i class="fa-solid fa-edit"></i>
+                  <i class="bi bi-pencil-square"></i>
                 </button>
                 <button 
                   class="btn btn-sm btn-outline-danger" 
                   (click)="deleteTransaction(transaction)"
                   [title]="'Delete transaction'">
-                  <i class="fa-solid fa-trash"></i>
+                  <i class="bi bi-trash"></i>
                 </button>
               </div>
             </td>
@@ -236,7 +236,7 @@
         <ul class="pagination justify-content-center">
           <li class="page-item" [class.disabled]="currentPage === 1">
             <button class="page-link" (click)="previousPage()">
-              <i class="fa-solid fa-chevron-left"></i>
+              <i class="bi bi-chevron-left"></i>
               Previous
             </button>
           </li>
@@ -271,7 +271,7 @@
           <li class="page-item" [class.disabled]="currentPage === totalPages">
             <button class="page-link" (click)="nextPage()">
               Next
-              <i class="fa-solid fa-chevron-right"></i>
+              <i class="bi bi-chevron-right"></i>
               </button>
           </li>
         </ul>
@@ -285,7 +285,7 @@
       <div class="modal-content custom-modal-content">
         <div class="modal-header custom-modal-header">
           <h5 class="modal-title">
-            <i class="fa-solid fa-edit me-2"></i>Edit Transaction
+            <i class="bi bi-pencil-square me-2"></i>Edit Transaction
           </h5>
           <button type="button" class="btn-close" (click)="closeEditModal()"></button>
         </div>
@@ -391,14 +391,14 @@
         </div>
         <div class="modal-footer custom-modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeEditModal()">
-            <i class="fa-solid fa-times me-1"></i>Cancel
+            <i class="bi bi-x-lg me-1"></i>Cancel
           </button>
           <button 
             type="button" 
             class="btn btn-primary" 
             (click)="saveTransaction()"
             [disabled]="editTransactionForm.invalid || isSaving">
-            <i class="fa-solid fa-save me-1"></i>
+            <i class="bi bi-check-lg me-1"></i>
             <span *ngIf="!isSaving">Save Changes</span>
             <span *ngIf="isSaving">Saving...</span>
           </button>
@@ -413,13 +413,13 @@
       <div class="modal-content custom-modal-content">
         <div class="modal-header custom-modal-header">
           <h5 class="modal-title">
-            <i class="fa-solid fa-trash me-2 text-danger"></i>Delete Transaction
+            <i class="bi bi-trash me-2 text-danger"></i>Delete Transaction
           </h5>
           <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
         </div>
         <div class="modal-body custom-modal-body">
           <div class="alert alert-warning">
-            <i class="fa-solid fa-exclamation-triangle me-2"></i>
+            <i class="bi bi-exclamation-triangle me-2"></i>
             <strong>Warning:</strong> This action cannot be undone.
           </div>
           <p>Are you sure you want to delete this transaction?</p>
@@ -434,14 +434,14 @@
         </div>
         <div class="modal-footer custom-modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
-            <i class="fa-solid fa-times me-1"></i>Cancel
+            <i class="bi bi-x-lg me-1"></i>Cancel
           </button>
           <button 
             type="button" 
             class="btn btn-danger" 
             (click)="confirmDelete()"
             [disabled]="isDeleting">
-            <i class="fa-solid fa-trash me-1"></i>
+            <i class="bi bi-trash me-1"></i>
             <span *ngIf="!isDeleting">Delete Transaction</span>
             <span *ngIf="isDeleting">Deleting...</span>
           </button>

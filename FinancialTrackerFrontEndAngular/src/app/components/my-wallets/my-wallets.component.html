@@ -12,7 +12,7 @@
         <div class="actions"> 
             <div class="action-button">
                 <button class="button-27" role="button" title="Add Card" 
-                [disabled]="isProcessing" 
+                [disabled]="isProcessing"
                 (click)="openAddForm()"
                 [class.processing]="isProcessing">
                     <i class="bi bi-plus-circle" style="color: white; font-size: 25px;"></i>
@@ -165,50 +165,71 @@
             <h2>Latest Transactions</h2>
             <h3>Today</h3>
             <div class="transactions">
-                <details *ngFor="let transaction of activeAccountTransactions; trackBy: trackByTransactionId">
-                    <summary>
-                        <div>
-                            <!-- ACTUALIZAR: Icono dinámico según el tipo -->
-                            <span class="transaction-icon-container" 
-                                  [style.background-color]="getTransactionIconColor(transaction.type)">
-                                <i [class]="getTransactionIcon(transaction.type)" 
-                                   [ngClass]="getTransactionIconClass(transaction.type)"></i>
-                            </span>
-                            <h3>
-                                <strong>{{ transaction.description }}</strong>
-                                <small>{{ transaction.type }}</small>
-                            </h3>
-                            <span [class.plus]="transaction.amount > 0" [class.minus]="transaction.amount < 0">
-                                {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount | currency:'USD' }}
-                            </span>
-                        </div>
-                    </summary>
-                    <div>
-                        <dl>
-                            <div>
-                                <dt>Date</dt>
-                                <dd>{{ transaction.date | date:'shortDate' }}</dd>
-                            </div>
-                            <div>
-                                <dt>Card used</dt>
-                                <dd>•••• {{ getActiveAccount()?.account_type?.slice(-4) }}</dd>
-                            </div>
-                            <div>
-                                <dt>Reference ID</dt>
-                                <dd>{{ getCurrentReferenceId() }}</dd>
-                            </div>
-                            <div>
-                                <dt>Category</dt>
-                                <dd>
-                                    <span class="transaction-category">
-                                        <i [class]="getTransactionIcon(transaction.type)"></i>
-                                        {{ transaction.type }}
+                <div *ngFor="let transaction of activeAccountTransactions; trackBy: trackByTransactionId" class="transaction-item">
+                    <details>
+                        <summary>
+                            <div class="transaction-header">
+                                <!-- Icono dinámico según el tipo -->
+                                <span class="transaction-icon-container" 
+                                      [style.background-color]="getTransactionIconColor(transaction.type)">
+                                    <i [class]="getTransactionIcon(transaction.type)" 
+                                       [ngClass]="getTransactionIconClass(transaction.type)"></i>
+                                </span>
+                                <div class="transaction-info">
+                                    <h3>
+                                        <strong>{{ transaction.description }}</strong>
+                                        <small>{{ transaction.type }}</small>
+                                    </h3>
+                                    <span [class.plus]="transaction.amount > 0" [class.minus]="transaction.amount < 0">
+                                        {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount | currency:'USD' }}
                                     </span>
-                                </dd>
+                                </div>
+                                <!-- NUEVO: Botones de acción -->
+                                <div class="transaction-actions">
+                                    <button 
+                                        class="btn-edit-transaction" 
+                                        title="Edit Transaction"
+                                        (click)="openEditTransactionModal(transaction, $event)"
+                                        [disabled]="isProcessing">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button 
+                                        class="btn-delete-transaction" 
+                                        title="Delete Transaction"
+                                        (click)="deleteTransaction(transaction, $event)"
+                                        [disabled]="isProcessing">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </div>
-                        </dl>
-                    </div>
-                </details>
+                        </summary>
+                        <div class="transaction-details">
+                            <dl>
+                                <div>
+                                    <dt>Date</dt>
+                                    <dd>{{ transaction.date | date:'shortDate' }}</dd>
+                                </div>
+                                <div>
+                                    <dt>Card used</dt>
+                                    <dd>•••• {{ getActiveAccount()?.account_type?.slice(-4) }}</dd>
+                                </div>
+                                <div>
+                                    <dt>Reference ID</dt>
+                                    <dd>{{ transaction.reference_id || getCurrentReferenceId() }}</dd>
+                                </div>
+                                <div>
+                                    <dt>Category</dt>
+                                    <dd>
+                                        <span class="transaction-category">
+                                            <i [class]="getTransactionIcon(transaction.type)"></i>
+                                            {{ transaction.type }}
+                                        </span>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </details>
+                </div>
                 
                 <!-- Mensaje cuando no hay transacciones -->
                 <div *ngIf="!activeAccountTransactions?.length" class="no-transactions">
@@ -216,7 +237,169 @@
                     <p>No transactions found for this card.</p>
                 </div>
             </div>
-                        </div>
+        </div>
+
+<!-- NUEVO: Modal para editar transacciones -->
+<div class="modal" *ngIf="showEditTransactionModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Transaction</h3>
+            <button type="button" class="close-btn" (click)="closeEditTransactionModal()" [disabled]="isProcessing">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <form (ngSubmit)="saveEditedTransaction()" #editTransactionForm="ngForm">
+            <div class="form-group">
+                <label for="edit_transaction_date">Date *</label>
+                <input 
+                    id="edit_transaction_date"
+                    type="date" 
+                    [(ngModel)]="editingTransaction.date" 
+                    name="edit_transaction_date" 
+                    required
+                    [disabled]="isProcessing"
+                    #editDate="ngModel">
+                <div class="validation-message" *ngIf="editDate.invalid && editDate.touched">
+                    <small *ngIf="editDate.errors?.['required']">Date is required</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit_transaction_description">Description *</label>
+                <input 
+                    id="edit_transaction_description"
+                    [(ngModel)]="editingTransaction.description" 
+                    name="edit_transaction_description" 
+                    required
+                    maxlength="100"
+                    placeholder="Transaction description"
+                    [disabled]="isProcessing"
+                    #editDescription="ngModel">
+                <div class="validation-message" *ngIf="editDescription.invalid && editDescription.touched">
+                    <small *ngIf="editDescription.errors?.['required']">Description is required</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit_transaction_amount">Amount *</label>
+                <input 
+                    id="edit_transaction_amount"
+                    type="number" 
+                    [(ngModel)]="editingTransaction.amount" 
+                    name="edit_transaction_amount" 
+                    required
+                    step="0.01"
+                    placeholder="0.00"
+                    [disabled]="isProcessing"
+                    #editAmount="ngModel">
+                <div class="validation-message" *ngIf="editAmount.invalid && editAmount.touched">
+                    <small *ngIf="editAmount.errors?.['required']">Amount is required</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit_transaction_type">Type *</label>
+                <select 
+                    id="edit_transaction_type"
+                    [(ngModel)]="editingTransaction.type" 
+                    name="edit_transaction_type" 
+                    required
+                    [disabled]="isProcessing">
+                    <option value="">Select transaction type</option>
+                    <option value="Food">Food</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Income">Income</option>
+                    <option value="Gift">Gift</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Education">Education</option>
+                </select>
+            </div>
+            
+            <!-- Error Messages -->
+            <div class="error-message" *ngIf="transactionEditError">
+                {{ transactionEditError }}
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="modal-buttons">
+                <button 
+                    type="submit" 
+                    class="btn btn-success" 
+                    [disabled]="!editTransactionForm.valid || isProcessing">
+                    <span *ngIf="isProcessing" class="spinner"></span>
+                    {{ isProcessing ? 'Saving...' : 'Save Changes' }}
+                </button>
+                <button 
+                    type="button" 
+                    class="btn btn-secondary" 
+                    (click)="closeEditTransactionModal()"
+                    [disabled]="isProcessing">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- NUEVO: Modal de confirmación para eliminar transacción -->
+<div class="modal" *ngIf="showDeleteTransactionModal">
+    <div class="modal-content delete-confirmation-modal">
+        <div class="modal-header">
+            <h3>
+                <i class="bi bi-exclamation-triangle text-danger"></i>
+                Delete Transaction
+            </h3>
+            <button type="button" class="close-btn" (click)="closeDeleteTransactionModal()" [disabled]="isProcessing">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <div class="confirmation-content">
+            <p>Are you sure you want to delete this transaction?</p>
+            <div class="transaction-preview" *ngIf="transactionToDelete">
+                <div class="transaction-summary">
+                    <span class="transaction-description">{{ transactionToDelete.description }}</span>
+                    <span class="transaction-amount" [class.plus]="transactionToDelete.amount > 0" [class.minus]="transactionToDelete.amount < 0">
+                        {{ transactionToDelete.amount > 0 ? '+' : '' }}{{ transactionToDelete.amount | currency:'USD' }}
+                    </span>
+                </div>
+                <div class="transaction-details-preview">
+                    <small>{{ transactionToDelete.type }} • {{ transactionToDelete.date | date:'shortDate' }}</small>
+                </div>
+            </div>
+            <p class="warning-text">This action cannot be undone.</p>
+        </div>
+        
+        <!-- Error Messages -->
+        <div class="error-message" *ngIf="transactionDeleteError">
+            {{ transactionDeleteError }}
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="modal-buttons">
+            <button 
+                type="button" 
+                class="btn btn-danger" 
+                (click)="confirmDeleteTransaction()"
+                [disabled]="isProcessing">
+                <span *ngIf="isProcessing" class="spinner"></span>
+                <i class="bi bi-trash" *ngIf="!isProcessing"></i>
+                {{ isProcessing ? 'Deleting...' : 'Delete Transaction' }}
+            </button>
+            <button 
+                type="button" 
+                class="btn btn-secondary" 
+                (click)="closeDeleteTransactionModal()"
+                [disabled]="isProcessing">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
                             </div>
                             
   
@@ -295,8 +478,8 @@
           </div>
           <div class="validation-message" *ngIf="selectedAccount && selectedAccount.account_number && selectedAccount.account_type && !validateAccountNumber(selectedAccount.account_number, selectedAccount.account_type)">
             <small class="error">           
-              Invalid {{ selectedAccount?.account_type === 'CreditCard' ? 'card' : 
-                 selectedAccount?.account_type === 'BankAccount' ? 'account' : 
+              Invalid {{ selectedAccount.account_type === 'CreditCard' ? 'card' : 
+                 selectedAccount.account_type === 'BankAccount' ? 'account' : 
                  'cash ID' }} number format
             </small>
           </div>

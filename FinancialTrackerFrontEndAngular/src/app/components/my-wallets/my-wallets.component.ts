@@ -46,6 +46,14 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   withdrawForm = { amount: 0, description: '' };
   depositForm = { amount: 0, description: '' };
 
+  // NUEVAS propiedades para edición de transacciones
+  showEditTransactionModal = false;
+  showDeleteTransactionModal = false;
+  editingTransaction: any = {};
+  transactionToDelete: any = null;
+  transactionEditError = '';
+  transactionDeleteError = '';
+
   constructor(private renderer: Renderer2, private accountService: AccountService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
@@ -1200,16 +1208,212 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   // NUEVO método helper para manejar errores de transacciones
-  private handleTransactionError(error: any) {
+  private handleTransactionError(error: any): string { // Añadir return type
     this.isProcessing = false;
     
     if (error.status === 403) {
-      this.setError('Error de autenticación. Por favor, inicia sesión nuevamente.');
+      return 'Error de autenticación. Por favor, inicia sesión nuevamente.';
     } else if (error.status === 400) {
-      this.setError('Datos inválidos. Verifica la información e intenta nuevamente.');
+      return 'Datos inválidos. Verifica la información e intenta nuevamente.';
     } else {
-      this.setError('Error al procesar la transacción. Por favor, intenta nuevamente.');
+      return 'Error al procesar la transacción. Por favor, intenta nuevamente.';
     }
+  }
+
+  // NUEVO: Abrir modal de edición de transacción
+  openEditTransactionModal(transaction: any, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    this.editingTransaction = {
+      id: transaction.id, // Cambiar de transaction_Id a id
+      date: transaction.date,
+      description: transaction.description,
+      amount: transaction.amount,
+      type: transaction.type,
+      accountId: transaction.accountId // Cambiar de account_Id a accountId
+    };
+    
+    this.showEditTransactionModal = true;
+    this.transactionEditError = '';
+  }
+
+  // NUEVO: Cerrar modal de edición de transacción
+  closeEditTransactionModal() {
+    this.showEditTransactionModal = false;
+    this.editingTransaction = {};
+    this.transactionEditError = '';
+  }
+
+  // NUEVO: Guardar transacción editada
+  saveEditedTransaction() {
+    if (!this.validateTransactionEdit()) {
+      return;
+    }
+
+    this.isProcessing = true;
+    this.transactionEditError = '';
+
+    // NUEVO: Calcular la diferencia en el balance
+    const originalTransaction = this.activeAccountTransactions.find(t => t.id === this.editingTransaction.id);
+    if (!originalTransaction) {
+      this.transactionEditError = 'No se encontró la transacción original';
+      this.isProcessing = false;
+      return;
+    }
+
+    const balanceDifference = this.editingTransaction.amount - originalTransaction.amount;
+
+    this.accountService.updateTransaction(this.editingTransaction).subscribe({
+      next: (updatedTransaction) => {
+        console.log('✅ Transaction updated successfully:', updatedTransaction);
+        
+        // NUEVO: Actualizar el balance de la cuenta
+        if (this.selectedAccount) {
+          this.selectedAccount.balance += balanceDifference;
+          
+          // Actualizar también en la lista de cuentas
+          const accountIndex = this.accounts.findIndex(a => a.account_Id === this.selectedAccount?.account_Id);
+          if (accountIndex !== -1) {
+            this.accounts[accountIndex].balance = this.selectedAccount.balance;
+          }
+          
+          // NUEVO: Guardar el balance actualizado en la base de datos
+          this.updateAccountBalance(this.selectedAccount);
+        }
+        
+        // Actualizar la transacción en la lista local
+        const index = this.activeAccountTransactions.findIndex(t => t.id === updatedTransaction.id);
+        if (index !== -1) {
+          this.activeAccountTransactions[index] = updatedTransaction;
+        }
+        
+        // Actualizar también en la cuenta seleccionada
+        if (this.selectedAccount && this.selectedAccount.transactions) {
+          const accountIndex = this.selectedAccount.transactions.findIndex(t => t.id === updatedTransaction.id);
+          if (accountIndex !== -1) {
+            this.selectedAccount.transactions[accountIndex] = updatedTransaction;
+          }
+        }
+        
+        this.closeEditTransactionModal();
+        this.isProcessing = false;
+        
+        // Mostrar mensaje de éxito
+        this.showSuccessMessage(`Transacción actualizada. Balance ajustado: ${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${this.selectedAccount?.currency}`);
+      },
+      error: (error) => {
+        console.error('❌ Error updating transaction:', error);
+        this.transactionEditError = this.handleTransactionError(error);
+        this.isProcessing = false;
+      }
+    });
+  }
+
+  // NUEVO: Validar edición de transacción
+  private validateTransactionEdit(): boolean {
+    if (!this.editingTransaction.description || this.editingTransaction.description.trim() === '') {
+      this.transactionEditError = 'Description is required';
+      return false;
+    }
+    
+    if (!this.editingTransaction.amount || this.editingTransaction.amount === 0) {
+      this.transactionEditError = 'Amount must be greater than 0';
+      return false;
+    }
+    
+    if (!this.editingTransaction.type) {
+      this.transactionEditError = 'Transaction type is required';
+      return false;
+    }
+    
+    if (!this.editingTransaction.date) {
+      this.transactionEditError = 'Date is required';
+      return false;
+    }
+    
+    return true;
+  }
+
+  // NUEVO: Abrir modal de confirmación para eliminar transacción
+  deleteTransaction(transaction: any, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    this.transactionToDelete = transaction;
+    this.showDeleteTransactionModal = true;
+    this.transactionDeleteError = '';
+  }
+
+  // NUEVO: Cerrar modal de confirmación para eliminar transacción
+  closeDeleteTransactionModal() {
+    this.showDeleteTransactionModal = false;
+    this.transactionToDelete = null;
+    this.transactionDeleteError = '';
+  }
+
+  // NUEVO: Confirmar eliminación de transacción
+  confirmDeleteTransaction() {
+    if (!this.transactionToDelete) {
+      return;
+    }
+
+    this.isProcessing = true;
+    this.transactionDeleteError = '';
+
+    // NUEVO: Calcular el impacto en el balance (revertir la transacción)
+    const balanceImpact = -this.transactionToDelete.amount; // Revertir el monto
+
+    this.accountService.deleteTransaction(this.transactionToDelete.id).subscribe({
+      next: () => {
+        console.log('✅ Transaction deleted successfully');
+        
+        // NUEVO: Actualizar el balance de la cuenta
+        if (this.selectedAccount) {
+          this.selectedAccount.balance += balanceImpact;
+          
+          // Actualizar también en la lista de cuentas
+          const accountIndex = this.accounts.findIndex(a => a.account_Id === this.selectedAccount?.account_Id);
+          if (accountIndex !== -1) {
+            this.accounts[accountIndex].balance = this.selectedAccount.balance;
+          }
+          
+          // NUEVO: Guardar el balance actualizado en la base de datos
+          this.updateAccountBalance(this.selectedAccount);
+        }
+        
+        // Remover la transacción de la lista local
+        this.activeAccountTransactions = this.activeAccountTransactions.filter(
+          t => t.id !== this.transactionToDelete.id
+        );
+        
+        // Remover también de la cuenta seleccionada
+        if (this.selectedAccount && this.selectedAccount.transactions) {
+          this.selectedAccount.transactions = this.selectedAccount.transactions.filter(
+            t => t.id !== this.transactionToDelete.id
+          );
+        }
+        
+        this.closeDeleteTransactionModal();
+        this.isProcessing = false;
+        
+        // Mostrar mensaje de éxito
+        this.showSuccessMessage(`Transacción eliminada. Balance ajustado: ${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${this.selectedAccount?.currency}`);
+      },
+      error: (error) => {
+        console.error('❌ Error deleting transaction:', error);
+        this.transactionDeleteError = this.handleTransactionError(error);
+        this.isProcessing = false;
+      }
+    });
+  }
+
+  // NUEVO: Mostrar mensaje de éxito
+  private showSuccessMessage(message: string) {
+    // Puedes implementar un toast o notificación aquí
+    console.log('✅ Success:', message);
+    // Ejemplo con alert temporal:
+    // alert(message);
   }
 }
 

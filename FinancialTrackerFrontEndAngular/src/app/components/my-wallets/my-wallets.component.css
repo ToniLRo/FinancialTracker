@@ -1612,3 +1612,133 @@ text-align: center;
   font-size: 14px;
 }
 
+/* Estilos para las acciones de transacciones */
+.transaction-item {
+  position: relative;
+}
+
+.transaction-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.transaction-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.transaction-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 10px;
+}
+
+.btn-edit-transaction,
+.btn-delete-transaction {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.btn-edit-transaction {
+  color: #007bff;
+}
+
+.btn-edit-transaction:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.btn-delete-transaction {
+  color: #dc3545;
+}
+
+.btn-delete-transaction:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.btn-edit-transaction:disabled,
+.btn-delete-transaction:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Estilos para el modal de confirmación de eliminación */
+.delete-confirmation-modal {
+  max-width: 400px;
+}
+
+.confirmation-content {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.transaction-preview {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.transaction-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.transaction-description {
+  font-weight: bold;
+  color: #fff;
+}
+
+.transaction-amount {
+  font-weight: bold;
+}
+
+.transaction-amount.plus {
+  color: #28a745;
+}
+
+.transaction-amount.minus {
+  color: #dc3545;
+}
+
+.transaction-details-preview {
+  color: #ccc;
+  font-size: 12px;
+}
+
+.warning-text {
+  color: #ffc107;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+/* Mejoras en el modal de edición */
+.modal-content form {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .transaction-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .btn-edit-transaction,
+  .btn-delete-transaction {
+    padding: 6px 10px;
+    font-size: 16px;
+  }
+}
+

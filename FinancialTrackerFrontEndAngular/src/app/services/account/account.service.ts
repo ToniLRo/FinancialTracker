@@ -102,4 +102,39 @@ export class AccountService {
       catchError(this.handleError.bind(this))
     );
   }
+
+  // NUEVO: Actualizar transacción
+  updateTransaction(transaction: any): Observable<any> {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return throwError(() => new Error('No authentication token'));
+    }
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.put<any>(`${this.transactionApiUrl}/update`, transaction, { headers })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // NUEVO: Eliminar transacción
+  deleteTransaction(transactionId: number): Observable<any> {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      return throwError(() => new Error('No authentication token'));
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.delete<any>(`${this.transactionApiUrl}/delete/${transactionId}`, { headers })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
 }

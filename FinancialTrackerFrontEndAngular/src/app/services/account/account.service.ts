@@ -176,6 +176,14 @@ export class AccountService {
     return this.http.get<any[]>(`${this.accountApiUrl}/marketdata/currencies`);
   }
 
+  // NUEVO: Método específico para actualizar solo el balance
+  updateAccountBalance(accountId: number, balance: number): Observable<Account> {
+    return this.http.put<Account>(`${this.accountApiUrl}/update-balance/${accountId}`, 
+      { balance: balance }, 
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
   private getToken(): string {
     return localStorage.getItem('jwt_token') || '';
   }

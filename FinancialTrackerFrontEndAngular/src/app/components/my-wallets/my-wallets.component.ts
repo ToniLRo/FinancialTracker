@@ -554,18 +554,33 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  updateAccountBalance(account: Account) {
-    this.accountService.updateAccount(account).subscribe({
-      next: (updatedAccount) => {
-        // Actualizar la cuenta en la lista local
-        const index = this.accounts.findIndex(a => a.account_Id === updatedAccount.account_Id);
-        if (index !== -1) {
-          this.accounts[index] = { ...updatedAccount, transactions: account.transactions };
+  // MEJORAR: updateAccountBalance para enviar solo campos necesarios
+  updateAccountBalance(account: Account): Promise<void> {
+    return new Promise((resolve, reject) => {
+      console.log('🔄 Updating account balance:', account.account_Id, account.balance);
+      
+      this.accountService.updateAccountBalance(account.account_Id!, account.balance).subscribe({
+        next: (updatedAccount) => {
+          console.log('✅ Balance updated successfully:', updatedAccount.balance);
+          
+          // Actualizar localmente
+          const index = this.accounts.findIndex(a => a.account_Id === updatedAccount.account_Id);
+          if (index !== -1) {
+            this.accounts[index].balance = updatedAccount.balance;
+          }
+          
+          if (this.selectedAccount?.account_Id === updatedAccount.account_Id) {
+            this.selectedAccount!.balance = updatedAccount.balance;
+          }
+          
+          this.cdr.detectChanges();
+          resolve();
+        },
+        error: (error) => {
+          console.error('❌ Error updating balance:', error);
+          reject(error);
         }
-      },
-      error: (error) => {
-        console.error('Error updating account balance:', error);
-      }
+      });
     });
   }
 
@@ -1357,8 +1372,8 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.transactionDeleteError = '';
   }
 
-  // NUEVO: Confirmar eliminación de transacción
-  confirmDeleteTransaction() {
+  // MEJORAR: confirmDeleteTransaction para esperar que se guarde el balance
+  async confirmDeleteTransaction() {
     if (!this.transactionToDelete) {
       return;
     }
@@ -1366,59 +1381,78 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.isProcessing = true;
     this.transactionDeleteError = '';
 
-    // NUEVO: Calcular el impacto en el balance (revertir la transacción)
-    const balanceImpact = -this.transactionToDelete.amount; // Revertir el monto
+    // Calcular el impacto en el balance (revertir la transacción)
+    const balanceImpact = -this.transactionToDelete.amount;
 
-    this.accountService.deleteTransaction(this.transactionToDelete.id).subscribe({
-      next: () => {
-        console.log('✅ Transaction deleted successfully');
+    try {
+      // 1. Eliminar transacción del backend
+      await this.accountService.deleteTransaction(this.transactionToDelete.id).toPromise();
+      console.log('✅ Transaction deleted successfully');
+      
+      // 2. Actualizar el balance de la cuenta localmente
+      if (this.selectedAccount) {
+        const previousBalance = this.selectedAccount.balance;
+        this.selectedAccount.balance += balanceImpact;
         
-        // NUEVO: Actualizar el balance de la cuenta
-        if (this.selectedAccount) {
-          this.selectedAccount.balance += balanceImpact;
-          
-          // Actualizar también en la lista de cuentas
-          const accountIndex = this.accounts.findIndex(a => a.account_Id === this.selectedAccount?.account_Id);
-          if (accountIndex !== -1) {
-            this.accounts[accountIndex].balance = this.selectedAccount.balance;
-          }
-          
-          // NUEVO: Guardar el balance actualizado en la base de datos
-          this.updateAccountBalance(this.selectedAccount);
+        console.log(`Balance adjustment: ${previousBalance} + (${balanceImpact}) = ${this.selectedAccount.balance}`);
+        
+        // 3. Actualizar también en la lista de cuentas
+        const accountIndex = this.accounts.findIndex(a => a.account_Id === this.selectedAccount?.account_Id);
+        if (accountIndex !== -1) {
+          this.accounts[accountIndex].balance = this.selectedAccount.balance;
         }
         
-        // Remover la transacción de la lista local
-        this.activeAccountTransactions = this.activeAccountTransactions.filter(
+        // 4. CRÍTICO: Guardar el balance actualizado en la base de datos
+        await this.updateAccountBalance(this.selectedAccount);
+        console.log('✅ Account balance saved to database');
+      }
+      
+      // 5. Remover la transacción de la lista local
+      this.activeAccountTransactions = this.activeAccountTransactions.filter(
+        t => t.id !== this.transactionToDelete.id
+      );
+      
+      // 6. Remover también de la cuenta seleccionada
+      if (this.selectedAccount && this.selectedAccount.transactions) {
+        this.selectedAccount.transactions = this.selectedAccount.transactions.filter(
           t => t.id !== this.transactionToDelete.id
         );
-        
-        // Remover también de la cuenta seleccionada
-        if (this.selectedAccount && this.selectedAccount.transactions) {
-          this.selectedAccount.transactions = this.selectedAccount.transactions.filter(
-            t => t.id !== this.transactionToDelete.id
-          );
-        }
-        
-        this.closeDeleteTransactionModal();
-        this.isProcessing = false;
-        
-        // Mostrar mensaje de éxito
-        this.showSuccessMessage(`Transacción eliminada. Balance ajustado: ${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${this.selectedAccount?.currency}`);
-      },
-      error: (error) => {
-        console.error('❌ Error deleting transaction:', error);
-        this.transactionDeleteError = this.handleTransactionError(error);
-        this.isProcessing = false;
       }
-    });
+      
+      this.closeDeleteTransactionModal();
+      
+      // 7. Mostrar mensaje de éxito
+      const balanceMessage = balanceImpact > 0 ? `+${balanceImpact.toFixed(2)}` : `${balanceImpact.toFixed(2)}`;
+      this.showSuccessMessage(`Transacción eliminada. Balance ajustado: ${balanceMessage} ${this.selectedAccount?.currency}`);
+      
+    } catch (error: any) {
+      console.error('❌ Error in delete transaction process:', error);
+      
+      // Revertir cambios locales si hay error
+      if (this.selectedAccount) {
+        this.selectedAccount.balance -= balanceImpact;
+        
+        const accountIndex = this.accounts.findIndex(a => a.account_Id === this.selectedAccount?.account_Id);
+        if (accountIndex !== -1) {
+          this.accounts[accountIndex].balance = this.selectedAccount.balance;
+        }
+      }
+      
+      this.transactionDeleteError = this.handleTransactionError(error);
+    } finally {
+      this.isProcessing = false;
+    }
   }
 
-  // NUEVO: Mostrar mensaje de éxito
-  private showSuccessMessage(message: string) {
-    // Puedes implementar un toast o notificación aquí
-    console.log('✅ Success:', message);
-    // Ejemplo con alert temporal:
-    // alert(message);
+  // NUEVO: Método para mostrar mensajes de éxito
+  showSuccessMessage(message: string) {
+    // Opción 1: Alert simple
+    alert(message);
+    
+    // Opción 2: Console log para debug
+    console.log('✅ SUCCESS:', message);
+    
+    // TODO: Implementar toast/snackbar más adelante
   }
 
   openInspectModal() {

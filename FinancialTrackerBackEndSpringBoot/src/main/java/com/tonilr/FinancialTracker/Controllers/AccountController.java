@@ -1,6 +1,7 @@
 package com.tonilr.FinancialTracker.Controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,11 +95,37 @@ public class AccountController {
 	@PutMapping("/update")
 	public ResponseEntity<AccountDTO> updateAccount(@RequestBody Account account) {
 		try {
-			Account updatedAccount = accountService.updateAccount(account);
+			System.out.println("=== UPDATE ACCOUNT ===");
+			System.out.println("Received account data:");
+			System.out.println("- ID: " + account.getAccount_Id());
+			System.out.println("- Holder name: " + account.getHolder_name());
+			System.out.println("- Balance: " + account.getBalance());
+			System.out.println("- Currency: " + account.getCurrency());
+			System.out.println("- Account number: " + account.getAccount_number());
+			System.out.println("- Account type: " + account.getAccount_type());
+			System.out.println("- User: " + (account.getUser() != null ? account.getUser().getUser_Id() : "null"));
+			
+			// NUEVO: Validar que la cuenta existe
+			Account existingAccount = accountService.findAccountById(account.getAccount_Id());
+			System.out.println("Found existing account: " + existingAccount.getAccount_Id());
+			
+			// NUEVO: Solo actualizar campos específicos para evitar conflictos
+			existingAccount.setBalance(account.getBalance());
+			if (account.getHolder_name() != null) {
+				existingAccount.setHolder_name(account.getHolder_name());
+			}
+			if (account.getCurrency() != null) {
+				existingAccount.setCurrency(account.getCurrency());
+			}
+			// NO actualizar: user, account_number, account_type, creation_date, etc.
+			
+			Account updatedAccount = accountService.updateAccount(existingAccount);
+			System.out.println("✅ Account updated successfully. New balance: " + updatedAccount.getBalance());
+			
 			AccountDTO accountDTO = convertToDTO(updatedAccount);
 			return new ResponseEntity<>(accountDTO, HttpStatus.OK);
 		} catch (Exception e) {
-			System.err.println("Error updating account: " + e.getMessage());
+			System.err.println("❌ Error updating account: " + e.getMessage());
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -141,4 +168,30 @@ public class AccountController {
 			account.getUser() != null ? account.getUser().getUser_Id() : null
 		);
 	}
+
+	// NUEVO: Endpoint específico para actualizar solo el balance
+	@PutMapping("/update-balance/{id}")
+	public ResponseEntity<AccountDTO> updateAccountBalance(@PathVariable("id") Long id, @RequestBody Map<String, Object> balanceData) {
+		try {
+        System.out.println("=== UPDATE ACCOUNT BALANCE ===");
+        System.out.println("Account ID: " + id);
+        System.out.println("New balance: " + balanceData.get("balance"));
+        
+        Account existingAccount = accountService.findAccountById(id);
+        
+        // Solo actualizar el balance
+        Double newBalance = ((Number) balanceData.get("balance")).doubleValue();
+        existingAccount.setBalance(newBalance);
+        
+        Account updatedAccount = accountService.updateAccount(existingAccount);
+        System.out.println("✅ Account balance updated successfully: " + updatedAccount.getBalance());
+        
+        AccountDTO accountDTO = convertToDTO(updatedAccount);
+        return new ResponseEntity<>(accountDTO, HttpStatus.OK);
+    } catch (Exception e) {
+        System.err.println("❌ Error updating account balance: " + e.getMessage());
+        e.printStackTrace();
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
 }

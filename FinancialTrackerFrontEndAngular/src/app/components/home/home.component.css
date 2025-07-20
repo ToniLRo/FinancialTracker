@@ -39,7 +39,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20%;
+        margin-bottom: 5%;
     }
     .footer-data{
         display: flex;
@@ -820,7 +820,6 @@ overflow-x: hidden;}
     max-width: 100%; /* MEJORADO: Usar todo el ancho disponible */
     height: auto;
     min-height: 300px; /* NUEVO: Altura mínima */
-    max-height: 400px; /* AJUSTADO: Altura máxima mayor */
     margin: 0;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 1.5rem;
@@ -1110,7 +1109,6 @@ overflow-x: hidden;}
 
 /* Gráfico más compacto */
 .cards {
-    max-height: 250px; /* Altura más pequeña */
     min-height: 200px;
 }
 

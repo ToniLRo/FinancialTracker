@@ -970,18 +970,60 @@ private makeStockApiCall(): void {
 
     this.accountService.getDataFromAPI(url).subscribe({
         next: (data: any) => {
-            // Procesar datos...
-            
-            // Registrar la actualización exitosa
-            this.apiUpdateControlService.recordUpdate('STOCK').subscribe({
-                next: () => console.log('✅ Timestamp de STOCKS actualizado'),
-                error: (err) => console.error('❌ Error actualizando timestamp:', err)
-            });
+            console.log('✅ Datos recibidos de API:', data);
 
-            // ... resto del código de procesamiento ...
+            // Para cada símbolo
+            Object.entries(data).forEach(([symbol, stockData]: [string, any]) => {
+                if (stockData.status === 'ok' && stockData.values?.length > 0) {
+                    const latestData = stockData.values[0];  // Último dato
+                    console.log(`📊 Procesando ${symbol}:`, {
+                        datetime: latestData.datetime,
+                        open: latestData.open,
+                        close: latestData.close,
+                        volume: latestData.volume
+                    });
+
+                    const marketData = {
+                        symbol: symbol,
+                        assetType: 'STOCK',
+                        date: new Date().toISOString().split('T')[0],
+                        open: parseFloat(latestData.open),
+                        high: parseFloat(latestData.high),
+                        low: parseFloat(latestData.low),
+                        close: parseFloat(latestData.close),
+                        volume: parseFloat(latestData.volume),
+                        market: 'USD'
+                    };
+
+                    // Actualizar UI
+                    const stockPrice = {
+                        symbol: symbol,
+                        price: this.formatPrice(parseFloat(latestData.close)),
+                        change: this.calculateChange(
+                            parseFloat(latestData.open),
+                            parseFloat(latestData.close)
+                        ),
+                        name: this.getCompanyName(symbol)
+                    };
+
+                    // Actualizar el array de precios
+                    const index = this.stockPrices.findIndex(s => s.symbol === symbol);
+                    if (index !== -1) {
+                        this.stockPrices[index] = stockPrice;
+                    } else {
+                        this.stockPrices.push(stockPrice);
+                    }
+
+                    // Guardar en BD
+                    this.marketDataService.saveMarketData(marketData).subscribe({
+                        next: () => console.log(`💾 ${symbol} guardado en BD`),
+                        error: (err) => console.error(`❌ Error guardando ${symbol}:`, err)
+                    });
+                }
+            });
         },
         error: (error) => {
-            console.error('❌ Error cargando stocks desde API:', error);
+            console.error('❌ Error cargando stocks:', error);
             this.loadStocksFromDatabase();
         }
     });

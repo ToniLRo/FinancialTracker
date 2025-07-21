@@ -732,7 +732,6 @@ loadCurrencyPrices(): void {
     const lastUpdate = localStorage.getItem('lastForexUpdate');
     const now = Date.now();
     
-    // Verificar si han pasado los 32 minutos necesarios
     if (lastUpdate && (now - parseInt(lastUpdate)) < this.UPDATE_INTERVALS.FOREX) {
         this.loadForexFromDatabase();
         return;
@@ -755,7 +754,7 @@ loadCurrencyPrices(): void {
                 const previousRate = rate * (1 + (Math.random() * 0.02 - 0.01));
                 
                 const marketData = {
-                    symbol: `${currency}/USD`,
+                    symbol: `USD/${currency}`, // Cambiado el orden aquí
                     assetType: 'FOREX',
                     date: new Date().toISOString().split('T')[0],
                     open: previousRate,
@@ -772,7 +771,7 @@ loadCurrencyPrices(): void {
                 });
 
                 return {
-                    symbol: `${currency}/USD`,
+                    symbol: `USD/${currency}`, // Cambiado el orden aquí
                     price: this.formatPrice(rate),
                     change: this.calculateChange(previousRate, rate),
                     name: this.getCurrencyName(currency)
@@ -787,8 +786,6 @@ loadCurrencyPrices(): void {
 }
 
 private loadForexFromDatabase(): void {
-    //console.log('🔄 Cargando datos de divisas desde base de datos...');
-    
     this.marketDataService.getLastMarketData('FOREX').subscribe({
         next: (data) => {
             if (!data || data.length === 0) {
@@ -797,12 +794,11 @@ private loadForexFromDatabase(): void {
             }
             
             this.currencyPrices = data.map((forex: any) => ({
-                symbol: forex.symbol,
+                symbol: forex.symbol, // Ya estará en formato USD/XXX desde la base de datos
                 price: this.formatPrice(forex.close),
                 change: this.calculateChange(forex.open, forex.close),
-                name: this.getCurrencyName(forex.symbol.split('/')[0])
+                name: this.getCurrencyName(forex.symbol.split('/')[1]) // Cambiado para tomar la segunda parte del par
             }));
-            //console.log(`✅ Cargados ${this.currencyPrices.length} datos de divisas desde base de datos`);
         },
         error: (err) => {
             console.error('❌ Error cargando divisas desde base de datos:', err);

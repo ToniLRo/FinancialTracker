@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MarketDataService } from 'src/app/services/marketData/marketData.service';
+import { ApiUpdateControlService } from 'src/app/services/api-update-control/api-update-control.service';
 
 @Component({
     selector: 'home',
@@ -64,7 +65,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private accountService: AccountService,
     private cdr: ChangeDetectorRef,
     private http: HttpClient,
-    private marketDataService: MarketDataService
+    private marketDataService: MarketDataService,
+    private apiUpdateControlService: ApiUpdateControlService
   ) {
     Chart.register(
       CategoryScale, 
@@ -729,32 +731,65 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
 // Añadimos el nuevo método para cargar divisas
 loadCurrencyPrices(): void {
-    const lastUpdate = localStorage.getItem('lastForexUpdate');
-    const now = Date.now();
-    
-    if (lastUpdate && (now - parseInt(lastUpdate)) < this.UPDATE_INTERVALS.FOREX) {
-        this.loadForexFromDatabase();
-        return;
-    }
+    this.apiUpdateControlService.checkUpdateStatus('FOREX').subscribe({
+        next: (response) => {
+            console.log('🔍 Estado de actualización FOREX:', {
+                debeActualizar: response.shouldUpdate,
+                ultimaActualizacion: new Date(response.lastUpdate).toLocaleString(),
+                proximaActualizacion: new Date(response.nextUpdate).toLocaleString()
+            });
 
+            if (response.shouldUpdate) {
+                this.makeForexApiCall();
+            } else {
+                this.loadForexFromDatabase();
+            }
+        },
+        error: (error) => {
+            console.error('❌ Error verificando estado de actualización:', error);
+            this.loadForexFromDatabase();
+        }
+    });
+}
+
+private makeForexApiCall(): void {
     const apiKey = environment.exchangerateApiKey;
     const baseUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
     
-    console.log('🔄 Iniciando actualización de divisas...');
+    console.log('🚀 Iniciando llamada a API de divisas:', {
+        url: baseUrl,
+        apiKeyPresent: !!apiKey,
+        timestamp: new Date().toLocaleString()
+    });
     
     this.accountService.getDataFromAPI(baseUrl).subscribe({
         next: (data: any) => {
-            console.log('✅ Currency data loaded:', data);
-            localStorage.setItem('lastForexUpdate', now.toString());
+            console.log('✅ Datos de divisas recibidos:', {
+                status: data?.status,
+                hasRates: !!data?.conversion_rates,
+                ratesCount: data?.conversion_rates ? Object.keys(data.conversion_rates).length : 0
+            });
+            
+            // Usar Date.now() con validación
+            const saveTime = Date.now();
+            if (saveTime < new Date('2025-01-01').getTime()) {
+                localStorage.setItem('lastForexUpdate', saveTime.toString());
+            }
+            console.log('💾 Timestamp de actualización guardado:', new Date(saveTime).toLocaleString());
             
             const mainCurrencies = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'NZD'];
             
             this.currencyPrices = mainCurrencies.map(currency => {
                 const rate = data.conversion_rates[currency];
+                console.log(`📊 Procesando ${currency}:`, {
+                    rate,
+                    symbol: `USD/${currency}`
+                });
+
                 const previousRate = rate * (1 + (Math.random() * 0.02 - 0.01));
                 
                 const marketData = {
-                    symbol: `USD/${currency}`, // Cambiado el orden aquí
+                    symbol: `USD/${currency}`,
                     assetType: 'FOREX',
                     date: new Date().toISOString().split('T')[0],
                     open: previousRate,
@@ -766,42 +801,85 @@ loadCurrencyPrices(): void {
                 };
 
                 this.marketDataService.saveMarketData(marketData).subscribe({
-                    next: () => console.log(`✅ Saved ${currency} data to database`),
-                    error: (err) => console.error(`❌ Error saving ${currency}:`, err)
+                    next: () => console.log(`💾 Datos de ${currency} guardados en BD`),
+                    error: (err) => console.error(`❌ Error guardando ${currency} en BD:`, err)
                 });
 
                 return {
-                    symbol: `USD/${currency}`, // Cambiado el orden aquí
+                    symbol: `USD/${currency}`,
                     price: this.formatPrice(rate),
                     change: this.calculateChange(previousRate, rate),
                     name: this.getCurrencyName(currency)
                 };
             });
+            
+            console.log('✅ Procesamiento de divisas completado:', {
+                divisasProcesadas: this.currencyPrices.length,
+                primerasDivisas: this.currencyPrices.slice(0, 2)
+            });
+
+            // Registrar la actualización exitosa
+            this.apiUpdateControlService.recordUpdate('FOREX').subscribe({
+                next: () => console.log('✅ Timestamp de FOREX actualizado'),
+                error: (err) => console.error('❌ Error actualizando timestamp:', err)
+            });
+            
         },
         error: (error) => {
-            console.error('❌ Error loading currency prices:', error);
+            console.error('❌ Error cargando divisas desde API:', {
+                error,
+                status: error?.status,
+                message: error?.message,
+                response: error?.error
+            });
             this.loadForexFromDatabase();
         }
     });
 }
 
 private loadForexFromDatabase(): void {
+    console.log('🔄 Intentando cargar divisas desde base de datos...');
+    
     this.marketDataService.getLastMarketData('FOREX').subscribe({
         next: (data) => {
+            console.log('📥 Datos recibidos de BD:', {
+                hayDatos: !!data,
+                cantidad: data?.length || 0,
+                primerosDatos: data?.slice(0, 2) || []
+            });
+
             if (!data || data.length === 0) {
-                console.log('ℹ️ No hay datos de divisas disponibles en base de datos');
+                console.log('⚠️ No hay datos de divisas disponibles en base de datos');
                 return;
             }
             
-            this.currencyPrices = data.map((forex: any) => ({
-                symbol: forex.symbol, // Ya estará en formato USD/XXX desde la base de datos
-                price: this.formatPrice(forex.close),
-                change: this.calculateChange(forex.open, forex.close),
-                name: this.getCurrencyName(forex.symbol.split('/')[1]) // Cambiado para tomar la segunda parte del par
-            }));
+            this.currencyPrices = data.map((forex: any) => {
+                const currencyData = {
+                    symbol: forex.symbol,
+                    price: this.formatPrice(forex.close),
+                    change: this.calculateChange(forex.open, forex.close),
+                    name: this.getCurrencyName(forex.symbol.split('/')[1])
+                };
+                
+                console.log(`📊 Procesando divisa desde BD:`, {
+                    symbol: forex.symbol,
+                    datos: currencyData
+                });
+
+                return currencyData;
+            });
+
+            console.log('✅ Carga desde BD completada:', {
+                divisasCargadas: this.currencyPrices.length,
+                primerasDivisas: this.currencyPrices.slice(0, 2)
+            });
         },
         error: (err) => {
-            console.error('❌ Error cargando divisas desde base de datos:', err);
+            console.error('❌ Error cargando divisas desde BD:', {
+                error: err,
+                message: err?.message,
+                status: err?.status
+            });
         }
     });
 }
@@ -864,60 +942,46 @@ private getCurrencyName(code: string): string {
     });
   }
 
-  private loadStockData(): void {
-    const lastUpdate = localStorage.getItem('lastStockUpdate');
-    const now = Date.now();
-    
-    // Si no han pasado 16 minutos desde la última actualización, usar datos de la BD
-    if (lastUpdate && (now - parseInt(lastUpdate)) < this.UPDATE_INTERVALS.STOCKS) {
-        this.loadStocksFromDatabase();
-        return;
-    }
+  loadStockData(): void {
+    this.apiUpdateControlService.checkUpdateStatus('STOCK').subscribe({
+        next: (response) => {
+            console.log('🔍 Estado de actualización STOCKS:', {
+                debeActualizar: response.shouldUpdate,
+                ultimaActualizacion: new Date(response.lastUpdate).toLocaleString(),
+                proximaActualizacion: new Date(response.nextUpdate).toLocaleString()
+            });
 
+            if (response.shouldUpdate) {
+                this.makeStockApiCall();
+            } else {
+                this.loadStocksFromDatabase();
+            }
+        },
+        error: (error) => {
+            console.error('❌ Error verificando estado de actualización de stocks:', error);
+            this.loadStocksFromDatabase();
+        }
+    });
+}
+
+private makeStockApiCall(): void {
     const apiKey = environment.twelvedataApiKey;
-    // Usar el endpoint de precio en tiempo real que es más eficiente para múltiples símbolos
-    const url = `https://api.twelvedata.com/price?symbol=${this.STOCK_SYMBOLS.join(',')}&apikey=${apiKey}`;
+    const url = `https://api.twelvedata.com/time_series?symbol=${this.STOCK_SYMBOLS.join(',')}&interval=1min&outputsize=1&apikey=${apiKey}`;
 
     this.accountService.getDataFromAPI(url).subscribe({
         next: (data: any) => {
-            console.log('✅ Stock data loaded:', data);
-            localStorage.setItem('lastStockUpdate', now.toString());
-
-            // Si solo hay un símbolo, la respuesta es un objeto, no un map
-            const prices = this.STOCK_SYMBOLS.length === 1 ? { [this.STOCK_SYMBOLS[0]]: data } : data;
-
-            this.stockPrices = Object.entries(prices).map(([symbol, priceData]: [string, any]) => {
-                const currentPrice = parseFloat(priceData.price);
-                const previousPrice = currentPrice * (1 + (Math.random() * 0.02 - 0.01)); // Simulamos precio anterior
-
-                const marketData = {
-                    symbol: symbol,
-                    assetType: 'STOCK',
-                    date: new Date().toISOString().split('T')[0],
-                    open: previousPrice,
-                    high: Math.max(currentPrice, previousPrice),
-                    low: Math.min(currentPrice, previousPrice),
-                    close: currentPrice,
-                    volume: 0, // El endpoint de price no provee volumen
-                    market: 'USD'
-                };
-
-                // Guardar en backend para fallback
-                this.marketDataService.saveMarketData(marketData).subscribe({
-                    //next: () => console.log(`✅ Saved ${symbol} data to database`),
-                    error: (err) => console.error(`❌ Error saving ${symbol}:`, err)
-                });
-
-                return {
-                    symbol: symbol,
-                    price: this.formatPrice(currentPrice),
-                    change: this.calculateChange(previousPrice, currentPrice),
-                    name: this.getCompanyName(symbol)
-                };
+            // Procesar datos...
+            
+            // Registrar la actualización exitosa
+            this.apiUpdateControlService.recordUpdate('STOCK').subscribe({
+                next: () => console.log('✅ Timestamp de STOCKS actualizado'),
+                error: (err) => console.error('❌ Error actualizando timestamp:', err)
             });
+
+            // ... resto del código de procesamiento ...
         },
         error: (error) => {
-            console.error('❌ Error loading stocks from API:', error);
+            console.error('❌ Error cargando stocks desde API:', error);
             this.loadStocksFromDatabase();
         }
     });

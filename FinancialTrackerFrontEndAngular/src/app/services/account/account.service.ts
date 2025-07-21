@@ -162,20 +162,6 @@ export class AccountService {
     return this.http.get<any>(`${this.dashboardApiUrl}/data`, { headers });
   }
 
-  getCryptoPrices(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.accountApiUrl}/marketdata/getTop10Crypto`);
-  }
-
-  getStockPrices(): Observable<any[]> {
-    // Para implementar cuando tengamos el endpoint
-    return this.http.get<any[]>(`${this.accountApiUrl}/marketdata/stocks`);
-  }
-
-  getCurrencyPrices(): Observable<any[]> {
-    // Para implementar cuando tengamos el endpoint
-    return this.http.get<any[]>(`${this.accountApiUrl}/marketdata/currencies`);
-  }
-
   // NUEVO: Método específico para actualizar solo el balance
   updateAccountBalance(accountId: number, balance: number): Observable<Account> {
     return this.http.put<Account>(`${this.accountApiUrl}/update-balance/${accountId}`, 
@@ -183,6 +169,15 @@ export class AccountService {
       { headers: this.getAuthHeaders() }
     );
   }
+
+  getDataFromAPI(url: string): Observable<any> {
+    // Si la URL contiene 'LISTING_STATUS', solicitar respuesta como texto
+    if (url.includes('LISTING_STATUS')) {
+        return this.http.get(url, { responseType: 'text' });
+    }
+    // Para otras URLs, mantener el comportamiento actual
+    return this.http.get<any>(url);
+}
 
   private getToken(): string {
     return localStorage.getItem('jwt_token') || '';

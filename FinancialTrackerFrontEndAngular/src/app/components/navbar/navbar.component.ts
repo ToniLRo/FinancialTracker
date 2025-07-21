@@ -40,7 +40,6 @@ export class NavbarComponent implements AfterViewInit, OnInit {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      console.log('Route changed to:', event.url);
       this.updateActiveNavOnRouteChange();
     });
   }
@@ -50,7 +49,6 @@ export class NavbarComponent implements AfterViewInit, OnInit {
       const canvas = this.myChart.nativeElement;
       const ctx = canvas.getContext('2d');
 
-      console.log('ViewChild:', this.myChart, ctx);
 
       if (ctx) {
         new Chart(ctx, {
@@ -84,7 +82,6 @@ export class NavbarComponent implements AfterViewInit, OnInit {
    */
   private updateActiveNavOnRouteChange(): void {
     const currentRoute = this.router.url;
-    console.log('Current route:', currentRoute);
     
     // Remover clase active de todos los enlaces
     const navLinks = document.querySelectorAll('.nav-link');
@@ -101,7 +98,6 @@ export class NavbarComponent implements AfterViewInit, OnInit {
       
       if (activeLink) {
         activeLink.classList.add('active');
-        console.log('Activated nav link for:', activeNavText);
       }
     }
     
@@ -130,7 +126,6 @@ export class NavbarComponent implements AfterViewInit, OnInit {
     
     if (targetLink) {
       targetLink.classList.add('active');
-      console.log('Activated nav link by text:', navText);
     }
   }
 
@@ -148,7 +143,6 @@ export class NavbarComponent implements AfterViewInit, OnInit {
     const clickedLink = event.target as HTMLElement;
     clickedLink.classList.add('active');
     
-    console.log('Nav link clicked:', clickedLink.textContent?.trim());
   }
 
   logout(): void {

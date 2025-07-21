@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,32 +13,56 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.tonilr.FinancialTracker.Entities.AssetType;
 import com.tonilr.FinancialTracker.Entities.MarketData;
 import com.tonilr.FinancialTracker.Services.APIServices;
 import com.tonilr.FinancialTracker.Services.MarketDataServices;
 
-@Controller
+@RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/marketdata")
 public class MarketDataController {
+    
+    @Autowired
+    private MarketDataServices marketDataService;
 
-	@Autowired
-    private final MarketDataServices marketDataService;
-	
     @Autowired
     private APIServices apiServices;
-	
-	public MarketDataController(MarketDataServices marketDataService) {
-		this.marketDataService = marketDataService;
-	}
+    
+    // Endpoint para obtener últimos datos por tipo de activo
+    @GetMapping("/last/{assetType}")
+    public ResponseEntity<List<MarketData>> getLastMarketData(
+            @PathVariable("assetType") AssetType assetType) {
+        System.out.println("\n🔍 Buscando últimos datos para tipo: " + assetType);
+        try {
+            List<MarketData> data = marketDataService.findLatestByAssetType(assetType);
+            System.out.println("✅ Encontrados " + data.size() + " registros");
+            return ResponseEntity.ok(data);
+        } catch (Exception e) {
+            System.err.println("❌ Error obteniendo datos: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-    // Endpoint para guardar un nuevo registro de MarketData
-	@PostMapping("/add")
+    // Endpoint para guardar datos
+    @PostMapping("/add")
     public ResponseEntity<MarketData> addMarketData(@RequestBody MarketData marketData) {
-		MarketData newMarketData = marketDataService.addMarketData(marketData);
-        return new ResponseEntity<>(newMarketData, HttpStatus.CREATED);
+        System.out.println("\n📥 Recibida petición POST para MarketData");
+        System.out.println("Símbolo: " + marketData.getSymbol());
+        System.out.println("Tipo: " + marketData.getAssetType());
+        
+        try {
+            MarketData saved = marketDataService.saveOrUpdate(marketData);
+            System.out.println("✅ Datos procesados correctamente para: " + saved.getSymbol());
+            return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (Exception e) {
+            System.err.println("❌ Error procesando datos: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // Endpoint para obtener MarketData por símbolo y tipo de activo

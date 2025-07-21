@@ -98,7 +98,7 @@ public class TransactionController {
 			                   (transaction.getUser() != null ? transaction.getUser().getUser_Id() : "null")); // CORREGIDO
 			
 			// Guardar transacción
-			Transaction newTransaction = transactionService.addTransaction(transaction);
+		Transaction newTransaction = transactionService.addTransaction(transaction);
 			
 			System.out.println("Transaction saved with ID: " + newTransaction.getTransaction_Id());
 			
@@ -206,7 +206,7 @@ public class TransactionController {
 			}
 			
 			// Eliminar transacción
-			transactionService.deleteTransaction(id);
+		transactionService.deleteTransaction(id);
 			System.out.println("Transaction deleted successfully");
 			
 			Map<String, String> response = new HashMap<>();
@@ -399,5 +399,5 @@ public class TransactionController {
 		}
 		
 		return dto;
-	}	
+	}
 }

@@ -2,6 +2,10 @@ import { Component, ElementRef, AfterViewInit, ViewChild, OnInit, Renderer2, OnD
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController, DoughnutController, ArcElement } from 'chart.js';
 import { AccountService } from 'src/app/services/account/account.service';
 import { Account } from 'src/app/models/account/account.model';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { MarketDataService } from 'src/app/services/marketData/marketData.service';
 
 @Component({
     selector: 'home',
@@ -58,7 +62,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private renderer: Renderer2,
     private accountService: AccountService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient,
+    private marketDataService: MarketDataService
   ) {
     Chart.register(
       CategoryScale, 
@@ -75,13 +81,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   ngOnInit(): void {
-    console.log('🚀 HomeComponent initialized');
     this.loadDashboardData();
     this.loadMarketData();
   }
 
   ngAfterViewInit(): void {
-    console.log('📊 AfterViewInit - DOM elements available');
     setTimeout(() => {
       this.tryInitializeChart();
       
@@ -102,15 +106,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // CORREGIR: loadDashboardData para NO usar fallback nunca
   loadDashboardData(): void {
-    console.log('📈 Loading REAL dashboard data from backend...');
     this.isLoadingDashboard = true;
     this.isLoadingCategories = true;
     
     this.accountService.getDashboardData().subscribe({
       next: (data) => {
-        console.log('✅ Raw dashboard data from backend:', data);
-        console.log('🔍 Category breakdown keys:', Object.keys(data.categoryBreakdown || {}));
-        console.log('🔍 Category breakdown values:', Object.values(data.categoryBreakdown || {}));
+        //console.log('✅ Raw dashboard data from backend:', data);
+        //console.log('🔍 Category breakdown keys:', Object.keys(data.categoryBreakdown || {}));
+        //console.log('🔍 Category breakdown values:', Object.values(data.categoryBreakdown || {}));
         
         this.dashboardData = {
           ...this.dashboardData,
@@ -145,7 +148,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadFallbackData(): void {
-    console.log('🔄 Loading fallback data...');
+    //console.log('🔄 Loading fallback data...');
     const currentDate = new Date();
     const fallbackIncomeData: { [key: string]: number } = {};
     const fallbackExpenseData: { [key: string]: number } = {};
@@ -170,7 +173,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     
     this.dataLoaded = true;
-    console.log('✅ Fallback data loaded:', this.dashboardData);
+    //console.log('✅ Fallback data loaded:', this.dashboardData);
   }
 
   tryInitializeChart(): void {
@@ -179,7 +182,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // 2. El ViewChild está disponible
     // 3. El gráfico no ha sido inicializado aún
     if (this.dataLoaded && this.myChart && !this.chartInitialized) {
-      console.log('🎯 Attempting to initialize chart...');
+      //console.log('🎯 Attempting to initialize chart...');
       this.initChart();
     } else {
       console.log('⏳ Chart initialization pending:', {
@@ -209,12 +212,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // Destruir gráfico existente si existe
       this.destroyChart();
-
-      console.log('📊 Creating new chart with data:', {
-        labels: this.getMonthLabels(),
-        incomeData: this.getIncomeData(),
-        expenseData: this.getExpenseData()
-      });
 
       this.chart = new Chart(ctx, {
         type: 'line',
@@ -334,7 +331,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.chartInitialized = true;
       this.isLoadingChart = false;
-      console.log('✅ Chart initialized successfully');
       
     } catch (error) {
       console.error('❌ Error initializing chart:', error);
@@ -345,18 +341,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateChart(): void {
     if (!this.chart) {
-      console.log('⚠️ Chart not initialized, attempting to initialize...');
+      //console.log('⚠️ Chart not initialized, attempting to initialize...');
       this.tryInitializeChart();
       return;
     }
 
     try {
-      console.log('🔄 Updating chart with new data...');
       this.chart.data.labels = this.getMonthLabels();
       this.chart.data.datasets[0].data = this.getIncomeData();
       this.chart.data.datasets[1].data = this.getExpenseData();
       this.chart.update('active');
-      console.log('✅ Chart updated successfully');
     } catch (error) {
       console.error('❌ Error updating chart:', error);
       this.chartError = true;
@@ -365,7 +359,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   destroyChart(): void {
     if (this.chart) {
-      console.log('🗑️ Destroying existing chart...');
       this.chart.destroy();
       this.chart = null;
       this.chartInitialized = false;
@@ -390,7 +383,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const monthlyData = this.dashboardData.monthlyIncomeChart || {};
     const labels = this.getMonthLabels();
     
-    console.log('📊 Raw monthly income data from backend:', monthlyData);
+    //console.log('📊 Raw monthly income data from backend:', monthlyData);
     
     // El backend envía datos con formato "YYYY-MM", necesitamos convertir a nombres de mes
     const data = labels.map((month, index) => {
@@ -402,11 +395,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       const value = monthlyData[yearMonth];
       const result = typeof value === 'number' ? value : 0;
       
-      console.log(`Income for ${month} (${yearMonth}):`, result);
+      //console.log(`Income for ${month} (${yearMonth}):`, result);
       return result;
     });
     
-    console.log('📊 Processed income data:', data);
+    //console.log('📊 Processed income data:', data);
     return data;
   }
 
@@ -415,7 +408,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const monthlyData = this.dashboardData.monthlyExpenseChart || {};
     const labels = this.getMonthLabels();
     
-    console.log('📊 Raw monthly expense data from backend:', monthlyData);
+    //console.log('📊 Raw monthly expense data from backend:', monthlyData);
     
     // El backend envía datos con formato "YYYY-MM", necesitamos convertir a nombres de mes
     const data = labels.map((month, index) => {
@@ -427,11 +420,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       const value = monthlyData[yearMonth];
       const result = typeof value === 'number' ? Math.abs(value) : 0; // Expenses as positive values
       
-      console.log(`Expense for ${month} (${yearMonth}):`, result);
+      //console.log(`Expense for ${month} (${yearMonth}):`, result);
       return result;
     });
     
-    console.log('📊 Processed expense data:', data);
+    //console.log('📊 Processed expense data:', data);
     return data;
   }
 
@@ -451,17 +444,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // CORREGIR: tryInitializeCategoriesChart para verificar datos reales
   tryInitializeCategoriesChart(): void {
-    console.log('🎯 Trying to initialize categories chart...');
-    console.log('📊 Categories available:', this.topCategories?.length || 0);
-    console.log('📊 Categories data:', this.topCategories);
+    //console.log('🎯 Trying to initialize categories chart...');
+    //console.log('📊 Categories available:', this.topCategories?.length || 0);
+    //console.log('📊 Categories data:', this.topCategories);
     
     if (this.categoriesChart && !this.categoriesChartInitialized) {
       // SOLO inicializar si tenemos datos reales
       if (this.topCategories && this.topCategories.length > 0) {
-        console.log('🎯 Initializing with REAL data...');
+        //console.log('🎯 Initializing with REAL data...');
         this.initCategoriesChart();
       } else {
-        console.log('⏳ Waiting for real category data...');
+        //console.log('⏳ Waiting for real category data...');
         this.categoriesError = true;
         this.isLoadingCategories = false;
       }
@@ -512,7 +505,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       
-      console.log('📊 Creating chart with REAL data:', categoryData);
+      //console.log('📊 Creating chart with REAL data:', categoryData);
 
       // Crear gráfico con datos reales
       this.categoriesChartInstance = new Chart(ctx, {
@@ -628,7 +621,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     
     // Validar que tenemos categorías
     if (!this.topCategories || this.topCategories.length === 0) {
-      console.warn('⚠️ No categories available for chart');
       return { labels: [], values: [], total: 0 };
     }
 
@@ -636,13 +628,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // Pero para el gráfico de dona, mostrar solo gastos
     const expenses = this.topCategories.filter(cat => cat.amount < 0);
     
-    console.log('📊 Expense categories found:', expenses.length);
-    console.log('📊 Expense categories:', expenses);
-    
     // Si no hay gastos, usar todas las categorías pero convertir a valores absolutos
     let categoriesToShow = expenses;
     if (expenses.length === 0) {
-      console.log('📊 No expenses found, using all categories as absolute values');
       categoriesToShow = this.topCategories.map(cat => ({
         ...cat,
         amount: Math.abs(cat.amount)
@@ -670,7 +658,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     
     // Método 2: Destruir nuestra instancia
     if (this.categoriesChartInstance) {
-      console.log('🗑️ Destroying our chart instance...');
       try {
         this.categoriesChartInstance.destroy();
       } catch (error) {
@@ -693,7 +680,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // NUEVO: Reinicializar gráfico de categorías
   reinitializeCategoriesChart(): void {
-    console.log('🔄 Manual categories chart reinitialization requested...');
+    //console.log('🔄 Manual categories chart reinitialization requested...');
     this.destroyCategoriesChart();
     this.categoriesChartInitialized = false;
     this.tryInitializeCategoriesChart();
@@ -729,41 +716,217 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Resto de métodos del carrusel y utilidades permanecen igual...
   loadMarketData(): void {
-    // Load crypto prices
-    this.accountService.getCryptoPrices().subscribe({
-      next: (data) => {
-        this.cryptoPrices = data.slice(0, 10);
-      },
-      error: (error) => {
-        console.error('Error loading crypto prices:', error);
-        // Fallback data
-        this.cryptoPrices = [
-          { symbol: 'BTC', price: '45,250.00', change: '+2.5%' },
-          { symbol: 'ETH', price: '3,125.50', change: '+1.8%' },
-          { symbol: 'BNB', price: '425.30', change: '-0.5%' },
-          { symbol: 'ADA', price: '1.25', change: '+3.2%' },
-          { symbol: 'XRP', price: '0.65', change: '+1.1%' }
-        ];
-      }
-    });
-
-    // Load stock prices (mock data for now)
-    this.stockPrices = [
-      { symbol: 'AAPL', price: '175.25', change: '+0.8%' },
-      { symbol: 'GOOGL', price: '2,890.50', change: '+1.2%' },
-      { symbol: 'MSFT', price: '310.75', change: '+0.5%' },
-      { symbol: 'AMZN', price: '135.20', change: '-0.3%' },
-      { symbol: 'TSLA', price: '245.80', change: '+2.1%' }
-    ];
-
+    this.loadCryptoPrices();
+    this.loadStockPrices();
+    
     // Load currency prices (mock data for now)
-    this.currencyPrices = [
+    /*this.currencyPrices = [
       { symbol: 'EUR/USD', price: '1.0850', change: '+0.2%' },
       { symbol: 'GBP/USD', price: '1.2750', change: '-0.1%' },
       { symbol: 'USD/JPY', price: '149.85', change: '+0.3%' },
       { symbol: 'USD/CAD', price: '1.3625', change: '+0.1%' },
       { symbol: 'AUD/USD', price: '0.6580', change: '-0.4%' }
     ];
+    */
+  }
+
+  loadCryptoPrices(): void {
+    const cryptoUrl = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h';
+    
+    this.accountService.getDataFromAPI(cryptoUrl).subscribe({
+      next: (data: any[]) => {
+        console.log('✅ Crypto data loaded:', data);
+        
+        this.cryptoPrices = data.map(coin => ({
+          symbol: coin.symbol.toUpperCase(),
+          price: this.formatPrice(coin.current_price),
+          change: this.formatChange(coin.price_change_percentage_24h),
+          name: coin.name
+        }));
+
+        // Guardar/Actualizar en backend
+        data.forEach(coin => {
+          const marketData = {
+            symbol: coin.symbol.toUpperCase(),
+            assetType: 'CRYPTO',
+            date: new Date().toISOString().split('T')[0],
+            open: coin.current_price,
+            high: coin.high_24h || coin.current_price,
+            low: coin.low_24h || coin.current_price,
+            close: coin.current_price,
+            volume: coin.total_volume || 0,
+            market: 'USD'
+          };
+          //console.log('✅ Crypto data going to save:', marketData);
+
+
+          // El backend ahora actualizará en lugar de crear nuevo
+          this.marketDataService.saveMarketData(marketData).subscribe({
+            next: (response) => console.log(`✅ Updated/Saved ${coin.symbol} data`, response),
+            error: (err) => console.error(`❌ Error updating ${coin.symbol}:`, err)
+          });
+        });
+      },
+      error: (error) => {
+        console.error('❌ Error loading crypto prices:', error);
+        this.loadFallbackCryptoData();
+      }
+    });
+  }
+
+  loadStockPrices(): void {
+    const apiKey = environment.alphaVantageApiKey;
+    // Endpoint para obtener lista de stocks activos
+    const listingUrl = `https://www.alphavantage.co/query?function=LISTING_STATUS&apikey=${apiKey}`;
+
+    // Primero obtenemos la lista completa de símbolos disponibles
+    this.accountService.getDataFromAPI(listingUrl).subscribe({
+        next: (data: any) => {
+            if (typeof data === 'string') {
+                // La API devuelve un CSV, convertirlo a array
+                const rows = data.split('\n');
+                const symbols = rows.slice(1) // Eliminar cabecera
+                    .map(row => row.split(',')[0]) // Obtener solo el símbolo
+                    .filter(symbol => symbol && symbol.length > 0) // Eliminar vacíos
+                    .slice(0, 100); // Limitar a 100 símbolos para no sobrecargar
+
+                console.log(`📊 Símbolos encontrados: ${symbols.length}`);
+
+                // Hacer una única llamada batch para obtener todos los precios
+                const batchUrl = `https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols=${symbols.join(',')}&apikey=${apiKey}`;
+                
+                this.accountService.getDataFromAPI(batchUrl).subscribe({
+                    next: (batchData: any) => {
+                        if (batchData.Information) {
+                            console.warn('⚠️ Límite de API alcanzado:', batchData.Information);
+                            return;
+                        }
+
+                        const quotes = batchData['Stock Quotes'] || [];
+                        console.log(`📈 Recibidos ${quotes.length} stocks`);
+
+                        quotes.forEach((quote: any) => {
+                            const marketData = {
+                                symbol: quote['1. symbol'],
+                                assetType: 'STOCK',
+                                date: new Date().toISOString().split('T')[0],
+                                open: parseFloat(quote['2. price']),
+                                high: parseFloat(quote['2. price']), // En batch no tenemos high/low
+                                low: parseFloat(quote['2. price']),
+                                close: parseFloat(quote['2. price']),
+                                volume: parseFloat(quote['3. volume']),
+                                market: 'USD'
+                            };
+
+                            // Actualizar UI
+                            this.updateStockPrice(marketData);
+
+                            // Guardar en backend
+                            this.marketDataService.saveMarketData(marketData).subscribe({
+                                next: () => console.log(`💾 ${marketData.symbol}: Datos guardados`),
+                                error: (err) => console.error(`❌ ${marketData.symbol}: Error al guardar:`, err)
+                            });
+                        });
+                    },
+                    error: (error) => {
+                        console.error('❌ Error cargando datos batch:', error);
+                        this.loadFallbackStockData('');
+                    }
+                });
+            }
+        },
+        error: (error) => {
+            console.error('❌ Error obteniendo lista de símbolos:', error);
+            this.loadFallbackStockData('');
+        }
+    });
+}
+
+private updateStockPrice(marketData: any): void {
+    console.log(`🔄 Actualizando precio para ${marketData.symbol}`);
+    
+    const index = this.stockPrices.findIndex(s => s.symbol === marketData.symbol);
+    const stockPrice = {
+        symbol: marketData.symbol,
+        price: this.formatPrice(marketData.close),
+        change: this.calculateChange(marketData.open, marketData.close),
+        name: this.getCompanyName(marketData.symbol)
+    };
+
+    console.log(`📊 Nuevo precio para ${marketData.symbol}:`, stockPrice);
+
+    if (index === -1) {
+        this.stockPrices.push(stockPrice);
+        console.log(`➕ Añadido nuevo stock: ${marketData.symbol}`);
+    } else {
+        this.stockPrices[index] = stockPrice;
+        console.log(`🔄 Actualizado stock existente: ${marketData.symbol}`);
+    }
+
+    console.log(`📈 Total stocks en UI: ${this.stockPrices.length}`);
+}
+
+private loadFallbackStockData(symbol: string): void {
+    console.log('🔄 Cargando datos de fallback para stocks...');
+    
+    this.marketDataService.getLastMarketData('STOCK').subscribe({
+        next: (data) => {
+            if (!data || data.length === 0) {
+                console.log('ℹ️ No hay datos de fallback disponibles');
+                return;
+            }
+
+            // Si no se especifica símbolo, cargar todos los disponibles
+            if (!symbol) {
+                data.forEach((stockData: any) => {
+                    this.updateStockPrice(stockData);
+                });
+                console.log(`✅ Cargados ${data.length} stocks de fallback`);
+            } else {
+                const stockData = data.find((s: any) => s.symbol === symbol);
+                if (stockData) {
+                    this.updateStockPrice(stockData);
+                    console.log(`✅ Datos de fallback cargados para ${symbol}`);
+                }
+            }
+        },
+        error: (err) => {
+            console.log('ℹ️ No se pudieron obtener datos de fallback');
+        }
+    });
+}
+
+private getStaticStockData(symbol: string): any {
+    // Datos estáticos como último recurso
+    const staticPrices: {[key: string]: any} = {
+        'AAPL': { close: 192.53, open: 190.12 },
+        'GOOGL': { close: 2875.10, open: 2860.20 },
+        'MSFT': { close: 378.85, open: 375.90 },
+        'AMZN': { close: 146.80, open: 145.50 },
+        'TSLA': { close: 248.50, open: 245.30 }
+    };
+
+    return {
+        symbol: symbol,
+        assetType: 'STOCK',
+        date: new Date().toISOString().split('T')[0],
+        open: staticPrices[symbol]?.open || 100,
+        close: staticPrices[symbol]?.close || 100,
+        high: staticPrices[symbol]?.close * 1.02,
+        low: staticPrices[symbol]?.open * 0.98,
+        volume: 1000000,
+        market: 'USD'
+    };
+}
+
+  calculateChange(open: number, close: number): string {
+    const change = ((close - open) / open) * 100;
+    return this.formatChange(change);
+  }
+
+  formatChange(changePercent: number): string {
+    const sign = changePercent >= 0 ? '+' : '';
+    return `${sign}${changePercent.toFixed(2)}%`;
   }
 
   initCarousel(): void {
@@ -857,6 +1020,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return change.startsWith('+') ? 'positive' : 'negative';
   }
 
+  formatPrice(price: number): string {
+    if (price >= 1000) {
+      return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } else if (price >= 1) {
+      return price.toFixed(2);
+    } else {
+      return price.toFixed(4);
+    }
+  }
+
   // NUEVO: Detectar scroll en tablas para efectos visuales
   initTableScrollDetection(): void {
     const tableContainers = document.querySelectorAll('.table-container');
@@ -876,9 +1049,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   processCategoryData(): void {
     const categoryData = this.dashboardData.categoryBreakdown || {};
     
-    console.log('🔍 PROCESSING CATEGORY DATA FROM BACKEND');
-    console.log('🔍 Raw categoryBreakdown:', categoryData);
-    console.log('🔍 Is empty?', Object.keys(categoryData).length === 0);
+    //console.log('🔍 PROCESSING CATEGORY DATA FROM BACKEND');
+    //console.log('🔍 Raw categoryBreakdown:', categoryData);
+    //console.log('🔍 Is empty?', Object.keys(categoryData).length === 0);
     
     // Si no hay datos del backend, NO usar fallback
     if (Object.keys(categoryData).length === 0) {
@@ -891,7 +1064,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // Procesar SOLO datos reales del backend
     this.topCategories = Object.entries(categoryData)
       .map(([name, amount]) => {
-        console.log(`🔍 Processing category: ${name} = ${amount}`);
+        //console.log(`🔍 Processing category: ${name} = ${amount}`);
         return { 
           name: name, // Entertainment, Deposit, Withdraw
           amount: typeof amount === 'number' ? amount : 0 
@@ -899,13 +1072,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .filter(cat => {
         const isValid = cat.amount > 0;
-        console.log(`🔍 Category ${cat.name}: ${cat.amount} - Valid: ${isValid}`);
+        //console.log(`🔍 Category ${cat.name}: ${cat.amount} - Valid: ${isValid}`);
         return isValid;
       })
       .sort((a, b) => b.amount - a.amount);
     
-    console.log('✅ FINAL REAL CATEGORIES:', this.topCategories);
-    console.log('✅ Categories count:', this.topCategories.length);
+    //console.log('✅ FINAL REAL CATEGORIES:', this.topCategories);
+    //console.log('✅ Categories count:', this.topCategories.length);
     
     if (this.topCategories.length === 0) {
       console.warn('❌ NO VALID CATEGORIES AFTER PROCESSING');
@@ -953,20 +1126,43 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
 
-  // AÑADIR: Método para debug completo
-  debugAllData(): void {
-    console.log('🐛 COMPLETE DEBUG');
-    console.log('=================');
-    console.log('Dashboard data full:', this.dashboardData);
-    console.log('Category breakdown:', this.dashboardData.categoryBreakdown);
-    console.log('Top categories:', this.topCategories);
-    console.log('Categories error:', this.categoriesError);
-    console.log('Categories initialized:', this.categoriesChartInitialized);
-    console.log('Loading categories:', this.isLoadingCategories);
-    
-    // Verificar si estamos usando datos de fallback por error
-    if (this.topCategories.some(cat => cat.name === 'TRANSPORT' && cat.amount === 420)) {
-      console.error('🚨 DETECTED FALLBACK DATA! THIS IS THE PROBLEM!');
-    }
+  getCompanyName(symbol: string): string {
+    const companies = {
+      'AAPL': 'Apple Inc.',
+      'GOOGL': 'Alphabet Inc.',
+      'MSFT': 'Microsoft Corp.',
+      'AMZN': 'Amazon.com Inc.',
+      'TSLA': 'Tesla Inc.',
+      'META': 'Meta Platforms',
+      'NVDA': 'NVIDIA Corp.',
+      'JPM': 'JPMorgan Chase',
+      'V': 'Visa Inc.',
+      'WMT': 'Walmart Inc.'
+    };
+    return companies[symbol as keyof typeof companies] || symbol;
   }
+
+  private loadFallbackCryptoData(): void {
+    console.log('🔄 Intentando cargar datos de fallback para cryptos...');
+    
+    this.marketDataService.getLastMarketData('CRYPTO').subscribe({
+        next: (data) => {
+            if (!data || data.length === 0) {
+                console.log('ℹ️ No hay datos de fallback disponibles para cryptos');
+                return;
+            }
+            
+            this.cryptoPrices = data.map((crypto: any) => ({
+                symbol: crypto.symbol,
+                price: this.formatPrice(crypto.close),
+                change: this.calculateChange(crypto.open, crypto.close),
+                name: crypto.symbol
+            }));
+            console.log('✅ Datos de fallback de crypto cargados');
+        },
+        error: (err) => {
+            console.log('ℹ️ No se pudieron obtener datos de fallback para cryptos');
+        }
+    });
+}
 }

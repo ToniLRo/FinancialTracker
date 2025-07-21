@@ -21,7 +21,7 @@ import java.util.*;
 
 @Service
 public class APIServices {
-		 private final String API_KEY = "DMJY7MQ72LLNWTYS";  // Coloca tu API Key de Alpha Vantage aquí
+		 private final String API_KEY = "ZM1VOLB41HPOFXAH";  // Coloca tu API Key de Alpha Vantage aquí
 		 private final String BASE_URL = "https://www.alphavantage.co/query";
 		 
 

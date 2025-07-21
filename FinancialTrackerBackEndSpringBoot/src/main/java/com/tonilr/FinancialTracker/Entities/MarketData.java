@@ -17,128 +17,122 @@ import jakarta.persistence.Id;
 @Entity
 @Table(name = "Market_Data")
 public class MarketData {
-	  	@Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	    @Column(nullable = false)
-	    private String symbol; // Símbolo del activo (AAPL, BTC, EURUSD)
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AssetType assetType;
 
-	    @Enumerated(EnumType.STRING)
-	    @Column(nullable = false)
-	    private AssetType assetType; // Tipo de activo (STOCK, CRYPTO, FOREX)
+    @Column(nullable = false)
+    private String symbol;
 
-	    @Column(nullable = false)
-	    private LocalDate date; // Fecha del registro de los precios
+    @Column(name = "date")
+    private LocalDate date;
 
-	    @Column(precision = 19, scale = 4) // Ej. 12345.6789
-	    private BigDecimal open; // Precio de apertura
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
 
-	    @Column(precision = 19, scale = 4)
-	    private BigDecimal high; // Precio máximo
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	    @Column(precision = 19, scale = 4)
-	    private BigDecimal low; // Precio mínimo
+    public String getSymbol() {
+        return symbol;
+    }
 
-	    @Column(precision = 19, scale = 4)
-	    private BigDecimal close; // Precio de cierre
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
 
-	    @Column
-	    private BigDecimal volume; // Volumen de transacciones (opcional, puede ser nulo para divisas)
+    public AssetType getAssetType() {
+        return assetType;
+    }
 
-	    @Column
-	    private String market; // Para cryptos, mercado en que se comercializa (ej. USD, BTC)
+    public void setAssetType(AssetType assetType) {
+        this.assetType = assetType;
+    }
 
-	    @Column(name = "base_currency")
-	    private String baseCurrency; // Para Forex, la divisa base (ej. USD)
+    public LocalDate getDate() {
+        return date;
+    }
 
-	    // Getters y Setters
-	    public Long getId() {
-	        return id;
-	    }
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
-	    public void setId(Long id) {
-	        this.id = id;
-	    }
+    @Column(precision = 19, scale = 4)
+    private BigDecimal open;
 
-	    public String getSymbol() {
-	        return symbol;
-	    }
+    @Column(precision = 19, scale = 4)
+    private BigDecimal high;
 
-	    public void setSymbol(String symbol) {
-	        this.symbol = symbol;
-	    }
+    @Column(precision = 19, scale = 4)
+    private BigDecimal low;
 
-	    public AssetType getAssetType() {
-	        return assetType;
-	    }
+    @Column(precision = 19, scale = 4)
+    private BigDecimal close;
 
-	    public void setAssetType(AssetType assetType) {
-	        this.assetType = assetType;
-	    }
+    @Column
+    private BigDecimal volume;
 
-	    public LocalDate getDate() {
-	        return date;
-	    }
+    // Getters y Setters
+    public BigDecimal getOpen() {
+        return open;
+    }
 
-	    public void setDate(LocalDate date) {
-	        this.date = date;
-	    }
+    public void setOpen(BigDecimal open) {
+        this.open = open;
+    }
 
-	    public BigDecimal getOpen() {
-	        return open;
-	    }
+    public BigDecimal getHigh() {
+        return high;
+    }
 
-	    public void setOpen(BigDecimal open) {
-	        this.open = open;
-	    }
+    public void setHigh(BigDecimal high) {
+        this.high = high;
+    }
 
-	    public BigDecimal getHigh() {
-	        return high;
-	    }
+    public BigDecimal getLow() {
+        return low;
+    }
 
-	    public void setHigh(BigDecimal high) {
-	        this.high = high;
-	    }
+    public void setLow(BigDecimal low) {
+        this.low = low;
+    }
 
-	    public BigDecimal getLow() {
-	        return low;
-	    }
+    public BigDecimal getClose() {
+        return close;
+    }
 
-	    public void setLow(BigDecimal low) {
-	        this.low = low;
-	    }
+    public void setClose(BigDecimal close) {
+        this.close = close;
+    }
 
-	    public BigDecimal getClose() {
-	        return close;
-	    }
+    public BigDecimal getVolume() {
+        return volume;
+    }
 
-	    public void setClose(BigDecimal close) {
-	        this.close = close;
-	    }
+    public void setVolume(BigDecimal volume) {
+        this.volume = volume;
+    }
 
-	    public BigDecimal getVolume() {
-	        return volume;
-	    }
+    @Column(name = "market")
+    private String market;
 
-	    public void setVolume(BigDecimal volume) {
-	        this.volume = volume;
-	    }
+    public String getMarket() {
+        return market;
+    }
 
-	    public String getMarket() {
-	        return market;
-	    }
+    public void setMarket(String market) {
+        this.market = market;
+    }
 
-	    public void setMarket(String market) {
-	        this.market = market;
-	    }
+    @Column(name = "base_currency")
+    private String baseCurrency;
 
-	    public String getBaseCurrency() {
-	        return baseCurrency;
-	    }
-
-	    public void setBaseCurrency(String baseCurrency) {
-	        this.baseCurrency = baseCurrency;
-	    }
-	
+    // Getters y setters
 }

@@ -171,12 +171,12 @@ export class AccountService {
   }
 
   getDataFromAPI(url: string): Observable<any> {
-    // Si la URL contiene 'LISTING_STATUS', solicitar respuesta como texto
-    if (url.includes('LISTING_STATUS')) {
-        return this.http.get(url, { responseType: 'text' });
+    // Si la URL es externa (no es localhost), no enviamos headers de autenticación
+    if (!url.includes('localhost')) {
+        return this.http.get<any>(url);
     }
-    // Para otras URLs, mantener el comportamiento actual
-    return this.http.get<any>(url);
+    // Para URLs internas, mantenemos la autenticación
+    return this.http.get<any>(url, { headers: this.getAuthHeaders() });
 }
 
   private getToken(): string {

@@ -185,11 +185,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       //console.log('🎯 Attempting to initialize chart...');
       this.initChart();
     } else {
-      console.log('⏳ Chart initialization pending:', {
-        dataLoaded: this.dataLoaded,
-        myChartAvailable: !!this.myChart,
-        chartInitialized: this.chartInitialized
-      });
+      //console.log('⏳ Chart initialization pending:', {
+      //  dataLoaded: this.dataLoaded,
+      //  myChartAvailable: !!this.myChart,
+      //  chartInitialized: this.chartInitialized
+      //});
     }
   }
 
@@ -604,7 +604,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.categoriesChartInitialized = true;
       this.isLoadingCategories = false;
-      console.log('✅ Categories chart initialized with REAL data');
+      //console.log('✅ Categories chart initialized with REAL data');
       
       this.cdr.detectChanges();
       
@@ -717,25 +717,109 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // Resto de métodos del carrusel y utilidades permanecen igual...
   loadMarketData(): void {
     this.loadCryptoPrices();
-    this.loadStockPrices();
+    this.loadStockData(); // Cambiamos loadStockPrices por loadStockData
+    this.loadCurrencyPrices(); // Añadimos esta línea
+
+    // Configurar actualizaciones periódicas
+    this.cryptoUpdateTimers = setInterval(() => this.loadCryptoPrices(), this.UPDATE_INTERVALS.CRYPTO);
+    this.forexUpdateTimers = setInterval(() => this.loadCurrencyPrices(), this.UPDATE_INTERVALS.FOREX);
+    this.stockUpdateTimers = setInterval(() => this.loadStockData(), this.UPDATE_INTERVALS.STOCKS);
+
+}
+
+// Añadimos el nuevo método para cargar divisas
+loadCurrencyPrices(): void {
+    // Usamos exchangerate.host que es gratuita y no requiere API key
+    const baseUrl = 'https://api.exchangerate.host/latest?base=USD';
     
-    // Load currency prices (mock data for now)
-    /*this.currencyPrices = [
-      { symbol: 'EUR/USD', price: '1.0850', change: '+0.2%' },
-      { symbol: 'GBP/USD', price: '1.2750', change: '-0.1%' },
-      { symbol: 'USD/JPY', price: '149.85', change: '+0.3%' },
-      { symbol: 'USD/CAD', price: '1.3625', change: '+0.1%' },
-      { symbol: 'AUD/USD', price: '0.6580', change: '-0.4%' }
-    ];
-    */
-  }
+    this.accountService.getDataFromAPI(baseUrl).subscribe({
+        next: (data: any) => {
+            console.log('✅ Currency data loaded:', data);
+            
+            // Seleccionamos las divisas más importantes
+            const mainCurrencies = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'NZD'];
+            
+            this.currencyPrices = mainCurrencies.map(currency => {
+                const rate = data.rates[currency];
+                const previousRate = rate * (1 + (Math.random() * 0.02 - 0.01)); // Simulamos cambio
+                
+                const marketData = {
+                    symbol: `${currency}/USD`,
+                    assetType: 'FOREX',
+                    date: new Date().toISOString().split('T')[0],
+                    open: previousRate,
+                    high: Math.max(rate, previousRate),
+                    low: Math.min(rate, previousRate),
+                    close: rate,
+                    volume: 0,
+                    market: 'FOREX'
+                };
+
+                // Guardar en backend
+                this.marketDataService.saveMarketData(marketData).subscribe({
+                    next: () => console.log(`✅ Updated/Saved ${currency} data`),
+                    error: (err) => console.error(`❌ Error updating ${currency}:`, err)
+                });
+
+                return {
+                    symbol: `${currency}/USD`,
+                    price: this.formatPrice(rate),
+                    change: this.calculateChange(previousRate, rate),
+                    name: this.getCurrencyName(currency)
+                };
+            });
+        },
+        error: (error) => {
+            console.error('❌ Error loading currency prices:', error);
+            this.loadFallbackCurrencyData();
+        }
+    });
+}
+
+private loadFallbackCurrencyData(): void {
+    console.log('🔄 Cargando datos de fallback para divisas...');
+    
+    this.marketDataService.getLastMarketData('FOREX').subscribe({ // Cambiamos CURRENCY por FOREX
+        next: (data) => {
+            if (!data || data.length === 0) {
+                console.log('ℹ️ No hay datos de fallback disponibles para divisas');
+                return;
+            }
+            
+            this.currencyPrices = data.map((currency: any) => ({
+                symbol: currency.symbol,
+                price: this.formatPrice(1/currency.close), // Invertimos para mostrar USD/XXX
+                change: this.calculateChange(1/currency.open, 1/currency.close),
+                name: this.getCurrencyName(currency.symbol.split('/')[0])
+            }));
+            console.log('✅ Datos de fallback de divisas cargados');
+        },
+        error: (err) => {
+            console.log('ℹ️ No se pudieron obtener datos de fallback para divisas');
+        }
+    });
+}
+
+private getCurrencyName(code: string): string {
+    const currencyNames: { [key: string]: string } = {
+        'EUR': 'Euro',
+        'GBP': 'British Pound',
+        'JPY': 'Japanese Yen',
+        'CAD': 'Canadian Dollar',
+        'AUD': 'Australian Dollar',
+        'CHF': 'Swiss Franc',
+        'CNY': 'Chinese Yuan',
+        'NZD': 'New Zealand Dollar'
+    };
+    return currencyNames[code] || code;
+}
 
   loadCryptoPrices(): void {
     const cryptoUrl = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h';
     
     this.accountService.getDataFromAPI(cryptoUrl).subscribe({
       next: (data: any[]) => {
-        console.log('✅ Crypto data loaded:', data);
+        //console.log('✅ Crypto data loaded:', data);
         
         this.cryptoPrices = data.map(coin => ({
           symbol: coin.symbol.toUpperCase(),
@@ -762,7 +846,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
           // El backend ahora actualizará en lugar de crear nuevo
           this.marketDataService.saveMarketData(marketData).subscribe({
-            next: (response) => console.log(`✅ Updated/Saved ${coin.symbol} data`, response),
+            //next: (response) => console.log(`✅ Updated/Saved ${coin.symbol} data`, response),
             error: (err) => console.error(`❌ Error updating ${coin.symbol}:`, err)
           });
         });
@@ -774,71 +858,82 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  loadStockPrices(): void {
-    const apiKey = environment.alphaVantageApiKey;
-    // Endpoint para obtener lista de stocks activos
-    const listingUrl = `https://www.alphavantage.co/query?function=LISTING_STATUS&apikey=${apiKey}`;
+  private loadStockData(): void {
+    const lastUpdate = localStorage.getItem('lastStockUpdate');
+    const now = Date.now();
+    
+    // Si no han pasado 16 minutos desde la última actualización, usar datos de la BD
+    if (lastUpdate && (now - parseInt(lastUpdate)) < this.UPDATE_INTERVALS.STOCKS) {
+        this.loadStocksFromDatabase();
+        return;
+    }
 
-    // Primero obtenemos la lista completa de símbolos disponibles
-    this.accountService.getDataFromAPI(listingUrl).subscribe({
+    const apiKey = environment.twelvedataApiKey;
+    // Usar el endpoint de precio en tiempo real que es más eficiente para múltiples símbolos
+    const url = `https://api.twelvedata.com/price?symbol=${this.STOCK_SYMBOLS.join(',')}&apikey=${apiKey}`;
+
+    this.accountService.getDataFromAPI(url).subscribe({
         next: (data: any) => {
-            if (typeof data === 'string') {
-                // La API devuelve un CSV, convertirlo a array
-                const rows = data.split('\n');
-                const symbols = rows.slice(1) // Eliminar cabecera
-                    .map(row => row.split(',')[0]) // Obtener solo el símbolo
-                    .filter(symbol => symbol && symbol.length > 0) // Eliminar vacíos
-                    .slice(0, 100); // Limitar a 100 símbolos para no sobrecargar
+            console.log('✅ Stock data loaded:', data);
+            localStorage.setItem('lastStockUpdate', now.toString());
 
-                console.log(`📊 Símbolos encontrados: ${symbols.length}`);
+            // Si solo hay un símbolo, la respuesta es un objeto, no un map
+            const prices = this.STOCK_SYMBOLS.length === 1 ? { [this.STOCK_SYMBOLS[0]]: data } : data;
 
-                // Hacer una única llamada batch para obtener todos los precios
-                const batchUrl = `https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols=${symbols.join(',')}&apikey=${apiKey}`;
-                
-                this.accountService.getDataFromAPI(batchUrl).subscribe({
-                    next: (batchData: any) => {
-                        if (batchData.Information) {
-                            console.warn('⚠️ Límite de API alcanzado:', batchData.Information);
-                            return;
-                        }
+            this.stockPrices = Object.entries(prices).map(([symbol, priceData]: [string, any]) => {
+                const currentPrice = parseFloat(priceData.price);
+                const previousPrice = currentPrice * (1 + (Math.random() * 0.02 - 0.01)); // Simulamos precio anterior
 
-                        const quotes = batchData['Stock Quotes'] || [];
-                        console.log(`📈 Recibidos ${quotes.length} stocks`);
+                const marketData = {
+                    symbol: symbol,
+                    assetType: 'STOCK',
+                    date: new Date().toISOString().split('T')[0],
+                    open: previousPrice,
+                    high: Math.max(currentPrice, previousPrice),
+                    low: Math.min(currentPrice, previousPrice),
+                    close: currentPrice,
+                    volume: 0, // El endpoint de price no provee volumen
+                    market: 'USD'
+                };
 
-                        quotes.forEach((quote: any) => {
-                            const marketData = {
-                                symbol: quote['1. symbol'],
-                                assetType: 'STOCK',
-                                date: new Date().toISOString().split('T')[0],
-                                open: parseFloat(quote['2. price']),
-                                high: parseFloat(quote['2. price']), // En batch no tenemos high/low
-                                low: parseFloat(quote['2. price']),
-                                close: parseFloat(quote['2. price']),
-                                volume: parseFloat(quote['3. volume']),
-                                market: 'USD'
-                            };
-
-                            // Actualizar UI
-                            this.updateStockPrice(marketData);
-
-                            // Guardar en backend
-                            this.marketDataService.saveMarketData(marketData).subscribe({
-                                next: () => console.log(`💾 ${marketData.symbol}: Datos guardados`),
-                                error: (err) => console.error(`❌ ${marketData.symbol}: Error al guardar:`, err)
-                            });
-                        });
-                    },
-                    error: (error) => {
-                        console.error('❌ Error cargando datos batch:', error);
-                        this.loadFallbackStockData('');
-                    }
+                // Guardar en backend para fallback
+                this.marketDataService.saveMarketData(marketData).subscribe({
+                    next: () => console.log(`✅ Saved ${symbol} data to database`),
+                    error: (err) => console.error(`❌ Error saving ${symbol}:`, err)
                 });
-            }
+
+                return {
+                    symbol: symbol,
+                    price: this.formatPrice(currentPrice),
+                    change: this.calculateChange(previousPrice, currentPrice),
+                    name: this.getCompanyName(symbol)
+                };
+            });
         },
         error: (error) => {
-            console.error('❌ Error obteniendo lista de símbolos:', error);
-            this.loadFallbackStockData('');
+            console.error('❌ Error loading stocks from API:', error);
+            this.loadStocksFromDatabase();
         }
+    });
+}
+
+private loadStocksFromDatabase(): void {
+    this.marketDataService.getLastMarketData('STOCK').subscribe({
+        next: (data) => {
+            if (!data || data.length === 0) {
+                console.log('ℹ️ No stock data available in database');
+                return;
+            }
+
+            this.stockPrices = data.map((stock: any) => ({
+                symbol: stock.symbol,
+                price: this.formatPrice(stock.close),
+                change: this.calculateChange(stock.open, stock.close),
+                name: this.getCompanyName(stock.symbol)
+            }));
+            console.log('✅ Loaded stock data from database');
+        },
+        error: (err) => console.error('❌ Error loading stocks from database:', err)
     });
 }
 
@@ -1105,7 +1200,7 @@ private getStaticStockData(symbol: string): any {
 
   // CORREGIR COMPLETAMENTE: forceInitializeCategories para NO usar fallback
   forceInitializeCategories(): void {
-    console.log('🚀 FORCING CATEGORIES INITIALIZATION');
+    //console.log('🚀 FORCING CATEGORIES INITIALIZATION');
     
     // NO usar datos de fallback
     // this.loadFallbackCategoryData(); // ELIMINAR ESTA LÍNEA
@@ -1127,19 +1222,19 @@ private getStaticStockData(symbol: string): any {
   }
 
   getCompanyName(symbol: string): string {
-    const companies = {
-      'AAPL': 'Apple Inc.',
-      'GOOGL': 'Alphabet Inc.',
-      'MSFT': 'Microsoft Corp.',
-      'AMZN': 'Amazon.com Inc.',
-      'TSLA': 'Tesla Inc.',
-      'META': 'Meta Platforms',
-      'NVDA': 'NVIDIA Corp.',
-      'JPM': 'JPMorgan Chase',
-      'V': 'Visa Inc.',
-      'WMT': 'Walmart Inc.'
+    const companies: { [key: string]: string } = {
+        'AAPL': 'Apple Inc.',
+        'GOOGL': 'Alphabet Inc.',
+        'MSFT': 'Microsoft Corp.',
+        'AMZN': 'Amazon.com Inc.',
+        'TSLA': 'Tesla Inc.',
+        'META': 'Meta Platforms',
+        'NVDA': 'NVIDIA Corp.',
+        'JPM': 'JPMorgan Chase',
+        'V': 'Visa Inc.',
+        'WMT': 'Walmart Inc.'
     };
-    return companies[symbol as keyof typeof companies] || symbol;
+    return companies[symbol] || symbol;
   }
 
   private loadFallbackCryptoData(): void {
@@ -1165,4 +1260,17 @@ private getStaticStockData(symbol: string): any {
         }
     });
 }
+
+private readonly STOCK_SYMBOLS = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'META', 'NVDA', 'JPM'];
+
+private readonly UPDATE_INTERVALS = {
+    CRYPTO: 5 * 60 * 1000,  // 5 minutos
+    FOREX: 60 * 60 * 1000,  // 1 hora
+    STOCKS:  16 * 60 * 1000 // 16 minutos
+};
+
+private cryptoUpdateTimers: { [key: string]: any } = {};
+private forexUpdateTimers: { [key: string]: any } = {};
+private stockUpdateTimers: { [key: string]: any } = {};
+
 }

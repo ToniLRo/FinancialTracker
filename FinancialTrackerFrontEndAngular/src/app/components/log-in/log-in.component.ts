@@ -16,6 +16,7 @@ export class LogINComponent implements OnInit {
   loginError: string = '';
   loginSuccess: string = '';
   isLoading: boolean = false;
+  keepSignedIn: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -40,7 +41,9 @@ export class LogINComponent implements OnInit {
       return;
     }
 
-    this.authService.login(this.loginData.username, this.loginData.password)
+    console.log('📝 Estado del checkbox:', this.keepSignedIn);
+    
+    this.authService.login(this.loginData.username, this.loginData.password, this.keepSignedIn)
       .subscribe({
         next: (response) => {
           this.loginSuccess = '¡Login exitoso!';

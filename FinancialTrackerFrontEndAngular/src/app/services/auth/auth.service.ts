@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { LoginResponse } from 'src/app/models/LoginResponse/loginresponse.model';
 import { User } from 'src/app/models/User/user.model';
 import { ChangePasswordRequest } from 'src/app/models/ChangePasswordRequest.model';
+import { tap } from 'rxjs/operators';
 
 
 @Injectable({
@@ -26,8 +27,22 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/add`, { username, email, password });
   }
 
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password });
+  login(username: string, password: string, keepSignedIn: boolean = false): Observable<any> {
+    console.log('🔐 Login attempt:', { username, keepSignedIn });
+
+    return this.http.post<any>(`${this.apiUrl}/login`, { username, password }).pipe(
+        tap(response => {
+            if (response.token) {
+                if (keepSignedIn) {
+                    localStorage.setItem('jwt_token', response.token);
+                    console.log('✅ Token guardado en localStorage (Keep me signed in)');
+                } else {
+                    sessionStorage.setItem('jwt_token', response.token);
+                    console.log('✅ Token guardado en sessionStorage (sesión normal)');
+                }
+            }
+        })
+    );
   }
 
   changePassword(request: ChangePasswordRequest): Observable<any> {
@@ -52,6 +67,8 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('jwt_token');
+    localStorage.removeItem('keepSignedIn');
+    sessionStorage.removeItem('jwt_token');
     this.currentUserSubject.next(null);
   }
 
@@ -60,11 +77,20 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('jwt_token');
+    return localStorage.getItem('jwt_token') || sessionStorage.getItem('jwt_token');
   }
 
   isLoggedIn(): boolean {
-    return this.getCurrentUser() !== null && this.getToken() !== null;
+    const localToken = localStorage.getItem('jwt_token');
+    const sessionToken = sessionStorage.getItem('jwt_token');
+    
+    console.log('🔍 Verificando estado de login:', {
+        tieneLocalToken: !!localToken,
+        tieneSessionToken: !!sessionToken,
+        ubicacionToken: localToken ? 'localStorage' : sessionToken ? 'sessionStorage' : 'ninguno'
+    });
+
+    return !!(localToken || sessionToken);
   }
 
   getUserProfile(): Observable<any> {

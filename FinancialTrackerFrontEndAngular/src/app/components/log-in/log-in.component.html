@@ -16,9 +16,21 @@
 								<label for="pass" class="label">Password</label>
 								<input id="pass" type="password" class="input" name="password" [(ngModel)]="loginData.password" required>
 							</div>
-							<div class="group">
-								<input id="check" type="checkbox" class="check" checked>
-								<label for="check"><span class="icon"></span> Keep me Signed in</label>
+							<!--<div class="group">
+								<input id="check" type="checkbox" class="check" [(ngModel)]="keepSignedIn" checked>
+								<label for="keepSignedIn"><span class="icon"></span> Keep me Signed in</label>
+							</div>-->
+							<div class="form-check">
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" 
+											class="form-check-input" 
+											id="keepSignedIn" 
+											[(ngModel)]="keepSignedIn"
+											name="keepSignedIn">
+										<span class="checkbox-text">Keep me signed in</span>
+									</label>
+								</div>
 							</div>
 							<div class="group">
 								<button type="button" class="button" (click)="onLogin()">Sign In</button>

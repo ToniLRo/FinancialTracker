@@ -729,19 +729,30 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
 // Añadimos el nuevo método para cargar divisas
 loadCurrencyPrices(): void {
-    // Usamos exchangerate.host que es gratuita y no requiere API key
-    const baseUrl = 'https://api.exchangerate.host/latest?base=USD';
+    const lastUpdate = localStorage.getItem('lastForexUpdate');
+    const now = Date.now();
+    
+    // Verificar si han pasado los 32 minutos necesarios
+    if (lastUpdate && (now - parseInt(lastUpdate)) < this.UPDATE_INTERVALS.FOREX) {
+        this.loadForexFromDatabase();
+        return;
+    }
+
+    const apiKey = environment.exchangerateApiKey;
+    const baseUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
+    
+    console.log('🔄 Iniciando actualización de divisas...');
     
     this.accountService.getDataFromAPI(baseUrl).subscribe({
         next: (data: any) => {
             console.log('✅ Currency data loaded:', data);
+            localStorage.setItem('lastForexUpdate', now.toString());
             
-            // Seleccionamos las divisas más importantes
             const mainCurrencies = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'NZD'];
             
             this.currencyPrices = mainCurrencies.map(currency => {
-                const rate = data.rates[currency];
-                const previousRate = rate * (1 + (Math.random() * 0.02 - 0.01)); // Simulamos cambio
+                const rate = data.conversion_rates[currency];
+                const previousRate = rate * (1 + (Math.random() * 0.02 - 0.01));
                 
                 const marketData = {
                     symbol: `${currency}/USD`,
@@ -755,10 +766,9 @@ loadCurrencyPrices(): void {
                     market: 'FOREX'
                 };
 
-                // Guardar en backend
                 this.marketDataService.saveMarketData(marketData).subscribe({
-                    next: () => console.log(`✅ Updated/Saved ${currency} data`),
-                    error: (err) => console.error(`❌ Error updating ${currency}:`, err)
+                    next: () => console.log(`✅ Saved ${currency} data to database`),
+                    error: (err) => console.error(`❌ Error saving ${currency}:`, err)
                 });
 
                 return {
@@ -771,31 +781,31 @@ loadCurrencyPrices(): void {
         },
         error: (error) => {
             console.error('❌ Error loading currency prices:', error);
-            this.loadFallbackCurrencyData();
+            this.loadForexFromDatabase();
         }
     });
 }
 
-private loadFallbackCurrencyData(): void {
-    console.log('🔄 Cargando datos de fallback para divisas...');
+private loadForexFromDatabase(): void {
+    //console.log('🔄 Cargando datos de divisas desde base de datos...');
     
-    this.marketDataService.getLastMarketData('FOREX').subscribe({ // Cambiamos CURRENCY por FOREX
+    this.marketDataService.getLastMarketData('FOREX').subscribe({
         next: (data) => {
             if (!data || data.length === 0) {
-                console.log('ℹ️ No hay datos de fallback disponibles para divisas');
+                console.log('ℹ️ No hay datos de divisas disponibles en base de datos');
                 return;
             }
             
-            this.currencyPrices = data.map((currency: any) => ({
-                symbol: currency.symbol,
-                price: this.formatPrice(1/currency.close), // Invertimos para mostrar USD/XXX
-                change: this.calculateChange(1/currency.open, 1/currency.close),
-                name: this.getCurrencyName(currency.symbol.split('/')[0])
+            this.currencyPrices = data.map((forex: any) => ({
+                symbol: forex.symbol,
+                price: this.formatPrice(forex.close),
+                change: this.calculateChange(forex.open, forex.close),
+                name: this.getCurrencyName(forex.symbol.split('/')[0])
             }));
-            console.log('✅ Datos de fallback de divisas cargados');
+            //console.log(`✅ Cargados ${this.currencyPrices.length} datos de divisas desde base de datos`);
         },
         error: (err) => {
-            console.log('ℹ️ No se pudieron obtener datos de fallback para divisas');
+            console.error('❌ Error cargando divisas desde base de datos:', err);
         }
     });
 }
@@ -898,7 +908,7 @@ private getCurrencyName(code: string): string {
 
                 // Guardar en backend para fallback
                 this.marketDataService.saveMarketData(marketData).subscribe({
-                    next: () => console.log(`✅ Saved ${symbol} data to database`),
+                    //next: () => console.log(`✅ Saved ${symbol} data to database`),
                     error: (err) => console.error(`❌ Error saving ${symbol}:`, err)
                 });
 
@@ -931,7 +941,7 @@ private loadStocksFromDatabase(): void {
                 change: this.calculateChange(stock.open, stock.close),
                 name: this.getCompanyName(stock.symbol)
             }));
-            console.log('✅ Loaded stock data from database');
+            //console.log('✅ Loaded stock data from database');
         },
         error: (err) => console.error('❌ Error loading stocks from database:', err)
     });
@@ -1264,9 +1274,9 @@ private getStaticStockData(symbol: string): any {
 private readonly STOCK_SYMBOLS = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'META', 'NVDA', 'JPM'];
 
 private readonly UPDATE_INTERVALS = {
-    CRYPTO: 5 * 60 * 1000,  // 5 minutos
-    FOREX: 60 * 60 * 1000,  // 1 hora
-    STOCKS:  16 * 60 * 1000 // 16 minutos
+    CRYPTO: 5 * 60 * 1000,    // 5 minutos
+    FOREX: 32 * 60 * 1000,    // 32 minutos (45 llamadas/día)
+    STOCKS: 16 * 60 * 1000    // 16 minutos
 };
 
 private cryptoUpdateTimers: { [key: string]: any } = {};

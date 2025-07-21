@@ -236,7 +236,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     this.selectedAccount = {
       holder_name: '',
       account_number: '',
-      account_type: 'CreditCard',
+      account_type: 'Card',
       balance: 0,
       currency: 'USD',
       good_thru: this.generateGoodThru() // NUEVO: Generar automáticamente
@@ -608,7 +608,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     if (!accountNumber) {
       // Si no hay número, generar uno de ejemplo basado en el tipo
       const prefixes = {
-        'CreditCard': '4567',
+        'Card': '4567',
         'BankAccount': '1234',
         'Cash': '9999'
       };
@@ -619,7 +619,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     // Si hay número real, formatearlo según el tipo
     const cleanNumber = accountNumber.replace(/\D/g, '');
     
-    if (accountType === 'CreditCard') {
+    if (accountType === 'Card') {
       // Formato: 1234 5678 9012 3456
       if (cleanNumber.length >= 16) {
         return cleanNumber.replace(/(\d{4})(?=\d)/g, '$1 ');
@@ -794,7 +794,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     }
 
     // NUEVA: Validación para good_thru
-    if ((account.account_type === 'CreditCard' || account.account_type === 'BankAccount')) {
+    if ((account.account_type === 'Card' || account.account_type === 'BankAccount')) {
       if (!account.good_thru || account.good_thru.trim() === '') {
         this.accountError = 'La fecha de vencimiento es obligatoria para tarjetas de crédito y cuentas bancarias.';
         return false;
@@ -834,7 +834,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     const numbers = value.replace(/\D/g, '');
     
     switch (accountType) {
-      case 'CreditCard':
+      case 'Card':
         // Formato: 1234 5678 9012 3456 (16 dígitos)
         return numbers.replace(/(\d{4})(?=\d)/g, '$1 ').substring(0, 19);
         
@@ -875,7 +875,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     const numbers = accountNumber.replace(/\D/g, '');
     
     switch (accountType) {
-      case 'CreditCard':
+      case 'Card':
         return numbers.length === 16;
       case 'BankAccount':
         return numbers.length >= 10 && numbers.length <= 12;
@@ -891,7 +891,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
    */
   getAccountNumberPlaceholder(accountType: string): string {
     switch (accountType) {
-      case 'CreditCard':
+      case 'Card':
         return '1234 5678 9012 3456';
       case 'BankAccount':
         return '1234-5678-9012';
@@ -907,7 +907,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
    */
   getAccountNumberMaxLength(accountType: string): number {
     switch (accountType) {
-      case 'CreditCard':
+      case 'Card':
         return 19; // 16 dígitos + 3 espacios
       case 'BankAccount':
         return 14; // 12 dígitos + 2 guiones
@@ -925,7 +925,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     const randomNumbers = () => Math.floor(Math.random() * 10);
     
     switch (accountType) {
-      case 'CreditCard':
+      case 'Card':
         const ccNumber = Array.from({length: 16}, randomNumbers).join('');
         return this.formatAccountNumber(ccNumber, accountType);
         
@@ -1014,8 +1014,8 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       // Auto-generar número cuando cambia el tipo (solo en modo añadir)
       this.selectedAccount.account_number = this.generateAccountNumber(this.selectedAccount.account_type);
       
-      // Auto-generar good_thru solo para CreditCard y BankAccount
-      if (this.selectedAccount.account_type === 'CreditCard' || this.selectedAccount.account_type === 'BankAccount') {
+      // Auto-generar good_thru solo para Card y BankAccount
+      if (this.selectedAccount.account_type === 'Card' || this.selectedAccount.account_type === 'BankAccount') {
         this.selectedAccount.good_thru = this.generateGoodThru();
       } else {
         this.selectedAccount.good_thru = '';

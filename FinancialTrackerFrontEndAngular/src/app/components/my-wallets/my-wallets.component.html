@@ -449,7 +449,7 @@
             [disabled]="isProcessing"
             (change)="onAccountTypeChange()">
             <option value="">Select card type</option>
-            <option value="CreditCard">Credit Card</option>
+            <option value="Card">Card</option>
             <option value="BankAccount">Bank Account</option>
             <option value="Cash">Cash</option>
           </select>
@@ -458,7 +458,7 @@
         <!-- Card Number con máscara mejorada -->
         <div class="form-group">
           <label for="account_number">
-            {{ selectedAccount?.account_type === 'CreditCard' ? 'Card Number' : 
+            {{ selectedAccount?.account_type === 'Card' ? 'Card Number' : 
                selectedAccount?.account_type === 'BankAccount' ? 'Account Number' : 
                'Cash ID' }} *
           </label>
@@ -468,8 +468,8 @@
               [(ngModel)]="selectedAccount!.account_number" 
               name="account_number"     
               required 
-              [maxlength]="getAccountNumberMaxLength(selectedAccount?.account_type || 'CreditCard')"
-              [placeholder]="getAccountNumberPlaceholder(selectedAccount?.account_type || 'CreditCard')"
+              [maxlength]="getAccountNumberMaxLength(selectedAccount?.account_type || 'Card')"
+              [placeholder]="getAccountNumberPlaceholder(selectedAccount?.account_type || 'Card')"
               [disabled]="isProcessing"
               (input)="onAccountNumberInput($event)"
               #accountNumber="ngModel"
@@ -478,21 +478,21 @@
           </div>
           <div class="validation-message" *ngIf="accountNumber.invalid && accountNumber.touched">
             <small *ngIf="accountNumber.errors?.['required']">
-              {{ selectedAccount?.account_type === 'CreditCard' ? 'Card number' : 
+              {{ selectedAccount?.account_type === 'Card' ? 'Card number' : 
                  selectedAccount?.account_type === 'BankAccount' ? 'Account number' : 
                  'Cash ID' }} is required
             </small>
           </div>
           <div class="validation-message" *ngIf="selectedAccount && selectedAccount.account_number && selectedAccount.account_type && !validateAccountNumber(selectedAccount.account_number, selectedAccount.account_type)">
             <small class="error">           
-              Invalid {{ selectedAccount.account_type === 'CreditCard' ? 'card' : 
+              Invalid {{ selectedAccount.account_type === 'Card' ? 'card' : 
                  selectedAccount.account_type === 'BankAccount' ? 'account' : 
                  'cash ID' }} number format
             </small>
           </div>
           <div class="format-hint">
             <small>
-              Format: {{ getAccountNumberPlaceholder(selectedAccount?.account_type || 'CreditCard') }}
+              Format: {{ getAccountNumberPlaceholder(selectedAccount?.account_type || 'Card') }}
             </small>
           </div>
         </div>
@@ -536,7 +536,7 @@
         </div>
         
         <!-- Good Thru (Valid Until) -->
-        <div class="form-group" *ngIf="selectedAccount?.account_type === 'CreditCard' || selectedAccount?.account_type === 'BankAccount'">
+        <div class="form-group" *ngIf="selectedAccount?.account_type === 'Card' || selectedAccount?.account_type === 'BankAccount'">
           <label for="good_thru">Valid Until (MM/YY) *</label>
           <div class="input-with-actions">
             <input 

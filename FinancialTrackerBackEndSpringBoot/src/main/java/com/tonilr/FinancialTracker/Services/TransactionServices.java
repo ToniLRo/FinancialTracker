@@ -1,6 +1,10 @@
 package com.tonilr.FinancialTracker.Services;
 
+import java.time.LocalDate;
+import java.sql.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,5 +76,35 @@ public class TransactionServices {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+
+	public Map<Object, Double> getCategoryTotalsByDateRange(Long userId, LocalDate startDate, LocalDate endDate) {
+		List<Transaction> transactions = transactionRepo.findByUser_IdAndDateBetween(
+			userId, 
+			Date.valueOf(startDate), 
+			Date.valueOf(endDate)
+		);
+
+		return transactions.stream()
+			.collect(Collectors.groupingBy(
+				t -> t.getType(),
+				Collectors.summingDouble(Transaction::getAmount)
+			));
+	}
+
+	public double getTotalIncome(Long userId, LocalDate startDate, LocalDate endDate) {
+		return transactionRepo.findByUser_IdAndDateBetween(userId, Date.valueOf(startDate), Date.valueOf(endDate))
+			.stream()
+			.filter(t -> t.getAmount() > 0)
+			.mapToDouble(Transaction::getAmount)
+			.sum();
+	}
+
+	public double getTotalExpenses(Long userId, LocalDate startDate, LocalDate endDate) {
+		return transactionRepo.findByUser_IdAndDateBetween(userId, Date.valueOf(startDate), Date.valueOf(endDate))
+			.stream()
+			.filter(t -> t.getAmount() < 0)
+			.mapToDouble(Transaction::getAmount)
+			.sum();
 	}
 }

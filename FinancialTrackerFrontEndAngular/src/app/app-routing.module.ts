@@ -9,6 +9,7 @@ import { AuthGuard } from './services/auth/auth.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 const routes: Routes = [
   {path: 'LogIn', component: LogINComponent},
@@ -19,6 +20,11 @@ const routes: Routes = [
   {path: 'MyWallets', component: MyWalletsComponent, canActivate: [AuthGuard] },
   {path: 'Payments', component: PaymentsComponent, canActivate: [AuthGuard] },
   {path: 'Profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  {
+    path: 'Settings',
+    component: SettingsComponent,
+    canActivate: [AuthGuard]  // Para proteger la ruta
+  },
   { path:  '**', redirectTo: '/Home', pathMatch: 'full' }
 ];
 

@@ -17,6 +17,7 @@ import { AuthInterceptor } from './services/auth/auth.interceptor';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
     NavbarComponent,
     ProfileComponent,
     ForgotPasswordComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +40,9 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
     FormsModule,
     CommonModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [
     {

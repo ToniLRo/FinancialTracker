@@ -20,4 +20,12 @@ export class UsersService {
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password });
   }
+
+  getUserSettings(userId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${userId}/settings`);
+}
+
+updateUserSettings(userId: number, settings: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${userId}/settings`, settings);
+}
 }

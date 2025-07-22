@@ -1,5 +1,6 @@
 package com.tonilr.FinancialTracker.repos;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,8 @@ public interface TransactionRepo extends JpaRepository<Transaction, Long> {
 	// CORREGIR: Para buscar por usuario, usar query personalizada también
 	@Query("SELECT t FROM Transaction t WHERE t.user.user_Id = :userId ORDER BY t.register_date DESC")
 	List<Transaction> findByUserId(@Param("userId") Long userId);
+
+	@Query("SELECT t FROM Transaction t WHERE t.user.id = :userId AND t.date BETWEEN :startDate AND :endDate")
+	List<Transaction> findByUser_IdAndDateBetween(Long userId, Date startDate, Date endDate);
+	
 }

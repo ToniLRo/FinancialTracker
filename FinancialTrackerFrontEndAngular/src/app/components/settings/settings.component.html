@@ -1,0 +1,60 @@
+<div class="settings-container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Settings</h2>
+        </div>
+        
+        <div class="card-body">
+            <!-- Email Notifications Section -->
+            <div class="settings-section">
+                <h4>Email Notifications</h4>
+                <div class="form-check mb-3">
+                    <input type="checkbox" 
+                           class="form-check-input" 
+                           id="emailEnabled"
+                           [(ngModel)]="notificationSettings.emailNotificationsEnabled">
+                    <label class="form-check-label" for="emailEnabled">
+                        Enable Email Notifications
+                    </label>
+                </div>
+
+                <div class="notification-options" 
+                     *ngIf="notificationSettings.emailNotificationsEnabled">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" 
+                               class="form-control" 
+                               [(ngModel)]="notificationSettings.emailAddress"
+                               placeholder="your@email.com">
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               id="weeklyReport"
+                               [(ngModel)]="notificationSettings.weeklyReportEnabled">
+                        <label class="form-check-label" for="weeklyReport">
+                            Weekly Summary (Sundays at 8 PM)
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               id="monthlyReport"
+                               [(ngModel)]="notificationSettings.monthlyReportEnabled">
+                        <label class="form-check-label" for="monthlyReport">
+                            Monthly Summary (1st day of month at 9 AM)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary mt-4" 
+                    (click)="saveSettings()">
+                Save Settings
+            </button>
+        </div>
+    </div>
+</div>

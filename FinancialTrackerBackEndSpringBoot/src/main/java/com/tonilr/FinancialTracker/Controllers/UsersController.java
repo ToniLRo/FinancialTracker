@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.owasp.encoder.Encode;
 
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.Services.UsersServices;
@@ -31,11 +33,20 @@ import com.tonilr.FinancialTracker.dto.PasswordResetRequest;
 import com.tonilr.FinancialTracker.dto.PasswordResetTokenRequest;
 import com.tonilr.FinancialTracker.Services.EmailService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/user")
+@Validated
 public class UsersController {
+
+	private static final Logger log = LoggerFactory.getLogger(UsersController.class);
 
 	@Autowired
 	private final UsersServices userService;
@@ -65,9 +76,49 @@ public class UsersController {
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<Users> addUser(@RequestBody RegisterRequest request) {
-		Users newUser = userService.addUser(request);
-		return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+	public ResponseEntity<?> addUser(@Valid @RequestBody RegisterRequest request) {
+		try {
+			log.info("Iniciando registro de usuario. Request recibido: {}", request.getUsername());
+			
+			// Sanitizar inputs
+			String sanitizedUsername = Encode.forHtml(request.getUsername());
+			log.info("Username después de sanitizar: {}", sanitizedUsername);
+			
+			// Verificar existencia
+			boolean exists = userService.existsByUsername(sanitizedUsername);
+			log.info("¿Usuario existe?: {}", exists);
+			
+			if (exists) {
+				return ResponseEntity
+					.badRequest()
+					.body("Username already exists");
+			}
+
+			// Continuar con el registro...
+			log.info("Recibida solicitud de registro para usuario: {}", request.getUsername());
+			
+			// Sanitizar inputs
+			String sanitizedEmail = Encode.forHtml(request.getEmail());
+			
+			// Crear request sanitizado
+			RegisterRequest sanitizedRequest = new RegisterRequest();
+			sanitizedRequest.setUsername(sanitizedUsername);
+			sanitizedRequest.setEmail(sanitizedEmail);
+			sanitizedRequest.setPassword(request.getPassword());
+			
+			// Crear usuario
+			log.info("Creando nuevo usuario");
+			Users newUser = userService.addUser(sanitizedRequest);
+			log.info("Usuario creado exitosamente con ID: {}", newUser.getUser_Id());
+			
+			return ResponseEntity.ok("User registered successfully");
+			
+		} catch (Exception e) {
+			log.error("Error durante el registro de usuario", e);
+			return ResponseEntity
+				.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body("Error during registration: " + e.getMessage());
+		}
 	}
 
 	@PutMapping("/update")

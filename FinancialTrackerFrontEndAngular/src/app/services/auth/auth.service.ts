@@ -5,6 +5,7 @@ import { LoginResponse } from 'src/app/models/LoginResponse/loginresponse.model'
 import { User } from 'src/app/models/User/user.model';
 import { ChangePasswordRequest } from 'src/app/models/ChangePasswordRequest.model';
 import { tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -15,7 +16,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   private getUserFromStorage(): User | null {
     const userStr = localStorage.getItem('currentUser');
@@ -70,6 +71,8 @@ export class AuthService {
     localStorage.removeItem('keepSignedIn');
     sessionStorage.removeItem('jwt_token');
     this.currentUserSubject.next(null);
+    this.router.navigate(['/LogIn']);
+
   }
 
   getCurrentUser(): User | null {
@@ -81,19 +84,52 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    const localToken = localStorage.getItem('jwt_token');
-    const sessionToken = sessionStorage.getItem('jwt_token');
-    
-    console.log('🔍 Verificando estado de login:', {
-        tieneLocalToken: !!localToken,
-        tieneSessionToken: !!sessionToken,
-        ubicacionToken: localToken ? 'localStorage' : sessionToken ? 'sessionStorage' : 'ninguno'
-    });
+    const token = localStorage.getItem('jwt_token') || sessionStorage.getItem('jwt_token');
+    if (!token) {
+        return false;
+    }
 
-    return !!(localToken || sessionToken);
+    // Opcional: Verificar si el token ha expirado
+    try {
+        const tokenData = JSON.parse(atob(token.split('.')[1]));
+        const expirationDate = new Date(tokenData.exp * 1000);
+        if (expirationDate < new Date()) {
+            this.logout(); // Limpiar token expirado
+            return false;
+        }
+        return true;
+    } catch {
+        return false;
+    }
   }
 
   getUserProfile(): Observable<any> {
     return this.http.get(`${this.apiUrl}/profile`);
   }
+}
+
+// Crear un servicio de validación
+@Injectable({
+    providedIn: 'root'
+})
+export class ValidationService {
+    private readonly EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    private readonly USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/;
+    private readonly PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+
+    validateEmail(email: string): boolean {
+        return this.EMAIL_REGEX.test(email);
+    }
+
+    validateUsername(username: string): boolean {
+        return this.USERNAME_REGEX.test(username);
+    }
+
+    validatePassword(password: string): boolean {
+        return this.PASSWORD_REGEX.test(password);
+    }
+
+    sanitizeInput(input: string): string {
+        return input.replace(/[<>]/g, ''); // Sanitización básica XSS
+    }
 } 

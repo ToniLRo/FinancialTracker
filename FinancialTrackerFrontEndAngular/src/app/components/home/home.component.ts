@@ -7,6 +7,11 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MarketDataService } from 'src/app/services/marketData/marketData.service';
 import { ApiUpdateControlService } from 'src/app/services/api-update-control/api-update-control.service';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { Router } from '@angular/router';
+import { HttpInterceptor, HttpHandler, HttpEvent, HttpRequest, HttpErrorResponse } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Component({
     selector: 'home',
@@ -66,7 +71,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private http: HttpClient,
     private marketDataService: MarketDataService,
-    private apiUpdateControlService: ApiUpdateControlService
+    private apiUpdateControlService: ApiUpdateControlService,
+    private authService: AuthService,
+    private router: Router
   ) {
     Chart.register(
       CategoryScale, 
@@ -83,6 +90,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   ngOnInit(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/LogIn']);
+      return;
+    }
     this.loadDashboardData();
     this.loadMarketData();
   }

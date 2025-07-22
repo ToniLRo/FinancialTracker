@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -210,5 +211,9 @@ public class UsersServices {
 	public Users findUserByUsername(String username) {
 		return userRepo.findByUsername(username)
 			.orElseThrow(() -> new UserNotFoundException("User by username " + username + " was not found"));
+	}
+
+	public boolean existsByUsername(String username) {
+	    return userRepo.findByUsername(username).isPresent();
 	}
 }

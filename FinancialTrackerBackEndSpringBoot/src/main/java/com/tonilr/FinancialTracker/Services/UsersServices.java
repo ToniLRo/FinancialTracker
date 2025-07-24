@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +19,8 @@ import com.tonilr.FinancialTracker.exceptions.UserNotFoundException;
 import com.tonilr.FinancialTracker.repos.UsersRepo;
 import com.tonilr.FinancialTracker.dto.ChangePasswordRequest;
 import com.tonilr.FinancialTracker.dto.PasswordResetTokenRequest;
+import com.tonilr.FinancialTracker.Entities.UserSettings;
+import com.tonilr.FinancialTracker.repos.UserSettingsRepo;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -43,6 +44,9 @@ public class UsersServices {
 	
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private UserSettingsRepo userSettingsRepo;
 	
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -215,5 +219,31 @@ public class UsersServices {
 
 	public boolean existsByUsername(String username) {
 	    return userRepo.findByUsername(username).isPresent();
+	}
+
+	public void updateUserSettings(Long userId, UserSettings settings) {
+		System.out.println("🔄 Actualizando settings para usuario " + userId);
+		System.out.println("📋 Nuevos settings: " + settings);
+		
+		Users user = findUserById(userId);
+		settings.setUser(user);
+		
+		// Buscar settings existentes o crear nuevos
+		UserSettings existingSettings = userSettingsRepo.findByUserId(userId);
+		if (existingSettings != null) {
+			existingSettings.setEmailNotificationsEnabled(settings.isEmailNotificationsEnabled());
+			existingSettings.setWeeklyReportEnabled(settings.isWeeklyReportEnabled());
+			existingSettings.setMonthlyReportEnabled(settings.isMonthlyReportEnabled());
+			existingSettings.setEmailAddress(settings.getEmailAddress());
+			userSettingsRepo.save(existingSettings);
+		} else {
+			userSettingsRepo.save(settings);
+			user.setUserSettings(settings);
+			userRepo.save(user);
+		}
+	}
+
+	public UserSettings getUserSettings(Long userId) {
+		return userSettingsRepo.findByUserId(userId);
 	}
 }

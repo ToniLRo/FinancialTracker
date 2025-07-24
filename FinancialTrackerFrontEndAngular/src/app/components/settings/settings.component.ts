@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { UsersService } from 'src/app/services/users/users.service';
 
@@ -6,6 +6,7 @@ import { UsersService } from 'src/app/services/users/users.service';
     selector: 'settings', 
     templateUrl: './settings.component.html',
     styleUrls: ['./settings.component.css'],
+    encapsulation: ViewEncapsulation.None,
     standalone: false
 })
 export class SettingsComponent implements OnInit {
@@ -13,7 +14,7 @@ export class SettingsComponent implements OnInit {
         emailNotificationsEnabled: false,
         weeklyReportEnabled: false,
         monthlyReportEnabled: false,
-        emailAddress: ''
+        emailAddress: ''  // Este campo debería inicializarse con el email del usuario
     };
 
     constructor(
@@ -22,21 +23,35 @@ export class SettingsComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        // Cargar configuración actual
-        this.loadUserSettings();
-    }
-    
-    loadUserSettings() {
+        // Obtener el email del usuario actual
         const userId = this.authService.getCurrentUser()?.userId;
-        if (!userId) {
-            console.error('User ID is undefined');
-            return;
+        if (userId) {
+            this.userService.getUserById(userId).subscribe({
+                next: (user: any) => {
+                    this.notificationSettings.emailAddress = user.email;
+                    // Cargar otras configuraciones de notificación
+                    this.loadNotificationSettings(userId);
+                },
+                error: (error: any) => {
+                    console.error('Error al cargar datos del usuario:', error);
+                }
+            });
         }
+    }
+
+    loadNotificationSettings(userId: number) {
         this.userService.getUserSettings(userId).subscribe({
             next: (settings) => {
-                this.notificationSettings = settings;
+                this.notificationSettings = {
+                    ...this.notificationSettings,
+                    emailNotificationsEnabled: settings.emailNotificationsEnabled,
+                    weeklyReportEnabled: settings.weeklyReportEnabled,
+                    monthlyReportEnabled: settings.monthlyReportEnabled
+                };
             },
-            error: (err) => console.error('Error loading settings:', err)
+            error: (error) => {
+                console.error('Error al cargar configuraciones:', error);
+            }
         });
     }
 

@@ -23,6 +23,7 @@ import org.owasp.encoder.Encode;
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.dto.RegisterRequest;
+import com.tonilr.FinancialTracker.dto.UserSettingsDTO;
 
 import io.jsonwebtoken.Jwts;
 
@@ -32,12 +33,18 @@ import com.tonilr.FinancialTracker.dto.ChangePasswordRequest;
 import com.tonilr.FinancialTracker.dto.PasswordResetRequest;
 import com.tonilr.FinancialTracker.dto.PasswordResetTokenRequest;
 import com.tonilr.FinancialTracker.Services.EmailService;
+import com.tonilr.FinancialTracker.Entities.UserSettings;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 @RestController
@@ -70,9 +77,32 @@ public class UsersController {
 	}
 
 	@GetMapping("/find/{id}")
-	public ResponseEntity<Users> getUserById(@PathVariable("id") Long id) {
-		Users user = userService.findUserById(id);
-		return new ResponseEntity<>(user, HttpStatus.OK);
+	public ResponseEntity<?> getUserById(@PathVariable("id") Long id) {
+		try {
+			Users user = userService.findUserById(id);
+			UserSettingsDTO settingsDTO = null;
+			
+			if (user.getUserSettings() != null) {
+				settingsDTO = new UserSettingsDTO();
+				settingsDTO.setSettings_id(user.getUserSettings().getSettings_id());
+				settingsDTO.setUserId(user.getUser_Id());
+				settingsDTO.setEmailNotificationsEnabled(user.getUserSettings().isEmailNotificationsEnabled());
+				settingsDTO.setWeeklyReportEnabled(user.getUserSettings().isWeeklyReportEnabled());
+				settingsDTO.setMonthlyReportEnabled(user.getUserSettings().isMonthlyReportEnabled());
+				settingsDTO.setEmailAddress(user.getUserSettings().getEmailAddress());
+			}
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("user_Id", user.getUser_Id());
+			response.put("username", user.getUsername());
+			response.put("email", user.getEmail());
+			response.put("register_date", user.getRegisterDate());
+			response.put("settings", settingsDTO);
+
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@PostMapping("/add")
@@ -213,6 +243,66 @@ public class UsersController {
 			Map<String, String> error = new HashMap<>();
 			error.put("message", e.getMessage());
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PutMapping("/{userId}/settings")
+public ResponseEntity<?> updateUserSettings(@PathVariable Long userId, @RequestBody UserSettings settings) {
+    log.debug("⚡ Recibida petición de actualización de settings para usuario {}", userId);
+    log.debug("📝 Settings recibidos: {}", settings);
+    
+    try {
+        // Verificar que el usuario existe
+        Users user = userService.findUserById(userId);
+        log.debug("👤 Usuario encontrado: {}", user.getUsername());
+        
+        // Actualizar settings
+        userService.updateUserSettings(userId, settings);
+        log.debug("✅ Settings actualizados correctamente");
+        
+        return ResponseEntity.ok().build();
+    } catch (Exception e) {
+        log.error("❌ Error actualizando settings: ", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
+}
+
+	@GetMapping("/{userId}/settings")
+	public ResponseEntity<?> getUserSettings(@PathVariable Long userId) {
+		try {
+			// Verificar que el usuario autenticado solo pueda ver sus propios settings
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String username = authentication.getName();
+			Users authenticatedUser = userService.findUserByUsername(username);
+			
+			if (!authenticatedUser.getUser_Id().equals(userId)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para ver estos settings");
+			}
+
+			UserSettings settings = userService.getUserSettings(userId);
+			if (settings == null) {
+				// Si no existen settings, devolver unos por defecto
+				UserSettingsDTO defaultSettings = new UserSettingsDTO();
+				defaultSettings.setUserId(userId);
+				defaultSettings.setEmailNotificationsEnabled(false);
+				defaultSettings.setWeeklyReportEnabled(false);
+				defaultSettings.setMonthlyReportEnabled(false);
+				return ResponseEntity.ok(defaultSettings);
+			}
+
+			// Convertir a DTO
+			UserSettingsDTO settingsDTO = new UserSettingsDTO();
+			settingsDTO.setSettings_id(settings.getSettings_id());
+			settingsDTO.setUserId(userId);
+			settingsDTO.setEmailNotificationsEnabled(settings.isEmailNotificationsEnabled());
+			settingsDTO.setWeeklyReportEnabled(settings.isWeeklyReportEnabled());
+			settingsDTO.setMonthlyReportEnabled(settings.isMonthlyReportEnabled());
+			settingsDTO.setEmailAddress(settings.getEmailAddress());
+
+			return ResponseEntity.ok(settingsDTO);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body("Error al obtener los settings: " + e.getMessage());
 		}
 	}
 }

@@ -25,6 +25,13 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.tonilr.FinancialTracker.Entities.Users;
+import com.tonilr.FinancialTracker.Entities.UserSettings;
+import com.tonilr.FinancialTracker.repos.UserSettingsRepo;
+import com.tonilr.FinancialTracker.dto.UserSettingsDTO;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +43,9 @@ public class SecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService; // Añadir esta línea
+
+    @Autowired
+    private UserSettingsRepo userSettingsRepo;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -53,6 +63,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
             .requestMatchers("/marketdata/**").permitAll()
             .requestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password").permitAll()
+            .requestMatchers(HttpMethod.GET, "/user/{userId}/settings").authenticated()
+            .requestMatchers(HttpMethod.PUT, "/user/{userId}/settings").authenticated()
+            .requestMatchers("/user/*/settings").authenticated()  // Añadir esta línea
             .requestMatchers("/account/**", "/transaction/**").authenticated() // Añadir transaction endpoints
             .anyRequest().authenticated()
             )

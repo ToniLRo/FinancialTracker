@@ -1,9 +1,26 @@
-.settings-container {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-}
+:root {
+    --primary-color: #21be72;
+    --secondary-color: #4FC3A1;
+    --accent-color: #324960;
+    --bg-dark: rgba(33,37,41,255);
+    --text-light: #ffffff;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+  }
 
+
+.content {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    background-color: var(--bg-dark) !important;
+    padding: 20px;
+    color: var(--text-light) !important;
+}
 .settings-section {
     margin-bottom: 30px;
     padding: 20px;

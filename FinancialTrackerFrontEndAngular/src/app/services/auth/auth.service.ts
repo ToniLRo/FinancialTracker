@@ -70,6 +70,7 @@ export class AuthService {
     localStorage.removeItem('jwt_token');
     localStorage.removeItem('keepSignedIn');
     sessionStorage.removeItem('jwt_token');
+    localStorage.removeItem('userSettings');
     this.currentUserSubject.next(null);
     this.router.navigate(['/LogIn']);
 

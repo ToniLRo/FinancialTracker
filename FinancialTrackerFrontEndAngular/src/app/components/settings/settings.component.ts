@@ -32,19 +32,25 @@ export class SettingsComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        // Obtener el email del usuario actual
-        const userId = this.authService.getCurrentUser()?.userId;
-        if (userId) {
-            this.userService.getUserById(userId).subscribe({
-                next: (user: any) => {
-                    this.notificationSettings.emailAddress = user.email;
-                    // Cargar otras configuraciones de notificación
-                    this.loadNotificationSettings(userId);
-                },
-                error: (error: any) => {
-                    console.error('Error al cargar datos del usuario:', error);
-                }
-            });
+        const cached = localStorage.getItem('userSettings');
+        if (cached) {
+            console.log('[Settings] Cargando settings desde CACHE (localStorage)');
+            this.notificationSettings = JSON.parse(cached);
+        } else {
+            console.log('[Settings] Cargando settings desde BDD (petición al backend)');
+            const userId = this.authService.getCurrentUser()?.userId;
+            if (userId) {
+                this.userService.getUserSettings(userId).subscribe({
+                    next: (settings) => {
+                        this.notificationSettings = settings;
+                        localStorage.setItem('userSettings', JSON.stringify(settings));
+                        console.log('[Settings] Settings guardados en cache tras cargar de BDD');
+                    },
+                    error: (error) => {
+                        console.error('[Settings] Error al cargar configuraciones desde BDD:', error);
+                    }
+                });
+            }
         }
     }
 
@@ -72,7 +78,8 @@ export class SettingsComponent implements OnInit {
         }
         this.userService.updateUserSettings(userId, this.notificationSettings).subscribe({
             next: () => {
-                console.log('Settings saved successfully');
+                localStorage.setItem('userSettings', JSON.stringify(this.notificationSettings));
+                console.log('[Settings] Settings guardados en cache tras actualizar en BDD');
                 this.notificationService.showSuccess('Configuración guardada correctamente');
                 // Mostrar mensaje de éxito
             },

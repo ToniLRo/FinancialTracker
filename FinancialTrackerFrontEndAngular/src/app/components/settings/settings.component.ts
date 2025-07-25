@@ -3,6 +3,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { UsersService } from 'src/app/services/users/users.service';
 import { EmailService } from 'src/app/services/email/email.service'; // Crear este servicio
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from 'src/app/services/notification/notification.service';
 
 @Component({
     selector: 'app-settings',
@@ -26,7 +27,8 @@ export class SettingsComponent implements OnInit {
         private authService: AuthService,
         private userService: UsersService,
         private emailService: EmailService,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        private notificationService: NotificationService
     ) {}
 
     ngOnInit() {
@@ -71,9 +73,13 @@ export class SettingsComponent implements OnInit {
         this.userService.updateUserSettings(userId, this.notificationSettings).subscribe({
             next: () => {
                 console.log('Settings saved successfully');
+                this.notificationService.showSuccess('Configuración guardada correctamente');
                 // Mostrar mensaje de éxito
             },
-            error: (err) => console.error('Error saving settings:', err)
+            error: (err) => {
+                console.error('Error saving settings:', err);
+                this.notificationService.showError('Error al guardar la configuración');
+            }
         });
     }
 

@@ -469,7 +469,10 @@ export class PaymentsComponent implements OnInit {
       
       // Mostrar mensaje de éxito con información del balance
       console.log(`✅ Transaction updated successfully. Balance adjusted: ${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${affectedAccount.currency}`);
-      this.notificationService.showTransactionSuccess(balanceDifference, updatedTransaction!.type);
+      this.notificationService.showSuccess(
+        `${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${affectedAccount.currency}`,
+        updatedTransaction!.type
+      );
       
     } catch (error: any) {
       console.error('❌ Error updating transaction:', error);
@@ -538,7 +541,10 @@ export class PaymentsComponent implements OnInit {
       
       // Mostrar mensaje de éxito con información del balance
       console.log(`✅ Transaction deleted successfully. Balance adjusted: ${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${affectedAccount.currency}`);
-      this.notificationService.showTransactionSuccess(balanceImpact, this.deletingTransaction!.type);
+      this.notificationService.showSuccess(
+        `${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${affectedAccount.currency}`,
+        this.deletingTransaction!.type
+      );
       
     } catch (error: any) {
       console.error('❌ Error deleting transaction:', error);
@@ -593,7 +599,7 @@ export class PaymentsComponent implements OnInit {
   }
 
   onTransactionSuccess(transaction: any) {
-    this.notificationService.showTransactionSuccess(
+    this.notificationService.showSuccess(
       transaction.amount,
       transaction.type
     );

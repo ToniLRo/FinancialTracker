@@ -59,7 +59,9 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   transactionEditError = '';
   transactionDeleteError = '';
 
-  constructor(private renderer: Renderer2, private accountService: AccountService, private cdr: ChangeDetectorRef, private notificationService: NotificationService) { }
+  constructor(private renderer: Renderer2, 
+    private accountService: AccountService, 
+    private cdr: ChangeDetectorRef, private notificationService: NotificationService) { }
 
   ngOnInit() {
     this.loadAccounts();
@@ -300,10 +302,12 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           this.closeForm();
           this.isProcessing = false;
           alert('Cuenta actualizada exitosamente.');
+          this.notificationService.showSuccess('Cuenta actualizada exitosamente.');
         },
         error: (error) => {
           console.error('Error updating account:', error);
           this.handleAccountError(error);
+          this.notificationService.showError('Error al actualizar la cuenta.');
         }
       });
     } else {
@@ -332,10 +336,12 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           setTimeout(() => this.initSwiper(), 100);
           
           alert('Cuenta creada exitosamente.');
+          this.notificationService.showSuccess('Cuenta creada exitosamente.');
         },
         error: (error) => {
           console.error('Error adding account:', error);
           this.handleAccountError(error);
+          this.notificationService.showError('Error al crear la cuenta.');
         }
       });
     }
@@ -384,6 +390,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           
           this.isProcessing = false;
           alert('Cuenta eliminada exitosamente.');
+          this.notificationService.showSuccess('Cuenta eliminada exitosamente.');
         },
         error: (error) => {
           console.error('Error deleting account:', error);
@@ -391,10 +398,13 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           
           if (error.status === 403) {
             alert('Error de autenticación. Por favor, inicia sesión nuevamente.');
+            this.notificationService.showError('Error de autenticación. Por favor, inicia sesión nuevamente.');
           } else if (error.status === 404) {
             alert('La cuenta no existe o ya fue eliminada.');
+            this.notificationService.showError('La cuenta no existe o ya fue eliminada.');
           } else {
             alert('Error al eliminar la cuenta. Por favor, intenta nuevamente.');
+            this.notificationService.showError('Error al eliminar la cuenta. Por favor, intenta nuevamente.');
           }
         }
       });
@@ -537,6 +547,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           
           this.closeAllForms();
           this.isProcessing = false;
+          this.notificationService.showSuccess('Transacción creada exitosamente.');
         },
         error: (error) => {
           console.error('Error adding transaction:', error);
@@ -545,8 +556,10 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           
           if (error.status === 403) {
             this.setError('Authentication error. Please login again.');
+            this.notificationService.showError('Error de autenticación. Por favor, inicia sesión nuevamente.');
           } else {
             this.setError('Error processing transaction. Please try again.');
+            this.notificationService.showError('Error al procesar la transacción. Por favor, intenta nuevamente.');
           }
           
           this.isProcessing = false;
@@ -1114,10 +1127,12 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
 
         this.closeWithdrawModal();
         alert(`Retiro exitoso: ${this.withdrawForm.amount} ${activeAccount.currency}`);
+        this.notificationService.showSuccess(`Retiro exitoso: ${this.withdrawForm.amount} ${activeAccount.currency}`);
       },
       error: (error) => {
         console.error('Error processing withdraw:', error);
         this.handleTransactionError(error);
+        this.notificationService.showError('Error al procesar el retiro.');
       }
     });
   }
@@ -1206,10 +1221,12 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
 
         this.closeDepositModal();
         alert(`Depósito exitoso: +${this.depositForm.amount} ${activeAccount.currency}`);
+        this.notificationService.showSuccess(`Depósito exitoso: +${this.depositForm.amount} ${activeAccount.currency}`);
       },
       error: (error) => {
         console.error('Error processing deposit:', error);
         this.handleTransactionError(error);
+        this.notificationService.showError('Error al procesar el depósito.');
       }
     });
   }
@@ -1322,11 +1339,13 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
         
         // Mostrar mensaje de éxito
         this.showSuccessMessage(`Transacción actualizada. Balance ajustado: ${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${this.selectedAccount?.currency}`);
+        this.notificationService.showSuccess(`Transacción actualizada. Balance ajustado: ${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${this.selectedAccount?.currency}`);
       },
       error: (error) => {
         console.error('❌ Error updating transaction:', error);
         this.transactionEditError = this.handleTransactionError(error);
         this.isProcessing = false;
+        this.notificationService.showError('Error al actualizar la transacción.');
       }
     });
   }
@@ -1425,6 +1444,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       // 7. Mostrar mensaje de éxito
       const balanceMessage = balanceImpact > 0 ? `+${balanceImpact.toFixed(2)}` : `${balanceImpact.toFixed(2)}`;
       this.showSuccessMessage(`Transacción eliminada. Balance ajustado: ${balanceMessage} ${this.selectedAccount?.currency}`);
+      this.notificationService.showSuccess(`Transacción eliminada. Balance ajustado: ${balanceMessage} ${this.selectedAccount?.currency}`);
       
     } catch (error: any) {
       console.error('❌ Error in delete transaction process:', error);
@@ -1440,6 +1460,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       }
       
       this.transactionDeleteError = this.handleTransactionError(error);
+      this.notificationService.showError('Error al eliminar la transacción.');
     } finally {
       this.isProcessing = false;
     }
@@ -1517,9 +1538,8 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   checkLowBalance(account: any) {
     const LOW_BALANCE_THRESHOLD = 100; // Ejemplo
     if (account.balance < LOW_BALANCE_THRESHOLD) {
-      this.notificationService.showAccountBalanceWarning(
-        account.holder_name,
-        account.balance
+      this.notificationService.showError(
+        `La cuenta ${account.holder_name} tiene un saldo bajo: $${account.balance}`
       );
     }
   }

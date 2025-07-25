@@ -16,22 +16,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import com.tonilr.FinancialTracker.Entities.Users;
-import com.tonilr.FinancialTracker.Entities.UserSettings;
 import com.tonilr.FinancialTracker.repos.UserSettingsRepo;
-import com.tonilr.FinancialTracker.dto.UserSettingsDTO;
 
 @Configuration
 @EnableWebSecurity
@@ -61,6 +53,8 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/api/email/**").authenticated()
             .requestMatchers("/marketdata/**").permitAll()
             .requestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password").permitAll()
             .requestMatchers(HttpMethod.GET, "/user/{userId}/settings").authenticated()

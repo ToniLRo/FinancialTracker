@@ -26,6 +26,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class UsersServices {
@@ -245,5 +247,13 @@ public class UsersServices {
 
 	public UserSettings getUserSettings(Long userId) {
 		return userSettingsRepo.findByUserId(userId);
+	}
+
+	public List<Users> findUsersWithWeeklyReportsEnabled() {
+		return userRepo.findUsersWithWeeklyReportsEnabled();
+	}
+
+	public List<Users> findUsersWithMonthlyReportsEnabled() {
+		return userRepo.findUsersWithMonthlyReportsEnabled();
 	}
 }

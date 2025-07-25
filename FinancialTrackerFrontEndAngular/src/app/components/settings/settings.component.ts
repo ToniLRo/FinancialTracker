@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { UsersService } from 'src/app/services/users/users.service';
+import { EmailService } from 'src/app/services/email/email.service'; // Crear este servicio
 
 @Component({
-    selector: 'settings', 
+    selector: 'app-settings',
     templateUrl: './settings.component.html',
     styleUrls: ['./settings.component.css'],
     encapsulation: ViewEncapsulation.None,
@@ -17,9 +18,13 @@ export class SettingsComponent implements OnInit {
         emailAddress: ''  // Este campo debería inicializarse con el email del usuario
     };
 
+    isTestingWeekly = false;
+    isTestingMonthly = false;
+
     constructor(
         private authService: AuthService,
-        private userService: UsersService
+        private userService: UsersService,
+        private emailService: EmailService
     ) {}
 
     ngOnInit() {
@@ -68,5 +73,41 @@ export class SettingsComponent implements OnInit {
             },
             error: (err) => console.error('Error saving settings:', err)
         });
+    }
+
+    async testWeeklyReport() {
+        if (!this.notificationSettings.weeklyReportEnabled) {
+            alert('Activa los reportes semanales primero');
+            return;
+        }
+
+        this.isTestingWeekly = true;
+        try {
+            await this.emailService.testWeeklyReport(this.authService.getCurrentUser()?.userId!).toPromise();
+            alert('Reporte semanal de prueba enviado correctamente');
+        } catch (error) {
+            console.error('Error al enviar reporte de prueba:', error);
+            alert('Error al enviar el reporte de prueba');
+        } finally {
+            this.isTestingWeekly = false;
+        }
+    }
+
+    async testMonthlyReport() {
+        if (!this.notificationSettings.monthlyReportEnabled) {
+            alert('Activa los reportes mensuales primero');
+            return;
+        }
+
+        this.isTestingMonthly = true;
+        try {
+            await this.emailService.testMonthlyReport(this.authService.getCurrentUser()?.userId!).toPromise();
+            alert('Reporte mensual de prueba enviado correctamente');
+        } catch (error) {
+            console.error('Error al enviar reporte de prueba:', error);
+            alert('Error al enviar el reporte de prueba');
+        } finally {
+            this.isTestingMonthly = false;
+        }
     }
 }

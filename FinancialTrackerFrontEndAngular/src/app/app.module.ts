@@ -18,6 +18,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { EmailService } from './services/email/email.service';
 
 @NgModule({
   declarations: [
@@ -40,16 +41,15 @@ import { SettingsComponent } from './components/settings/settings.component';
     FormsModule,
     CommonModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    ReactiveFormsModule
+    BrowserAnimationsModule
   ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    EmailService
   ],
   bootstrap: [AppComponent]
 })

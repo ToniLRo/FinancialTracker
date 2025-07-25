@@ -51,21 +51,26 @@
                 </div>
             </div>
 
-            <!-- Añadir esta sección después de las otras configuraciones -->
+            <!-- Botones para probar notificaciones push -->
             <div class="settings-section mt-4">
-              <h4>Probar Notificaciones</h4>
+              <h4>Probar Notificaciones Push (Toastr)</h4>
               <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-success" (click)="testSuccessNotification()">
-                    Notificación Éxito
+                <button class="btn btn-success" (click)="testSuccessNotification()">Notificación Éxito</button>
+                <button class="btn btn-danger" (click)="testErrorNotification()">Notificación Error</button>
+                <button class="btn btn-warning" (click)="testWarningNotification()">Notificación Advertencia</button>
+                <button class="btn btn-info" (click)="testInfoNotification()">Notificación Info</button>
+              </div>
+            </div>
+
+            <!-- Botones para probar envío de mails de reportes -->
+            <div class="settings-section mt-4">
+              <h4>Probar envío de reportes por email</h4>
+              <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-primary" (click)="testWeeklyReport()" [disabled]="isTestingWeekly">
+                  Probar Reporte Semanal
                 </button>
-                <button class="btn btn-danger" (click)="testErrorNotification()">
-                    Notificación Error
-                </button>
-                <button class="btn btn-warning" (click)="testWarningNotification()">
-                    Notificación Advertencia
-                </button>
-                <button class="btn btn-info" (click)="testInfoNotification()">
-                    Notificación Info
+                <button class="btn btn-secondary" (click)="testMonthlyReport()" [disabled]="isTestingMonthly">
+                  Probar Reporte Mensual
                 </button>
               </div>
             </div>

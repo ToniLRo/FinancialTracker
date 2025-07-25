@@ -90,39 +90,42 @@ export class SettingsComponent implements OnInit {
         });
     }
 
-    async testWeeklyReport() {
-        if (!this.notificationSettings.weeklyReportEnabled) {
-            this.toastr.error('Activa los reportes semanales primero', 'Error');
-            return;
-        }
-
+    testWeeklyReport() {
+        const userId = this.authService.getCurrentUser()?.userId;
+        if (!userId) return;
         this.isTestingWeekly = true;
-        try {
-            await this.emailService.testWeeklyReport(this.authService.getCurrentUser()?.userId!).toPromise();
-            this.toastr.success('Reporte semanal enviado correctamente', 'Éxito');
-        } catch (error) {
-            this.toastr.error('Error al enviar el reporte de prueba', 'Error');
-        } finally {
-            this.isTestingWeekly = false;
-        }
+        this.emailService.testWeeklyReport(userId).subscribe({
+            next: (res) => {
+                this.notificationService.showSuccess('Reporte semanal de prueba enviado correctamente');
+                console.log('[Settings] Reporte semanal de prueba enviado:', res);
+            },
+            error: (err) => {
+                this.notificationService.showError('Error al enviar el reporte semanal de prueba');
+                console.error('[Settings] Error al enviar reporte semanal de prueba:', err);
+            },
+            complete: () => {
+                this.isTestingWeekly = false;
+            }
+        });
     }
 
-    async testMonthlyReport() {
-        if (!this.notificationSettings.monthlyReportEnabled) {
-            alert('Activa los reportes mensuales primero');
-            return;
-        }
-
+    testMonthlyReport() {
+        const userId = this.authService.getCurrentUser()?.userId;
+        if (!userId) return;
         this.isTestingMonthly = true;
-        try {
-            await this.emailService.testMonthlyReport(this.authService.getCurrentUser()?.userId!).toPromise();
-            alert('Reporte mensual de prueba enviado correctamente');
-        } catch (error) {
-            console.error('Error al enviar reporte de prueba:', error);
-            alert('Error al enviar el reporte de prueba');
-        } finally {
-            this.isTestingMonthly = false;
-        }
+        this.emailService.testMonthlyReport(userId).subscribe({
+            next: (res) => {
+                this.notificationService.showSuccess('Reporte mensual de prueba enviado correctamente');
+                console.log('[Settings] Reporte mensual de prueba enviado:', res);
+            },
+            error: (err) => {
+                this.notificationService.showError('Error al enviar el reporte mensual de prueba');
+                console.error('[Settings] Error al enviar reporte mensual de prueba:', err);
+            },
+            complete: () => {
+                this.isTestingMonthly = false;
+            }
+        });
     }
 
     testSuccessNotification() {

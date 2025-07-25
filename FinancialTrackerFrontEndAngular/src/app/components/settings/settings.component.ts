@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { UsersService } from 'src/app/services/users/users.service';
 import { EmailService } from 'src/app/services/email/email.service'; // Crear este servicio
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-settings',
@@ -24,7 +25,8 @@ export class SettingsComponent implements OnInit {
     constructor(
         private authService: AuthService,
         private userService: UsersService,
-        private emailService: EmailService
+        private emailService: EmailService,
+        private toastr: ToastrService
     ) {}
 
     ngOnInit() {
@@ -77,17 +79,16 @@ export class SettingsComponent implements OnInit {
 
     async testWeeklyReport() {
         if (!this.notificationSettings.weeklyReportEnabled) {
-            alert('Activa los reportes semanales primero');
+            this.toastr.error('Activa los reportes semanales primero', 'Error');
             return;
         }
 
         this.isTestingWeekly = true;
         try {
             await this.emailService.testWeeklyReport(this.authService.getCurrentUser()?.userId!).toPromise();
-            alert('Reporte semanal de prueba enviado correctamente');
+            this.toastr.success('Reporte semanal enviado correctamente', 'Éxito');
         } catch (error) {
-            console.error('Error al enviar reporte de prueba:', error);
-            alert('Error al enviar el reporte de prueba');
+            this.toastr.error('Error al enviar el reporte de prueba', 'Error');
         } finally {
             this.isTestingWeekly = false;
         }
@@ -109,5 +110,25 @@ export class SettingsComponent implements OnInit {
         } finally {
             this.isTestingMonthly = false;
         }
+    }
+
+    testSuccessNotification() {
+        console.log('Testing success notification');
+        this.toastr.success('¡Operación completada!', 'Éxito');
+    }
+
+    testErrorNotification() {
+        console.log('Testing error notification');
+        this.toastr.error('Algo salió mal', 'Error');
+    }
+
+    testWarningNotification() {
+        console.log('Testing warning notification');
+        this.toastr.warning('Ten cuidado', 'Advertencia');
+    }
+
+    testInfoNotification() {
+        console.log('Testing info notification');
+        this.toastr.info('Información importante', 'Info');
     }
 }

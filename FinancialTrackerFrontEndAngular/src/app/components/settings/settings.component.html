@@ -51,27 +51,22 @@
                 </div>
             </div>
 
-            <!-- Agregar esta sección después de las otras configuraciones -->
-            <div class="settings-section">
-              <h3>Probar Reportes</h3>
-              <div class="test-reports-container">
-                <div class="report-test-item">
-                  <button (click)="testWeeklyReport()" [disabled]="!notificationSettings.weeklyReportEnabled" class="test-report-button">
-                    <i class="fas fa-envelope"></i> Probar Reporte Semanal
-                  </button>
-                  <small *ngIf="!notificationSettings.weeklyReportEnabled" class="warning-text">
-                    Activa los reportes semanales para probar
-                  </small>
-                </div>
-
-                <div class="report-test-item">
-                  <button (click)="testMonthlyReport()" [disabled]="!notificationSettings.monthlyReportEnabled" class="test-report-button">
-                    <i class="fas fa-envelope"></i> Probar Reporte Mensual
-                  </button>
-                  <small *ngIf="!notificationSettings.monthlyReportEnabled" class="warning-text">
-                    Activa los reportes mensuales para probar
-                  </small>
-                </div>
+            <!-- Añadir esta sección después de las otras configuraciones -->
+            <div class="settings-section mt-4">
+              <h4>Probar Notificaciones</h4>
+              <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-success" (click)="testSuccessNotification()">
+                    Notificación Éxito
+                </button>
+                <button class="btn btn-danger" (click)="testErrorNotification()">
+                    Notificación Error
+                </button>
+                <button class="btn btn-warning" (click)="testWarningNotification()">
+                    Notificación Advertencia
+                </button>
+                <button class="btn btn-info" (click)="testInfoNotification()">
+                    Notificación Info
+                </button>
               </div>
             </div>
 

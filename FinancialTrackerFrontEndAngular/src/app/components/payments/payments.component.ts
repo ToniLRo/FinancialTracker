@@ -4,6 +4,7 @@ import { TransactionService } from 'src/app/services/transaction/transaction.ser
 import { AccountService } from 'src/app/services/account/account.service';
 import { Transaction } from 'src/app/models/Transaction/transaction.model';
 import { Account } from 'src/app/models/account/account.model';
+import { NotificationService } from '../../services/notification/notification.service';
 
 export interface FilterCriteria {
   accountId?: number;
@@ -63,7 +64,8 @@ export class PaymentsComponent implements OnInit {
   constructor(
     private transactionService: TransactionService,
     private accountService: AccountService,
-    private formBuilder: FormBuilder // NUEVO: FormBuilder para reactive forms
+    private formBuilder: FormBuilder, // NUEVO: FormBuilder para reactive forms
+    private notificationService: NotificationService
   ) {
     this.initializeEditForm();
   }
@@ -467,6 +469,7 @@ export class PaymentsComponent implements OnInit {
       
       // Mostrar mensaje de éxito con información del balance
       console.log(`✅ Transaction updated successfully. Balance adjusted: ${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${affectedAccount.currency}`);
+      this.notificationService.showTransactionSuccess(balanceDifference, updatedTransaction!.type);
       
     } catch (error: any) {
       console.error('❌ Error updating transaction:', error);
@@ -481,6 +484,7 @@ export class PaymentsComponent implements OnInit {
       } else {
         this.error = 'Failed to update transaction. Please try again.';
       }
+      this.notificationService.showError('Failed to update transaction. Please try again.');
     } finally {
       this.isSaving = false;
     }
@@ -534,6 +538,7 @@ export class PaymentsComponent implements OnInit {
       
       // Mostrar mensaje de éxito con información del balance
       console.log(`✅ Transaction deleted successfully. Balance adjusted: ${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${affectedAccount.currency}`);
+      this.notificationService.showTransactionSuccess(balanceImpact, this.deletingTransaction!.type);
       
     } catch (error: any) {
       console.error('❌ Error deleting transaction:', error);
@@ -545,6 +550,7 @@ export class PaymentsComponent implements OnInit {
       } else {
         this.error = 'Failed to delete transaction. Please try again.';
       }
+      this.notificationService.showError('Failed to delete transaction. Please try again.');
     } finally {
       this.isDeleting = false;
     }
@@ -584,5 +590,16 @@ export class PaymentsComponent implements OnInit {
   // NUEVO: Get editable transaction types (exclude 'All')
   getEditableTransactionTypes(): string[] {
     return this.transactionTypes.filter(type => type !== 'All');
+  }
+
+  onTransactionSuccess(transaction: any) {
+    this.notificationService.showTransactionSuccess(
+      transaction.amount,
+      transaction.type
+    );
+  }
+
+  onTransactionError(error: any) {
+    this.notificationService.showError('Error al procesar la transacción: ' + error.message);
   }
 }

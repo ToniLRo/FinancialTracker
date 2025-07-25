@@ -3,6 +3,7 @@ import { AccountService, Transaction } from 'src/app/services/account/account.se
 import { Account } from 'src/app/models/account/account.model';
 import Swiper from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
+import { NotificationService } from '../../services/notification/notification.service';
 
 Swiper.use([Navigation, Pagination]);
 
@@ -58,7 +59,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   transactionEditError = '';
   transactionDeleteError = '';
 
-  constructor(private renderer: Renderer2, private accountService: AccountService, private cdr: ChangeDetectorRef) { }
+  constructor(private renderer: Renderer2, private accountService: AccountService, private cdr: ChangeDetectorRef, private notificationService: NotificationService) { }
 
   ngOnInit() {
     this.loadAccounts();
@@ -1511,6 +1512,16 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     return diffDays;
+  }
+
+  checkLowBalance(account: any) {
+    const LOW_BALANCE_THRESHOLD = 100; // Ejemplo
+    if (account.balance < LOW_BALANCE_THRESHOLD) {
+      this.notificationService.showAccountBalanceWarning(
+        account.holder_name,
+        account.balance
+      );
+    }
   }
 }
 

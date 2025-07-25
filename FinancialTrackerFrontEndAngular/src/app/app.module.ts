@@ -19,6 +19,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { EmailService } from './services/email/email.service';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,15 @@ import { EmailService } from './services/email/email.service';
     FormsModule,
     CommonModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    ToastrModule.forRoot({
+      positionClass: 'toast-top-full-width', // O 'toast-top-right' si prefieres
+      timeOut: 4000,
+      progressBar: true,
+      closeButton: true,
+      newestOnTop: true,
+      preventDuplicates: true
+    })
   ],
   providers: [
     {

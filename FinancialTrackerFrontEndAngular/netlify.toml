@@ -1,7 +1,7 @@
 [build]
   base = "FinancialTrackerFrontEndAngular"
   command = "npm run build"
-  publish = "dist/financial-tracker"
+  publish = "dist/financial-tracker/browser"
 
 [build.environment]
   NODE_VERSION = "20.19.0"

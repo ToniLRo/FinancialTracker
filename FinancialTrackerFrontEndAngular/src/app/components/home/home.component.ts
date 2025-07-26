@@ -460,26 +460,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // ELIMINAR COMPLETAMENTE: loadFallbackCategoryData
   // Comentar o eliminar este método completo porque está generando datos falsos
 
-  // CORREGIR: tryInitializeCategoriesChart para verificar datos reales
+  // CORREGIR: tryInitializeCategoriesChart para SIEMPRE inicializar
   tryInitializeCategoriesChart(): void {
-    //console.log('🎯 Trying to initialize categories chart...');
-    //console.log('📊 Categories available:', this.topCategories?.length || 0);
-    //console.log('📊 Categories data:', this.topCategories);
+    console.log('🎯 Trying to initialize categories chart...');
+    console.log('📊 Categories available:', this.topCategories?.length || 0);
     
     if (this.categoriesChart && !this.categoriesChartInitialized) {
-      // SOLO inicializar si tenemos datos reales
-      if (this.topCategories && this.topCategories.length > 0) {
-        //console.log('🎯 Initializing with REAL data...');
-        this.initCategoriesChart();
-      } else {
-        //console.log('⏳ Waiting for real category data...');
-        this.categoriesError = true;
-        this.isLoadingCategories = false;
-      }
+      // SIEMPRE inicializar, incluso sin datos
+      console.log('🎯 Initializing categories chart...');
+      this.initCategoriesChart();
     }
   }
 
-  // CORREGIR: initCategoriesChart para garantizar datos reales
+  // CORREGIR: initCategoriesChart para manejar datos vacíos
   initCategoriesChart(): void {
     if (!this.categoriesChart?.nativeElement) {
       return;
@@ -492,7 +485,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       const canvas = this.categoriesChart.nativeElement;
       // Ajustar tamaño del canvas
       canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : 400;
-      canvas.height = 240; // Aumentado de 220px a 240px
+      canvas.height = 240;
       
       // Destruir gráfico existente
       const existingChart = Chart.getChart(canvas);
@@ -519,14 +512,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       // Obtener datos con colores dinámicos
       const categoryData = this.getCategoryChartData();
       
-      if (categoryData.labels.length === 0) {
-        console.warn('⚠️ No real category data available for chart');
-        this.categoriesError = true;
-        this.isLoadingCategories = false;
-        return;
-      }
-
-      // Crear gráfico con colores dinámicos
+      // SIEMPRE crear el gráfico, incluso con datos vacíos
       this.categoriesChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -534,8 +520,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           datasets: [{
             label: 'Amount ($)',
             data: categoryData.values,
-            backgroundColor: categoryData.colors, // Usar colores dinámicos
-            borderColor: categoryData.borderColors, // Usar bordes dinámicos
+            backgroundColor: categoryData.colors,
+            borderColor: categoryData.borderColors,
             borderWidth: 1.5
           }]
         },
@@ -548,7 +534,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             title: {
               display: true,
-              text: 'Transactions by Category',
+              text: categoryData.labels.length > 0 ? 'Transactions by Category' : 'No Category Data Available',
               color: '#ffffff',
               font: {
                 size: 14
@@ -570,10 +556,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             x: {
               ticks: {
-                color: '#ffffff',
-                font: { size: 10 },
-                maxRotation: 45,
-                minRotation: 0
+                color: '#ffffff'
               },
               grid: {
                 color: 'rgba(255, 255, 255, 0.1)'
@@ -594,16 +577,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // MEJORAR: Obtener datos para el gráfico de categorías
+  // CORREGIR: getCategoryChartData para manejar datos vacíos
   getCategoryChartData(): any {
-    // Validar que tenemos categorías
+    // Si no hay categorías, mostrar mensaje de "No Data"
     if (!this.topCategories || this.topCategories.length === 0) {
-      return { labels: [], values: [], total: 0, colors: [] };
+      return { 
+        labels: ['No Data'], 
+        values: [0], 
+        total: 0, 
+        colors: ['rgba(128, 128, 128, 0.8)'],
+        borderColors: ['rgba(128, 128, 128, 1)']
+      };
     }
 
     // MOSTRAR TODAS LAS CATEGORÍAS (gastos e ingresos)
     const labels = this.topCategories.map(cat => {
-      // Determinar tipo basado en el nombre de la categoría, no en el valor
       const isIncome = this.isIncomeCategory(cat.name);
       const type = isIncome ? ' (Income)' : ' (Expense)';
       return (cat.name || 'Unknown') + type;
@@ -616,10 +604,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const colors = this.topCategories.map(cat => {
       const isIncome = this.isIncomeCategory(cat.name);
       if (isIncome) {
-        // VERDE VERDADERO para ingresos (income) - CAMBIAR ESTE COLOR
         return 'rgba(34, 197, 94, 0.8)'; // Verde más puro
       } else {
-        // ROJO para gastos (expenses)
         return 'rgba(255, 99, 132, 0.8)';
       }
     });
@@ -627,10 +613,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const borderColors = this.topCategories.map(cat => {
       const isIncome = this.isIncomeCategory(cat.name);
       if (isIncome) {
-        // VERDE VERDADERO para ingresos - CAMBIAR ESTE COLOR
         return 'rgba(34, 197, 94, 1)'; // Verde más puro
       } else {
-        // ROJO para gastos
         return 'rgba(255, 99, 132, 1)';
       }
     });

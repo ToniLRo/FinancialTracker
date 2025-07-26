@@ -149,15 +149,6 @@
                                 <span class="visually-hidden">Loading categories...</span>
                                             </div>
                                         </div>
-                        
-                        <!-- Error state -->
-                        <div *ngIf="categoriesError && !isLoadingCategories" class="error-state text-center">
-                            <p class="mb-2">❌ Categories failed to load</p>
-                            <button class="btn btn-outline-light btn-sm me-2" (click)="reinitializeCategoriesChart()">
-                                🔄 Retry
-                            </button>
-                                    </div> 
-                        
                         <!-- Categories Chart canvas - SIEMPRE MOSTRAR -->
                         <div class="cards">
                             <canvas #categoriesChart class="myChart" style="display: block; width: 100%; height: 300px;"></canvas>

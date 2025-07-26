@@ -1,4 +1,4 @@
-import { Component, ElementRef, AfterViewInit, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, ViewChild, OnInit, HostListener } from '@angular/core';
 import { Chart, CategoryScale, LinearScale, BarController, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Router, NavigationEnd } from '@angular/router';
 import { UsersService } from '../../services/users/users.service';
@@ -15,6 +15,9 @@ export class NavbarComponent implements AfterViewInit, OnInit {
 
   @ViewChild('myChart', { static: false }) myChart!: ElementRef<HTMLCanvasElement>;
   @ViewChild('navLink') navLink!: ElementRef;
+
+  // Variable para controlar el estado del sidebar en móvil
+  isSidebarOpen: boolean = false;
 
   // Mapa de rutas para identificar qué enlace debe estar activo
   private routeToNavMap: { [key: string]: string } = {
@@ -49,7 +52,6 @@ export class NavbarComponent implements AfterViewInit, OnInit {
       const canvas = this.myChart.nativeElement;
       const ctx = canvas.getContext('2d');
 
-
       if (ctx) {
         new Chart(ctx, {
           type: 'bar',
@@ -69,11 +71,54 @@ export class NavbarComponent implements AfterViewInit, OnInit {
             }
           }
         });
-      } else {
-        //console.error('No se pudo obtener el contexto 2D del canvas');
       }
+    }
+  }
+
+  /**
+   * Toggle del sidebar en móvil
+   */
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+    
+    // Prevenir scroll del body cuando el sidebar está abierto
+    if (this.isSidebarOpen) {
+      document.body.style.overflow = 'hidden';
     } else {
-      //console.warn('El elemento myChart no está disponible');
+      document.body.style.overflow = '';
+    }
+  }
+
+  /**
+   * Cerrar sidebar en móvil
+   */
+  closeSidebar(): void {
+    this.isSidebarOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  /**
+   * Escuchar clics fuera del sidebar para cerrarlo
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    
+    // Si el clic es fuera del sidebar y el sidebar está abierto, cerrarlo
+    if (this.isSidebarOpen && 
+        !target.closest('.sidebar') && 
+        !target.closest('.mobile-toggle')) {
+      this.closeSidebar();
+    }
+  }
+
+  /**
+   * Escuchar tecla Escape para cerrar sidebar
+   */
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.isSidebarOpen) {
+      this.closeSidebar();
     }
   }
 
@@ -142,7 +187,6 @@ export class NavbarComponent implements AfterViewInit, OnInit {
     // Agregar clase active al enlace clickeado
     const clickedLink = event.target as HTMLElement;
     clickedLink.classList.add('active');
-    
   }
 
   logout(): void {

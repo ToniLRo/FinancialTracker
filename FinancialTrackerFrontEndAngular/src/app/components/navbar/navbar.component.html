@@ -1,13 +1,35 @@
 <main>
-  <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white" style="width: 280px;">
-    <a href="/" class="d-flex align-items-center mb-3 me-md-auto text-white text-decoration-none">
-      <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="40" height="32" fill="currentColor" class="bi bi-cash-stack" viewBox="0 0 16 16">
-        <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
-        <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/>
-      </svg>
-      <span class="fs-4">FinancialTracker</span>
-    </a>
+  <!-- Botón hamburguesa para móvil -->
+  <div class="mobile-toggle d-md-none" (click)="toggleSidebar()">
+    <i class="bi bi-list"></i>
+  </div>
 
+  <!-- Overlay para cerrar sidebar en móvil -->
+  <div class="sidebar-overlay" 
+       [class.active]="isSidebarOpen" 
+       (click)="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white" 
+       [class.mobile-open]="isSidebarOpen">
+    
+    <!-- Header del sidebar -->
+    <div class="sidebar-header">
+      <a href="/" class="d-flex align-items-center mb-3 me-md-auto text-white text-decoration-none">
+        <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="40" height="32" fill="currentColor" class="bi bi-cash-stack" viewBox="0 0 16 16">
+          <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+          <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/>
+        </svg>
+        <span class="fs-4">FinancialTracker</span>
+      </a>
+      
+      <!-- Botón cerrar para móvil -->
+      <button class="close-sidebar d-md-none" (click)="closeSidebar()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Navegación principal -->
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
         <a 
@@ -15,7 +37,8 @@
           routerLink="/Home" 
           class="nav-link text-white fs-5" 
           [class.active]="router.url === '/Home'"
-          data-nav="Dashboard">
+          data-nav="Dashboard"
+          (click)="closeSidebar()">
           <i class="bi bi-graph-up me-2"></i>
           Dashboard
         </a>
@@ -26,7 +49,8 @@
           routerLink="/MyWallets" 
           class="nav-link text-white fs-5"
           [class.active]="router.url === '/MyWallets'"
-          data-nav="My Wallets">
+          data-nav="My Wallets"
+          (click)="closeSidebar()">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
             <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
             <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
@@ -40,7 +64,8 @@
           routerLink="/Payments" 
           class="nav-link text-white fs-5"
           [class.active]="router.url === '/Payments'"
-          data-nav="Payments">
+          data-nav="Payments"
+          (click)="closeSidebar()">
           <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 640 512">
             <path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64l241.9 0c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5 608 384c0 35.3-28.7 64-64 64l-241.9 0c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5 32 128c0-35.3 28.7-64 64-64zm64 64l-64 0 0 64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64l64 0 0-64zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/>
           </svg>
@@ -49,55 +74,56 @@
       </li>
     </ul>
 
-    <!-- Dropdown del usuario -->
+    <!-- Sección de usuario (abajo separada) -->
     @if (authService.getCurrentUser()) {
-      <div class="dropdown d-flex flex-column flex-shrink-0 p-3 text-white" style="width: 280px;">
-        <hr>
-          <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-              <a 
-                (click)="onLinkClick($event)" 
-                routerLink="/Settings" 
-                class="nav-link text-white fs-5"
-                [class.active]="router.url === '/Settings'"
-                data-nav="Settings">
-                <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
-                  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
-                  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
-                </svg>
-                Settings
-              </a>
-            </li>
-            <li class="nav-item">
-              <a 
-                (click)="onLinkClick($event)" 
-                routerLink="/Profile" 
-                class="nav-link text-white fs-5"
-                [class.active]="router.url === '/Profile'"
-                style="cursor: pointer;"
-                data-nav="Perfil">
-                <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm4-3a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
-                  <path fill-rule="evenodd" d="M8 9a5 5 0 0 0-5 5v.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V14a5 5 0 0 0-5-5z"/>
-                </svg>
-                Perfil ({{ authService.getCurrentUser()?.username || 'Usuario' }})
-              </a>
-            </li>
-            <li class="nav-item">
-              <a (click)="logout()" class="nav-link text-white fs-5" style="cursor: pointer;">
-                <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
-                  <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
-                </svg>
-                Sign Out ({{ authService.getCurrentUser()?.username || 'Usuario' }})
-              </a>
-            </li>
-          </ul>
-        </div>
-      }
-    </div>
+      <div class="user-section">
+        <ul class="nav nav-pills flex-column">
+          <li class="nav-item">
+            <a 
+              (click)="onLinkClick($event)" 
+              routerLink="/Settings" 
+              class="nav-link text-white fs-5"
+              [class.active]="router.url === '/Settings'"
+              data-nav="Settings"
+              (click)="closeSidebar()">
+              <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+                <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+              </svg>
+              Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a 
+              (click)="onLinkClick($event)" 
+              routerLink="/Profile" 
+              class="nav-link text-white fs-5"
+              [class.active]="router.url === '/Profile'"
+              style="cursor: pointer;"
+              data-nav="Perfil"
+              (click)="closeSidebar()">
+              <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm4-3a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
+                <path fill-rule="evenodd" d="M8 9a5 5 0 0 0-5 5v.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V14a5 5 0 0 0-5-5z"/>
+              </svg>
+              Perfil ({{ authService.getCurrentUser()?.username || 'Usuario' }})
+            </a>
+          </li>
+          <li class="nav-item">
+            <a (click)="logout()" class="nav-link text-white fs-5" style="cursor: pointer;" (click)="closeSidebar()">
+              <svg class="bi me-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
+                <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+              </svg>
+              Sign Out ({{ authService.getCurrentUser()?.username || 'Usuario' }})
+            </a>
+          </li>
+        </ul>
+      </div>
+    }
+  </div>
 
-    <div style="width: 100%;height: 100%">
-      <router-outlet></router-outlet>
-    </div>
-  </main>
+  <div class="content-area">
+    <router-outlet></router-outlet>
+  </div>
+</main>

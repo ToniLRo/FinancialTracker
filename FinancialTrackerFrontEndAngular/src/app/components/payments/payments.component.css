@@ -882,3 +882,214 @@ body .modal select option {
   background-color: rgba(33,37,41,255) !important;
   color: white !important;
   }
+
+  /* Desktop grande */
+@media (max-width: 1200px) { }
+
+/* Laptop y tablets en horizontal */
+@media (max-width: 1024px) {
+  .content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    height: auto;
+    min-height: 100vh;
+    padding: 15px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 70vh;
+  }
+  
+  .filters-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+}
+
+/* Tablets en vertical y móviles grandes */
+@media (max-width: 768px) { 
+  .content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    height: auto;
+    min-height: 100vh;
+    padding: 10px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 60vh;
+  }
+  
+  .filters-section {
+    margin-bottom: 20px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+/* Móviles grandes */
+@media (max-width: 600px) {
+  .content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    height: auto;
+    min-height: 100vh;
+    padding: 8px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 50vh;
+  }
+  
+  .filters-section {
+    margin-bottom: 15px;
+  }
+  
+  .stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .stat-card {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 15px;
+  }
+}
+
+/* Móviles estándar */
+@media (max-width: 480px) {
+  .content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    height: auto;
+    min-height: 100vh;
+    padding: 6px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 45vh;
+  }
+  
+  .filters-section {
+    margin-bottom: 12px;
+  }
+  
+  .stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .stat-card {
+    width: 100%;
+    padding: 10px 12px;
+  }
+  
+  .filters-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 360px) { 
+  .content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    height: auto;
+    min-height: 100vh;
+    padding: 5px;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 40vh;
+  }
+  
+  .filters-section {
+    margin-bottom: 10px;
+  }
+  
+  .stat-card {
+    padding: 8px 10px;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* Asegurar scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mejorar accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Scrollbar personalizado para tablas */
+.table-responsive::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Mejorar la experiencia táctil en móviles */
+@media (hover: none) and (pointer: coarse) {
+  .table-responsive {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .transaction-row:hover {
+    background-color: inherit;
+  }
+  
+  .btn:hover {
+    transform: none;
+  }
+}

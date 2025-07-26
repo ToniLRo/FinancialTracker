@@ -1,16 +1,13 @@
 [build]
-  publish = "dist/financial-tracker"
+  base = "FinancialTrackerFrontEndAngular"
   command = "npm run build"
+  publish = "dist/financial-tracker"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20.19.0"
+  NPM_VERSION = "10.2.4"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200
-
-[dev]
-  command = "npm start"
-  port = 4200
-  publish = "dist/financial-tracker" 
+  status = 200 

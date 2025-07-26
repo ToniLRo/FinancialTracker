@@ -409,7 +409,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       const yearMonth = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
       
       const value = monthlyData[yearMonth];
-      const result = typeof value === 'number' ? value : 0;
+      // CORREGIR: Usar valor absoluto para income
+      const result = typeof value === 'number' ? Math.abs(value) : 0;
       
       //console.log(`Income for ${month} (${yearMonth}):`, result);
       return result;
@@ -434,7 +435,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       const yearMonth = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
       
       const value = monthlyData[yearMonth];
-      const result = typeof value === 'number' ? Math.abs(value) : 0; // Expenses as positive values
+      // CORREGIR: Usar valor absoluto para expenses
+      const result = typeof value === 'number' ? Math.abs(value) : 0;
       
       //console.log(`Expense for ${month} (${yearMonth}):`, result);
       return result;
@@ -514,7 +516,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // USAR SOLO datos reales, NO fallback
+      // Obtener datos con colores dinámicos
       const categoryData = this.getCategoryChartData();
       
       if (categoryData.labels.length === 0) {
@@ -523,10 +525,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoadingCategories = false;
         return;
       }
-      
-      //console.log('📊 Creating chart with REAL data:', categoryData);
 
-      // Crear gráfico con datos reales
+      // Crear gráfico con colores dinámicos
       this.categoriesChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -534,134 +534,118 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           datasets: [{
             label: 'Amount ($)',
             data: categoryData.values,
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.8)',
-              'rgba(54, 162, 235, 0.8)',
-              'rgba(255, 205, 86, 0.8)',
-              'rgba(75, 192, 192, 0.8)',
-              'rgba(153, 102, 255, 0.8)',
-              'rgba(255, 159, 64, 0.8)',
-              'rgba(33, 190, 114, 0.8)',
-              'rgba(255, 71, 87, 0.8)'
-            ],
-            borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 205, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 159, 64, 1)',
-              'rgba(33, 190, 114, 1)',
-              'rgba(255, 71, 87, 1)'
-            ],
+            backgroundColor: categoryData.colors, // Usar colores dinámicos
+            borderColor: categoryData.borderColors, // Usar bordes dinámicos
             borderWidth: 1.5
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          scales: {
-            x: {
-              ticks: {
-                color: 'white',
-                font: { size: 10 }, // Un poco más grande
-                maxRotation: 45,
-                minRotation: 0
-              },
-              grid: {
-                color: 'rgba(255, 255, 255, 0.1)'
-              }
+          plugins: {
+            legend: {
+              display: false
             },
+            title: {
+              display: true,
+              text: 'Transactions by Category',
+              color: '#ffffff',
+              font: {
+                size: 14
+              }
+            }
+          },
+          scales: {
             y: {
               beginAtZero: true,
               ticks: {
-                color: 'white',
-                font: { size: 10 }, // Un poco más grande
+                color: '#ffffff',
                 callback: function(value: any) {
-                  if (value >= 1000) {
-                    return '$' + (value / 1000).toFixed(1) + 'K';
-                  }
                   return '$' + value.toLocaleString();
                 }
               },
               grid: {
                 color: 'rgba(255, 255, 255, 0.1)'
               }
-            }
-          },
-          plugins: {
-            legend: {
-              display: false
             },
-            tooltip: {
-              enabled: true,
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
-              titleColor: 'white',
-              bodyColor: 'white',
-              borderColor: 'rgba(255, 255, 255, 0.3)',
-              borderWidth: 1,
-              cornerRadius: 6,
-              titleFont: { size: 10 }, // Un poco más grande
-              bodyFont: { size: 9 }, // Un poco más grande
-              callbacks: {
-                title: function(context: any) {
-                  return context[0].label;
-                },
-                label: function(context: any) {
-                  const value = '$' + context.parsed.y.toLocaleString();
-                  return `Amount: ${value}`;
-                }
+            x: {
+              ticks: {
+                color: '#ffffff',
+                font: { size: 10 },
+                maxRotation: 45,
+                minRotation: 0
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
               }
             }
-          },
-          animation: {
-            duration: 800,
-            easing: 'easeInOutQuart'
           }
         }
       });
 
       this.categoriesChartInitialized = true;
       this.isLoadingCategories = false;
-      //console.log('✅ Categories chart initialized with REAL data');
-      
-      this.cdr.detectChanges();
-      
+      console.log('✅ Categories chart initialized successfully');
+
     } catch (error) {
       console.error('❌ Error initializing categories chart:', error);
       this.categoriesError = true;
       this.isLoadingCategories = false;
-      this.cdr.detectChanges();
     }
   }
 
   // MEJORAR: Obtener datos para el gráfico de categorías
   getCategoryChartData(): any {
-    
     // Validar que tenemos categorías
     if (!this.topCategories || this.topCategories.length === 0) {
-      return { labels: [], values: [], total: 0 };
+      return { labels: [], values: [], total: 0, colors: [] };
     }
 
-    // CAMBIO: Incluir todas las categorías, tanto gastos como ingresos
-    // Pero para el gráfico de dona, mostrar solo gastos
-    const expenses = this.topCategories.filter(cat => cat.amount < 0);
+    // MOSTRAR TODAS LAS CATEGORÍAS (gastos e ingresos)
+    const labels = this.topCategories.map(cat => {
+      // Determinar tipo basado en el nombre de la categoría, no en el valor
+      const isIncome = this.isIncomeCategory(cat.name);
+      const type = isIncome ? ' (Income)' : ' (Expense)';
+      return (cat.name || 'Unknown') + type;
+    });
     
-    // Si no hay gastos, usar todas las categorías pero convertir a valores absolutos
-    let categoriesToShow = expenses;
-    if (expenses.length === 0) {
-      categoriesToShow = this.topCategories.map(cat => ({
-        ...cat,
-        amount: Math.abs(cat.amount)
-      }));
-    }
-
-    const labels = categoriesToShow.map(cat => cat.name || 'Unknown');
-    const values = categoriesToShow.map(cat => Math.abs(cat.amount || 0));
+    const values = this.topCategories.map(cat => Math.abs(cat.amount || 0));
     const total = values.reduce((sum, val) => sum + val, 0);
     
+    // GENERAR COLORES DINÁMICOS basados en el tipo de categoría
+    const colors = this.topCategories.map(cat => {
+      const isIncome = this.isIncomeCategory(cat.name);
+      if (isIncome) {
+        // VERDE VERDADERO para ingresos (income) - CAMBIAR ESTE COLOR
+        return 'rgba(34, 197, 94, 0.8)'; // Verde más puro
+      } else {
+        // ROJO para gastos (expenses)
+        return 'rgba(255, 99, 132, 0.8)';
+      }
+    });
     
-    return { labels, values, total };
+    const borderColors = this.topCategories.map(cat => {
+      const isIncome = this.isIncomeCategory(cat.name);
+      if (isIncome) {
+        // VERDE VERDADERO para ingresos - CAMBIAR ESTE COLOR
+        return 'rgba(34, 197, 94, 1)'; // Verde más puro
+      } else {
+        // ROJO para gastos
+        return 'rgba(255, 99, 132, 1)';
+      }
+    });
+    
+    return { labels, values, total, colors, borderColors };
+  }
+
+  // NUEVA FUNCIÓN: Determinar si una categoría es de ingresos
+  isIncomeCategory(categoryName: string): boolean {
+    const incomeCategories = [
+      'INCOME', 'SALARY', 'DEPOSIT', 'REVENUE', 'PROFIT', 'GAIN',
+      'Income', 'Salary', 'Deposit', 'Revenue', 'Profit', 'Gain'
+    ];
+    
+    return incomeCategories.includes(categoryName);
   }
 
   // MEJORAR: destroyCategoriesChart usando Chart.getChart
@@ -1273,11 +1257,6 @@ private getStaticStockData(symbol: string): any {
   processCategoryData(): void {
     const categoryData = this.dashboardData.categoryBreakdown || {};
     
-    //console.log('🔍 PROCESSING CATEGORY DATA FROM BACKEND');
-    //console.log('🔍 Raw categoryBreakdown:', categoryData);
-    //console.log('🔍 Is empty?', Object.keys(categoryData).length === 0);
-    
-    // Si no hay datos del backend, NO usar fallback
     if (Object.keys(categoryData).length === 0) {
       console.warn('❌ NO REAL CATEGORY DATA FROM BACKEND');
       this.topCategories = [];
@@ -1285,25 +1264,21 @@ private getStaticStockData(symbol: string): any {
       return;
     }
 
-    // Procesar SOLO datos reales del backend
+    // Procesar datos reales del backend
     this.topCategories = Object.entries(categoryData)
       .map(([name, amount]) => {
-        //console.log(`🔍 Processing category: ${name} = ${amount}`);
         return { 
-          name: name, // Entertainment, Deposit, Withdraw
+          name: name,
           amount: typeof amount === 'number' ? amount : 0 
         };
       })
       .filter(cat => {
-        const isValid = cat.amount > 0;
-        //console.log(`🔍 Category ${cat.name}: ${cat.amount} - Valid: ${isValid}`);
+        // CORREGIR: Incluir tanto gastos (negativos) como ingresos (positivos)
+        const isValid = cat.amount !== 0; // Cambiar de > 0 a !== 0
         return isValid;
       })
-      .sort((a, b) => b.amount - a.amount);
-    
-    //console.log('✅ FINAL REAL CATEGORIES:', this.topCategories);
-    //console.log('✅ Categories count:', this.topCategories.length);
-    
+      .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount)); // Ordenar por valor absoluto
+  
     if (this.topCategories.length === 0) {
       console.warn('❌ NO VALID CATEGORIES AFTER PROCESSING');
       this.categoriesError = true;

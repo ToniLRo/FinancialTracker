@@ -47,13 +47,13 @@ public class DashboardServices {
         
         double monthlyIncome = userTransactions.stream()
             .filter(t -> t.getDate().compareTo(startDate) >= 0 && t.getDate().compareTo(endDate) <= 0)
-            .filter(t -> t.getAmount() > 0)
-            .mapToDouble(Transaction::getAmount)
+            .filter(t -> "Income".equalsIgnoreCase(t.getType()))
+            .mapToDouble(t -> Math.abs(t.getAmount()))
             .sum();
             
         double monthlyExpenses = userTransactions.stream()
             .filter(t -> t.getDate().compareTo(startDate) >= 0 && t.getDate().compareTo(endDate) <= 0)
-            .filter(t -> t.getAmount() < 0)
+            .filter(t -> "Expense".equalsIgnoreCase(t.getType()))
             .mapToDouble(t -> Math.abs(t.getAmount()))
             .sum();
         
@@ -91,10 +91,10 @@ public class DashboardServices {
         
         // Agrupar transacciones por mes
         Map<YearMonth, Double> transactionsByMonth = transactions.stream()
-            .filter(t -> isIncome ? t.getAmount() > 0 : t.getAmount() < 0)
+            .filter(t -> isIncome ? "Income".equalsIgnoreCase(t.getType()) : "Expense".equalsIgnoreCase(t.getType()))
             .collect(Collectors.groupingBy(
                 t -> YearMonth.from(t.getDate().toLocalDate()),
-                Collectors.summingDouble(t -> isIncome ? t.getAmount() : Math.abs(t.getAmount()))
+                Collectors.summingDouble(t -> Math.abs(t.getAmount()))
             ));
         
         // Actualizar datos con valores reales

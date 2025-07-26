@@ -158,13 +158,7 @@
                             </button>
                                     </div> 
                         
-                        <!-- No data state -->
-                        <div *ngIf="!isLoadingCategories && !categoriesError && topCategories.length === 0" class="error-state text-center">
-                            <p class="mb-2">📊 No category data available</p>
-                            <small>Add some transactions to see category breakdown</small>
-                                            </div>
-                        
-                        <!-- Categories Chart canvas - SIEMPRE MOSTRAR PARA DEBUG -->
+                        <!-- Categories Chart canvas - SIEMPRE MOSTRAR -->
                         <div class="cards">
                             <canvas #categoriesChart class="myChart" style="display: block; width: 100%; height: 300px;"></canvas>
                         </div>

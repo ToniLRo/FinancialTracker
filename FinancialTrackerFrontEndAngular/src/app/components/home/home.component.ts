@@ -212,13 +212,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Ajustar tamaño del canvas
+    const canvas = this.myChart.nativeElement;
+    canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : 400;
+    canvas.height = 240; // Aumentado de 220px a 240px
+
     this.isLoadingChart = true;
     this.chartError = false;
 
     try {
-      const canvas = this.myChart.nativeElement;
       const ctx = canvas.getContext('2d');
-      
       if (!ctx) {
         throw new Error('Could not get 2D context from canvas');
       }
@@ -274,7 +277,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               ticks: {
                 color: 'rgb(255, 255, 255)',
                 font: {
-                  size: 12
+                  size: 11 // Un poco más grande
                 },
                 callback: function(value: any) {
                   return '$' + value.toLocaleString();
@@ -289,7 +292,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               ticks: {
                 color: 'rgb(255, 255, 255)',
                 font: {
-                  size: 12
+                  size: 11 // Un poco más grande
                 }
               },
               grid: {
@@ -305,12 +308,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               labels: {
                 color: 'rgb(255, 255, 255)',
                 font: {
-                  size: 14,
+                  size: 13, // Un poco más grande
                   family: 'Arial',
                   weight: 'bold'
                 },
-                boxWidth: 20,
-                padding: 20,
+                boxWidth: 18, // Un poco más grande
+                padding: 14, // Un poco más grande
                 usePointStyle: true
               }
             },
@@ -485,6 +488,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       const canvas = this.categoriesChart.nativeElement;
+      // Ajustar tamaño del canvas
+      canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : 400;
+      canvas.height = 240; // Aumentado de 220px a 240px
       
       // Destruir gráfico existente
       const existingChart = Chart.getChart(canvas);
@@ -558,7 +564,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             x: {
               ticks: {
                 color: 'white',
-                font: { size: 8 },
+                font: { size: 10 }, // Un poco más grande
                 maxRotation: 45,
                 minRotation: 0
               },
@@ -570,7 +576,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               beginAtZero: true,
               ticks: {
                 color: 'white',
-                font: { size: 8 },
+                font: { size: 10 }, // Un poco más grande
                 callback: function(value: any) {
                   if (value >= 1000) {
                     return '$' + (value / 1000).toFixed(1) + 'K';
@@ -595,8 +601,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               borderColor: 'rgba(255, 255, 255, 0.3)',
               borderWidth: 1,
               cornerRadius: 6,
-              titleFont: { size: 9 },
-              bodyFont: { size: 8 },
+              titleFont: { size: 10 }, // Un poco más grande
+              bodyFont: { size: 9 }, // Un poco más grande
               callbacks: {
                 title: function(context: any) {
                   return context[0].label;

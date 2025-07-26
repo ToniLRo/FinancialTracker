@@ -1,12 +1,16 @@
 [build]
   base = "FinancialTrackerFrontEndAngular"
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "dist/financial-tracker"
 
 [build.environment]
   NODE_VERSION = "20.19.0"
   NPM_VERSION = "10.2.4"
+  API_URL = "https://financialtracker-production.up.railway.app"
+  TWELVEDATA_API_KEY = "b18b371800b24fceb2f2439b2e6c1c60"
+  EXCHANGERATE_API_KEY = "6ef67e7d3c6e02e659707acc"
 
+# IMPORTANTE: Redirects para Angular SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"

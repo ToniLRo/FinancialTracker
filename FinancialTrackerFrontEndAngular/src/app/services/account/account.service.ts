@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Account } from 'src/app/models/account/account.model';
 import { tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 export interface Transaction {
   id: number;
@@ -17,9 +18,9 @@ export interface Transaction {
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
-  private accountApiUrl = 'http://localhost:8080/account';
-  private transactionApiUrl = 'http://localhost:8080/transaction';
-  private dashboardApiUrl = 'http://localhost:8080/dashboard';
+  private accountApiUrl = environment.apiUrl+"/account";
+  private transactionApiUrl = environment.apiUrl+"/transaction";
+  private dashboardApiUrl = environment.apiUrl+"/dashboard";
 
   constructor(private http: HttpClient) {}
 

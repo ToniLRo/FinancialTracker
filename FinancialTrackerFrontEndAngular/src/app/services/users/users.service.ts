@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { LoginResponse } from 'src/app/models/LoginResponse/loginresponse.model';
 import { AuthService } from '../auth/auth.service';
 import { catchError, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  private apiUrl = 'http://localhost:8080/user'; // Ajusta la URL según tu backend
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 

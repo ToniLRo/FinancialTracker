@@ -6,13 +6,14 @@ import { User } from 'src/app/models/User/user.model';
 import { ChangePasswordRequest } from 'src/app/models/ChangePasswordRequest.model';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/user';
+  private apiUrl = environment.apiUrl+"/user";
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
 

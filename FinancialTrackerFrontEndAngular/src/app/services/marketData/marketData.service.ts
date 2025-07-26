@@ -4,10 +4,11 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Account } from 'src/app/models/account/account.model';
 import { tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class MarketDataService {
-    private marketDataApiUrl = 'http://localhost:8080/marketdata';
+    private marketDataApiUrl = environment.apiUrl+"/marketdata";
 
     constructor(private http: HttpClient) {}
 

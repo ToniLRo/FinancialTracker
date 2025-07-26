@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ApiUpdateControlService {
-    private readonly apiUrl = 'http://localhost:8080/api/update-control';
+    private readonly apiUrl = environment.apiUrl+"/api/update-control";
 
     constructor(private http: HttpClient) {}
 

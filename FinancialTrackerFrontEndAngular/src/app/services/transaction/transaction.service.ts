@@ -3,12 +3,13 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Transaction } from 'src/app/models/Transaction/transaction.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionService {
-  private transactionApiUrl = 'http://localhost:8080/transaction';
+  private transactionApiUrl = environment.apiUrl+"/transaction";
 
   constructor(private http: HttpClient) { }
 

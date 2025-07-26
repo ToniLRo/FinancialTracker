@@ -1,6 +1,6 @@
 [build]
   publish = "dist/financial-tracker"
-  command = "npm run build:netlify"
+  command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "18"

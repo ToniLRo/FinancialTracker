@@ -247,7 +247,7 @@ public class UsersController {
 	}
 
 	@PutMapping("/{userId}/settings")
-public ResponseEntity<?> updateUserSettings(@PathVariable Long userId, @RequestBody UserSettings settings) {
+	public ResponseEntity<?> updateUserSettings(@PathVariable Long userId, @RequestBody UserSettings settings) {
     log.debug("⚡ Recibida petición de actualización de settings para usuario {}", userId);
     log.debug("📝 Settings recibidos: {}", settings);
     

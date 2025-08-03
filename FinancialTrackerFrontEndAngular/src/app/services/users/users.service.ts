@@ -29,7 +29,7 @@ export class UsersService {
         `Bearer ${this.authService.getToken()}`
     );
     
-    return this.http.get(`${this.apiUrl}/${userId}/settings`, { headers })
+    return this.http.get(`${this.apiUrl}/user/${userId}/settings`, { headers })
         .pipe(
             catchError(error => {
                 console.error('Error al obtener settings:', error);
@@ -40,7 +40,7 @@ export class UsersService {
 
 updateUserSettings(userId: number, settings: any): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.put<any>(`${this.apiUrl}/${userId}/settings`, settings, { headers });
+    return this.http.put<any>(`${this.apiUrl}/user/${userId}/settings`, settings, { headers });
 }
 
   getUserById(userId: number): Observable<any> {

@@ -109,14 +109,25 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        
+        // Permitir todos los orígenes que necesites
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:4200", 
             "https://myfinancialtracker.netlify.app",
             "https://financialtracker-production.up.railway.app"
         ));
+        
+        // Permitir todos los métodos HTTP
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        
+        // Permitir todos los headers
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        
+        // Permitir credenciales
         configuration.setAllowCredentials(true);
+        
+        // Configurar tiempo de cache para preflight
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

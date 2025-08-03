@@ -25,7 +25,6 @@ import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.dto.AccountDTO;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/account")
 public class AccountController {
 

@@ -17,7 +17,6 @@ import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.Entities.Users;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/dashboard")
 public class DashboardController {
 

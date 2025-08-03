@@ -48,7 +48,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:4200", "https://myfinancialtracker.netlify.app", "https://financialtracker-production.up.railway.app"})
 @RequestMapping("/user")
 @Validated
 public class UsersController {

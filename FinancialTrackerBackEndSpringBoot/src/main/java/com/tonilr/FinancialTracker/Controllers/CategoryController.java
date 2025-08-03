@@ -18,7 +18,6 @@ import com.tonilr.FinancialTracker.Entities.Category;
 import com.tonilr.FinancialTracker.Services.CategoryServices;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/category")
 public class CategoryController {
 

@@ -30,7 +30,6 @@ import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.dto.TransactionDTO;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/transaction")
 public class TransactionController {
 	@Autowired

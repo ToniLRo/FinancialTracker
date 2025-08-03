@@ -21,7 +21,6 @@ import com.tonilr.FinancialTracker.Services.APIServices;
 import com.tonilr.FinancialTracker.Services.MarketDataServices;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/marketdata")
 public class MarketDataController {
     

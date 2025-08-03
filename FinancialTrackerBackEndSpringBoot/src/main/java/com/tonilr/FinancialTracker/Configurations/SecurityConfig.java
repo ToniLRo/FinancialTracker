@@ -53,6 +53,7 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Añadir esta línea
             .requestMatchers("/auth/**").permitAll()
             .requestMatchers("/api/email/**").authenticated()
             .requestMatchers("/marketdata/**").permitAll()

@@ -53,6 +53,6 @@ public class MarketDataServices {
     }
 
     public List<MarketData> findLatestByAssetType(AssetType assetType) {
-        return marketDataRepository.findLatestByAssetType(assetType.name());
+        return marketDataRepository.findLatestByAssetType(assetType);
     }
 }

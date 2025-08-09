@@ -24,7 +24,7 @@ public class ApiUpdateControlService {
                     .plusMinutes(control.getUpdateIntervalMinutes());
                 return LocalDateTime.now().isAfter(nextUpdate);
             })
-            .orElse(true); // Si no existe registro, debemos actualizar
+            .orElse(true);
     }
 
     public void updateLastUpdateTime(ApiUpdateControl.ApiType apiType) {
@@ -34,7 +34,6 @@ public class ApiUpdateControlService {
         control.setApiType(apiType);
         control.setLastUpdate(LocalDateTime.now());
         
-        // Establecer intervalos según el tipo
         switch (apiType) {
             case FOREX:
                 control.setUpdateIntervalMinutes(32);

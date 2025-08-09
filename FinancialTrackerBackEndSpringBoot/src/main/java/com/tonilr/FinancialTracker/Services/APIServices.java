@@ -39,7 +39,7 @@ public class APIServices {
 	        // Construir la URL
 	        String url = String.format("%s?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s", BASE_URL, symbol, API_KEY);
 
-	        System.out.println("URL generada: "+url);
+	        //System.out.println("URL generada: "+url);
 	        
 	        // Hacer la solicitud GET
 	        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -85,7 +85,7 @@ public class APIServices {
 	        // Construir la URL
 	        String url = String.format("%s?function=FX_DAILY&from_symbol=%s&to_symbol=%s&apikey=%s", BASE_URL, fromSymbol, toSymbol, API_KEY);
 
-	        System.out.println("URL generada: " + url);
+	        //System.out.println("URL generada: " + url);
 
 	        // Hacer la solicitud GET
 	        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -149,7 +149,7 @@ public class APIServices {
 
 	            if (response != null) {
 	                JSONObject jsonResponse = new JSONObject(response);
-	                System.out.println("Response for " + crypto + ": " + jsonResponse.toString(4));  // Formato indentado para facilitar lectura
+	                //System.out.println("Response for " + crypto + ": " + jsonResponse.toString(4));  // Formato indentado para facilitar lectura
 
 
 	                if (jsonResponse.has("Time Series (Digital Currency Daily)")) {
@@ -190,7 +190,7 @@ public class APIServices {
 	        // Construir la URL
 	        String url = String.format("%s?function=DIGITAL_CURRENCY_DAILY&symbol=%s&market=%s&apikey=%s", BASE_URL, symbol, market, API_KEY);
 
-	        System.out.println("URL generada: " + url);
+	        //System.out.println("URL generada: " + url);
 
 	        // Hacer la solicitud GET
 	        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);

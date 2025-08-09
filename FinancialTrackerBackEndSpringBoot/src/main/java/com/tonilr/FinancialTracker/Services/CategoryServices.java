@@ -1,10 +1,8 @@
 package com.tonilr.FinancialTracker.Services;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.tonilr.FinancialTracker.Entities.Category;
 import com.tonilr.FinancialTracker.exceptions.UserNotFoundException;
 import com.tonilr.FinancialTracker.repos.CategoryRepo;

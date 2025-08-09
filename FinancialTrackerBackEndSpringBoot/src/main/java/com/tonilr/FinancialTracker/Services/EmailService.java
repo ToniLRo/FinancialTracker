@@ -6,17 +6,11 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 import java.time.format.TextStyle;
 import java.util.Locale;
-
-import com.tonilr.FinancialTracker.Entities.Users;
-import com.tonilr.FinancialTracker.Entities.UserSettings;
-import com.tonilr.FinancialTracker.Services.UsersServices;
 
 @Service
 public class EmailService {
@@ -85,36 +79,36 @@ public class EmailService {
     @Scheduled(cron = "0 0 9 1 * *") // Primer día del mes 9AM
     public void sendMonthlyReport(String toEmail, Long userId) {
         try {
-            System.out.println("📊 Generando reporte mensual");
-            System.out.println("📧 Email destino: " + toEmail);
-            System.out.println("👤 Usuario ID: " + userId);
+            //System.out.println("📊 Generando reporte mensual");
+            //System.out.println("📧 Email destino: " + toEmail);
+            //System.out.println("👤 Usuario ID: " + userId);
 
             LocalDate endDate = LocalDate.now();
             LocalDate startDate = endDate.minusMonths(1);
-            System.out.println("📅 Periodo: " + startDate + " a " + endDate);
+            //System.out.println("📅 Periodo: " + startDate + " a " + endDate);
 
             Map<Object, Double> currentMonthTotals = transactionService
                 .getCategoryTotalsByDateRange(userId, startDate, endDate);
-            System.out.println("💰 Totales por categoría: " + currentMonthTotals);
+            //System.out.println("💰 Totales por categoría: " + currentMonthTotals);
 
             double totalIncome = transactionService.getTotalIncome(userId, startDate, endDate);
             double totalExpenses = transactionService.getTotalExpenses(userId, startDate, endDate);
-            System.out.println("📈 Ingresos totales: " + totalIncome);
-            System.out.println("📉 Gastos totales: " + totalExpenses);
+            //System.out.println("📈 Ingresos totales: " + totalIncome);
+            //System.out.println("📉 Gastos totales: " + totalExpenses);
 
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
-            System.out.println("📧 Remitente: " + fromEmail);
+            //System.out.println("📧 Remitente: " + fromEmail);
             message.setTo(toEmail);
             message.setSubject("Tu Resumen Mensual - Financial Tracker");
 
             String emailBody = formatMonthlyReport(currentMonthTotals, totalIncome, totalExpenses, startDate);
-            System.out.println("📝 Cuerpo del email generado");
+            //System.out.println("📝 Cuerpo del email generado");
             message.setText(emailBody);
 
-            System.out.println("📨 Enviando email...");
+            //System.out.println("📨 Enviando email...");
             mailSender.send(message);
-            System.out.println("✅ Email enviado correctamente");
+            //System.out.println("✅ Email enviado correctamente");
         } catch (Exception e) {
             System.err.println("❌ Error en sendMonthlyReport: " + e.getMessage());
             e.printStackTrace();

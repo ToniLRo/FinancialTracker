@@ -45,12 +45,12 @@ public class TransactionServices {
 	}
 
 	public List<Transaction> findTransactionsByAccountId(Long accountId) {
-		System.out.println("=== TRANSACTION SERVICE ===");
-		System.out.println("Service received accountId: " + accountId);
+		//System.out.println("=== TRANSACTION SERVICE ===");
+		//System.out.println("Service received accountId: " + accountId);
 		
 		try {
 			List<Transaction> transactions = transactionRepo.findByAccountId(accountId);
-			System.out.println("Repository returned " + transactions.size() + " transactions");
+			//System.out.println("Repository returned " + transactions.size() + " transactions");
 			
 			return transactions;
 		} catch (Exception e) {
@@ -62,12 +62,12 @@ public class TransactionServices {
 	}
 
 	public List<Transaction> findTransactionsByUserId(Long userId) {
-		System.out.println("=== TRANSACTION SERVICE - FIND BY USER ID ===");
-		System.out.println("Service received userId: " + userId);
+		//System.out.println("=== TRANSACTION SERVICE - FIND BY USER ID ===");
+		//System.out.println("Service received userId: " + userId);
 		
 		try {
 			List<Transaction> transactions = transactionRepo.findByUserId(userId);
-			System.out.println("Repository returned " + transactions.size() + " transactions for user");
+			//System.out.println("Repository returned " + transactions.size() + " transactions for user");
 			
 			return transactions;
 		} catch (Exception e) {

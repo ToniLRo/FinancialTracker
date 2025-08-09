@@ -64,10 +64,10 @@ public class AccountServices {
 	}
 
 	public List<Account> findAccountsByUserId(Long userId) {
-		System.out.println("Finding accounts for userId: " + userId);
+		//System.out.println("Finding accounts for userId: " + userId);
 		try {
 			List<Account> accounts = accountRepo.findByUserId(userId);
-			System.out.println("Found " + accounts.size() + " accounts for user " + userId);
+			//System.out.println("Found " + accounts.size() + " accounts for user " + userId);
 			return accounts;
 		} catch (Exception e) {
 			System.err.println("Error finding accounts for user " + userId + ": " + e.getMessage());

@@ -1,18 +1,14 @@
 package com.tonilr.FinancialTracker.Services;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.tonilr.FinancialTracker.Entities.Account;
 import com.tonilr.FinancialTracker.Entities.Transaction;
-import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.repos.AccountRepo;
 import com.tonilr.FinancialTracker.repos.TransactionRepo;
 
@@ -107,40 +103,18 @@ public class DashboardServices {
         return monthlyData;
     }
     
-    // CORREGIR: getCategoryData para usar las transacciones REALES del usuario
     private Map<String, Double> getCategoryData(List<Transaction> transactions) {
-        System.out.println("=== GET CATEGORY DATA ===");
-        System.out.println("Total user transactions received: " + transactions.size());
-        
-        // Debug cada transacción
-        for (int i = 0; i < transactions.size(); i++) {
-            Transaction t = transactions.get(i);
-            System.out.println("Transaction " + i + ":");
-            System.out.println("  - ID: " + t.getTransaction_Id());
-            System.out.println("  - Amount: " + t.getAmount());
-            System.out.println("  - Description: " + t.getDescription());
-            System.out.println("  - Type: " + t.getType());
-            System.out.println("  - Date: " + t.getDate());
-        }
-        
-        // Agrupar TODAS las transacciones por tipo (usar valores absolutos para el gráfico)
         Map<String, Double> categoryData = transactions.stream()
             .collect(Collectors.groupingBy(
                 t -> {
                     String type = t.getType();
-                    // Si el tipo es null o vacío, usar "Other"
                     if (type == null || type.trim().isEmpty()) {
                         return "Other";
                     }
-                    return type; // Usar el tipo exacto como está en BD
+                    return type;
                 },
-                Collectors.summingDouble(t -> Math.abs(t.getAmount())) // Valores absolutos
+                Collectors.summingDouble(t -> Math.abs(t.getAmount()))
             ));
-        
-        System.out.println("Category breakdown result:");
-        categoryData.forEach((category, amount) -> {
-            System.out.println("- " + category + ": " + amount);
-        });
         
         return categoryData;
     }

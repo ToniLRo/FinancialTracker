@@ -3,11 +3,9 @@ package com.tonilr.FinancialTracker.Controllers;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,14 +17,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.validation.annotation.Validated;
 import org.owasp.encoder.Encode;
-
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.dto.RegisterRequest;
 import com.tonilr.FinancialTracker.dto.UserSettingsDTO;
-
-import io.jsonwebtoken.Jwts;
-
 import com.tonilr.FinancialTracker.dto.LoginRequest;
 import com.tonilr.FinancialTracker.Services.JwtService;
 import com.tonilr.FinancialTracker.dto.ChangePasswordRequest;
@@ -34,15 +28,9 @@ import com.tonilr.FinancialTracker.dto.PasswordResetRequest;
 import com.tonilr.FinancialTracker.dto.PasswordResetTokenRequest;
 import com.tonilr.FinancialTracker.Services.EmailService;
 import com.tonilr.FinancialTracker.Entities.UserSettings;
-
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

@@ -224,8 +224,8 @@ public class UsersServices {
 	}
 
 	public void updateUserSettings(Long userId, UserSettings settings) {
-		System.out.println("🔄 Actualizando settings para usuario " + userId);
-		System.out.println("📋 Nuevos settings: " + settings);
+		//System.out.println("🔄 Actualizando settings para usuario " + userId);
+		//System.out.println("📋 Nuevos settings: " + settings);
 		
 		Users user = findUserById(userId);
 		settings.setUser(user);

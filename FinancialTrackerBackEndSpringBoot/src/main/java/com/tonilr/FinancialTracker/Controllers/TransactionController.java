@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,12 +65,12 @@ public class TransactionController {
 			String username = authentication.getName();
 			Users user = usersService.findUserByUsername(username);
 			
-			System.out.println("Authenticated user: " + username);
-			System.out.println("User ID: " + user.getUser_Id()); // CORREGIDO: getUser_Id() en lugar de getUserId()
+			//System.out.println("Authenticated user: " + username);
+			//System.out.println("User ID: " + user.getUser_Id());
 			
 			// Validar que existe la cuenta
 			Account account = accountService.findAccountById(request.getAccountId());
-			System.out.println("Account found: " + account.getAccount_Id());
+			//System.out.println("Account found: " + account.getAccount_Id());
 			
 			// Crear nueva transacción
 			Transaction transaction = new Transaction();
@@ -91,15 +89,15 @@ public class TransactionController {
 			transaction.setAccount(account);
 			transaction.setUser(user);
 			
-			System.out.println("Transaction before save - Account ID: " + 
-			                   (transaction.getAccount() != null ? transaction.getAccount().getAccount_Id() : "null"));
-			System.out.println("Transaction before save - User ID: " + 
-			                   (transaction.getUser() != null ? transaction.getUser().getUser_Id() : "null")); // CORREGIDO
+			//System.out.println("Transaction before save - Account ID: " + 
+			//                   (transaction.getAccount() != null ? transaction.getAccount().getAccount_Id() : "null"));
+			//System.out.println("Transaction before save - User ID: " + 
+			//                   (transaction.getUser() != null ? transaction.getUser().getUser_Id() : "null"));
 			
 			// Guardar transacción
 		Transaction newTransaction = transactionService.addTransaction(transaction);
 			
-			System.out.println("Transaction saved with ID: " + newTransaction.getTransaction_Id());
+			//System.out.println("Transaction saved with ID: " + newTransaction.getTransaction_Id());
 			
 			// NUEVO: Convertir a DTO para evitar lazy loading
 			TransactionDTO responseDTO = convertToDTO(newTransaction);
@@ -107,7 +105,7 @@ public class TransactionController {
 			return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 			
 		} catch (Exception e) {
-			System.err.println("Error adding transaction: " + e.getMessage());
+			//System.err.println("Error adding transaction: " + e.getMessage());
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
@@ -116,28 +114,28 @@ public class TransactionController {
 	@PutMapping("/update")
 	public ResponseEntity<TransactionDTO> updateTransaction(@RequestBody TransactionUpdateRequest request) {
 		try {
-			System.out.println("=== UPDATE TRANSACTION ===");
-			System.out.println("Received update request for transaction ID: " + request.getId());
+			//System.out.println("=== UPDATE TRANSACTION ===");
+			//System.out.println("Received update request for transaction ID: " + request.getId());
 			
 			// Obtener usuario autenticado
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			String username = authentication.getName();
 			Users user = usersService.findUserByUsername(username);
-			System.out.println("Authenticated user: " + username);
+			//System.out.println("Authenticated user: " + username);
 			
 			// Buscar la transacción existente
 			Transaction existingTransaction = transactionService.findTransactionById(request.getId());
-			System.out.println("Found existing transaction: " + existingTransaction.getTransaction_Id());
+			//System.out.println("Found existing transaction: " + existingTransaction.getTransaction_Id());
 			
 			// Verificar que la transacción pertenece al usuario autenticado
 			if (existingTransaction.getUser() == null || !existingTransaction.getUser().getUser_Id().equals(user.getUser_Id())) {
-				System.err.println("Transaction does not belong to authenticated user");
+				//System.err.println("Transaction does not belong to authenticated user");
 				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 			}
 			
 			// Validar que existe la cuenta (si se está cambiando)
 			Account account = accountService.findAccountById(request.getAccountId());
-			System.out.println("Account found: " + account.getAccount_Id());
+			//System.out.println("Account found: " + account.getAccount_Id());
 			
 			// Actualizar los campos de la transacción
 			existingTransaction.setAmount(request.getAmount());
@@ -159,15 +157,15 @@ public class TransactionController {
 			// existingTransaction.setUser(user); // Mantener usuario original
 			// existingTransaction.setRegisterDate() // Mantener fecha registro original
 			
-			System.out.println("Updated transaction data:");
-			System.out.println("  - Amount: " + existingTransaction.getAmount());
-			System.out.println("  - Description: " + existingTransaction.getDescription());
-			System.out.println("  - Type: " + existingTransaction.getType());
-			System.out.println("  - Account ID: " + existingTransaction.getAccount().getAccount_Id());
+			//System.out.println("Updated transaction data:");
+			//System.out.println("  - Amount: " + existingTransaction.getAmount());
+			//System.out.println("  - Description: " + existingTransaction.getDescription());
+			//System.out.println("  - Type: " + existingTransaction.getType());
+			//System.out.println("  - Account ID: " + existingTransaction.getAccount().getAccount_Id());
 			
 			// Guardar transacción actualizada
 			Transaction updatedTransaction = transactionService.updateTransaction(existingTransaction);
-			System.out.println("Transaction updated successfully with ID: " + updatedTransaction.getTransaction_Id());
+			//System.out.println("Transaction updated successfully with ID: " + updatedTransaction.getTransaction_Id());
 			
 			// Convertir a DTO para evitar lazy loading
 			TransactionDTO responseDTO = convertToDTO(updatedTransaction);
@@ -175,7 +173,7 @@ public class TransactionController {
 			return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 			
 		} catch (Exception e) {
-			System.err.println("Error updating transaction: " + e.getMessage());
+			//System.err.println("Error updating transaction: " + e.getMessage());
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
@@ -185,35 +183,35 @@ public class TransactionController {
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<?> deleteTransaction(@PathVariable("id") Long id) {
 		try {
-			System.out.println("=== DELETE TRANSACTION ===");
-			System.out.println("Received delete request for transaction ID: " + id);
+			//System.out.println("=== DELETE TRANSACTION ===");
+			//System.out.println("Received delete request for transaction ID: " + id);
 			
 			// Obtener usuario autenticado
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			String username = authentication.getName();
 			Users user = usersService.findUserByUsername(username);
-			System.out.println("Authenticated user: " + username);
+			//System.out.println("Authenticated user: " + username);
 			
 			// Buscar la transacción existente
 			Transaction existingTransaction = transactionService.findTransactionById(id);
-			System.out.println("Found transaction: " + existingTransaction.getTransaction_Id());
+			//System.out.println("Found transaction: " + existingTransaction.getTransaction_Id());
 			
 			// Verificar que la transacción pertenece al usuario autenticado
 			if (existingTransaction.getUser() == null || !existingTransaction.getUser().getUser_Id().equals(user.getUser_Id())) {
-				System.err.println("Transaction does not belong to authenticated user");
+				//System.err.println("Transaction does not belong to authenticated user");
 				return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
 			}
 			
 			// Eliminar transacción
 		transactionService.deleteTransaction(id);
-			System.out.println("Transaction deleted successfully");
+			//System.out.println("Transaction deleted successfully");
 			
 			Map<String, String> response = new HashMap<>();
 			response.put("message", "Transaction deleted successfully");
 			return new ResponseEntity<>(response, HttpStatus.OK);
 			
 		} catch (Exception e) {
-			System.err.println("Error deleting transaction: " + e.getMessage());
+			//System.err.println("Error deleting transaction: " + e.getMessage());
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
@@ -222,64 +220,64 @@ public class TransactionController {
 	@GetMapping("/account/{accountId}")
 	public ResponseEntity<List<Transaction>> getTransactionsByAccount(@PathVariable("accountId") Long accountId) {
 		try {
-			System.out.println("=== GET TRANSACTIONS BY ACCOUNT ===");
-			System.out.println("Received accountId: " + accountId);
-			System.out.println("AccountId type: " + (accountId != null ? accountId.getClass().getSimpleName() : "null"));
+			//System.out.println("=== GET TRANSACTIONS BY ACCOUNT ===");
+			//System.out.println("Received accountId: " + accountId);
+			//System.out.println("AccountId type: " + (accountId != null ? accountId.getClass().getSimpleName() : "null"));
 			
 			// Verificar usuario autenticado
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			String username = authentication.getName();
-			System.out.println("Authenticated user: " + username);
+			//System.out.println("Authenticated user: " + username);
 			
 			// Verificar que la cuenta existe
 			Account account = accountService.findAccountById(accountId);
-			System.out.println("Account found: " + account.getAccount_Id());
-			System.out.println("Account number: " + account.getAccount_number());
+			//System.out.println("Account found: " + account.getAccount_Id());
+			//System.out.println("Account number: " + account.getAccount_number());
 			
 			// Buscar transacciones
-			System.out.println("Searching transactions for account ID: " + accountId);
+			//System.out.println("Searching transactions for account ID: " + accountId);
 			List<Transaction> transactions = transactionService.findTransactionsByAccountId(accountId);
-			System.out.println("Found " + transactions.size() + " transactions");
+			//System.out.println("Found " + transactions.size() + " transactions");
 			
 			// Debug cada transacción
 			for (int i = 0; i < transactions.size(); i++) {
 				Transaction t = transactions.get(i);
-				System.out.println("Transaction " + i + ":");
-				System.out.println("  - ID: " + t.getTransaction_Id());
-				System.out.println("  - Amount: " + t.getAmount());
-				System.out.println("  - Description: " + t.getDescription());
-				System.out.println("  - Type: " + t.getType());
-				System.out.println("  - Date: " + t.getDate());
-				System.out.println("  - Account ID: " + (t.getAccount() != null ? t.getAccount().getAccount_Id() : "null"));
-				System.out.println("  - User ID: " + (t.getUser() != null ? t.getUser().getUser_Id() : "null"));
+				//System.out.println("Transaction " + i + ":");
+				//System.out.println("  - ID: " + t.getTransaction_Id());
+				//System.out.println("  - Amount: " + t.getAmount());
+				//System.out.println("  - Description: " + t.getDescription());
+				//System.out.println("  - Type: " + t.getType());
+				//System.out.println("  - Date: " + t.getDate());
+				//System.out.println("  - Account ID: " + (t.getAccount() != null ? t.getAccount().getAccount_Id() : "null"));
+				//System.out.println("  - User ID: " + (t.getUser() != null ? t.getUser().getUser_Id() : "null"));
 			}
 			
 			// Convertir a DTOs para evitar lazy loading
-			System.out.println("Converting to DTOs...");
+			//System.out.println("Converting to DTOs...");
 			List<TransactionDTO> transactionDTOs = transactions.stream()
 				.map(this::convertToDTO)
 				.collect(Collectors.toList());
 			
-			System.out.println("Converted " + transactionDTOs.size() + " DTOs");
+			//System.out.println("Converted " + transactionDTOs.size() + " DTOs");
 			
 			// Debug cada DTO
 			for (int i = 0; i < transactionDTOs.size(); i++) {
 				TransactionDTO dto = transactionDTOs.get(i);
-				System.out.println("DTO " + i + ":");
-				System.out.println("  - ID: " + dto.getId());
-				System.out.println("  - Amount: " + dto.getAmount());
-				System.out.println("  - Description: " + dto.getDescription());
-				System.out.println("  - Type: " + dto.getType());
-				System.out.println("  - AccountId: " + dto.getAccountId());
+				//System.out.println("DTO " + i + ":");
+				//System.out.println("  - ID: " + dto.getId());
+				//System.out.println("  - Amount: " + dto.getAmount());
+				//System.out.println("  - Description: " + dto.getDescription());
+				//System.out.println("  - Type: " + dto.getType());
+				//System.out.println("  - AccountId: " + dto.getAccountId());
 			}
 			
-			System.out.println("Returning response with " + transactionDTOs.size() + " transactions");
+			//System.out.println("Returning response with " + transactionDTOs.size() + " transactions");
 			return new ResponseEntity(transactionDTOs, HttpStatus.OK);
 			
 		} catch (Exception e) {
-			System.err.println("ERROR in getTransactionsByAccount:");
-			System.err.println("Error message: " + e.getMessage());
-			System.err.println("Error class: " + e.getClass().getSimpleName());
+			//System.err.println("ERROR in getTransactionsByAccount:");
+			//System.err.println("Error message: " + e.getMessage());
+			//System.err.println("Error class: " + e.getClass().getSimpleName());
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -351,31 +349,31 @@ public class TransactionController {
 	@GetMapping("/user")
 	public ResponseEntity<List<TransactionDTO>> getTransactionsByUser() {
 		try {
-			System.out.println("=== GET ALL USER TRANSACTIONS ===");
+			//System.out.println("=== GET ALL USER TRANSACTIONS ===");
 			
 			// Obtener usuario autenticado
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			String username = authentication.getName();
 			Users user = usersService.findUserByUsername(username);
 			
-			System.out.println("Authenticated user: " + username);
-			System.out.println("User ID: " + user.getUser_Id());
+			//System.out.println("Authenticated user: " + username);
+			//System.out.println("User ID: " + user.getUser_Id());
 			
 			// Buscar todas las transacciones del usuario
 			List<Transaction> transactions = transactionService.findTransactionsByUserId(user.getUser_Id());
-			System.out.println("Found " + transactions.size() + " transactions for user");
+			//System.out.println("Found " + transactions.size() + " transactions for user");
 			
 			// Convertir a DTOs
 			List<TransactionDTO> transactionDTOs = transactions.stream()
 				.map(this::convertToDTO)
 				.collect(Collectors.toList());
 			
-			System.out.println("Returning " + transactionDTOs.size() + " transaction DTOs");
+			//System.out.println("Returning " + transactionDTOs.size() + " transaction DTOs");
 			return new ResponseEntity<>(transactionDTOs, HttpStatus.OK);
 			
 		} catch (Exception e) {
-			System.err.println("ERROR in getTransactionsByUser:");
-			System.err.println("Error message: " + e.getMessage());
+			//System.err.println("ERROR in getTransactionsByUser:");
+			//System.err.println("Error message: " + e.getMessage());
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

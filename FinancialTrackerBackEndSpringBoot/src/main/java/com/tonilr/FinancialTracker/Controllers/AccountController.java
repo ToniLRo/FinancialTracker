@@ -3,14 +3,12 @@ package com.tonilr.FinancialTracker.Controllers;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,22 +40,22 @@ public class AccountController {
 	@GetMapping("/all")
 	public ResponseEntity<List<AccountDTO>> getAllAccounts() {
 		try {
-			// NUEVO: Obtener usuario autenticado y solo sus cuentas
+			//Obtener usuario autenticado y solo sus cuentas
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			String username = authentication.getName();
 			Users user = usersService.findUserByUsername(username);
 			
-			System.out.println("Getting accounts for user: " + username + " (ID: " + user.getUser_Id() + ")");
+			//System.out.println("Getting accounts for user: " + username + " (ID: " + user.getUser_Id() + ")");
 			
-			// Obtener solo las cuentas del usuario autenticado
+			//Obtener solo las cuentas del usuario autenticado
 			List<Account> userAccounts = accountService.findAccountsByUserId(user.getUser_Id());
 			
-			// Convertir a DTOs para evitar problemas de lazy loading
+			//Convertir a DTOs para evitar problemas de lazy loading
 			List<AccountDTO> accountDTOs = userAccounts.stream()
 				.map(this::convertToDTO)
 				.collect(Collectors.toList());
 			
-			System.out.println("Found " + accountDTOs.size() + " accounts for user " + username);
+			//System.out.println("Found " + accountDTOs.size() + " accounts for user " + username);
 			return new ResponseEntity<>(accountDTOs, HttpStatus.OK);
 			
 		} catch (Exception e) {
@@ -70,14 +68,14 @@ public class AccountController {
 	@PostMapping("/add")
 	public ResponseEntity<AccountDTO> addAccount(@RequestBody Account account) {
 		try {
-			// Obtener usuario autenticado
+			//Obtener usuario autenticado
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			String username = authentication.getName();
 			Users user = usersService.findUserByUsername(username);
 			
-			System.out.println("Creating account for user: " + username + " (ID: " + user.getUser_Id() + ")");
+			//System.out.println("Creating account for user: " + username + " (ID: " + user.getUser_Id() + ")");
 			
-			// Establecer el usuario en la cuenta
+			//Establecer el usuario en la cuenta
 			account.setUser(user);
 			
 			Account newAccount = accountService.addAccount(account);
@@ -94,21 +92,20 @@ public class AccountController {
 	@PutMapping("/update")
 	public ResponseEntity<AccountDTO> updateAccount(@RequestBody Account account) {
 		try {
-			System.out.println("=== UPDATE ACCOUNT ===");
-			System.out.println("Received account data:");
-			System.out.println("- ID: " + account.getAccount_Id());
-			System.out.println("- Holder name: " + account.getHolder_name());
-			System.out.println("- Balance: " + account.getBalance());
-			System.out.println("- Currency: " + account.getCurrency());
-			System.out.println("- Account number: " + account.getAccount_number());
-			System.out.println("- Account type: " + account.getAccount_type());
-			System.out.println("- User: " + (account.getUser() != null ? account.getUser().getUser_Id() : "null"));
+			//System.out.println("=== UPDATE ACCOUNT ===");
+			//System.out.println("Received account data:");
+			//System.out.println("- ID: " + account.getAccount_Id());
+			//System.out.println("- Holder name: " + account.getHolder_name());
+			//System.out.println("- Balance: " + account.getBalance());
+			//System.out.println("- Currency: " + account.getCurrency());
+			//System.out.println("- Account number: " + account.getAccount_number());
+			//System.out.println("- Account type: " + account.getAccount_type());
+			//System.out.println("- User: " + (account.getUser() != null ? account.getUser().getUser_Id() : "null"));
 			
-			// NUEVO: Validar que la cuenta existe
+			//Validar que la cuenta existe
 			Account existingAccount = accountService.findAccountById(account.getAccount_Id());
-			System.out.println("Found existing account: " + existingAccount.getAccount_Id());
+			//System.out.println("Found existing account: " + existingAccount.getAccount_Id());
 			
-			// NUEVO: Solo actualizar campos específicos para evitar conflictos
 			existingAccount.setBalance(account.getBalance());
 			if (account.getHolder_name() != null) {
 				existingAccount.setHolder_name(account.getHolder_name());
@@ -116,10 +113,9 @@ public class AccountController {
 			if (account.getCurrency() != null) {
 				existingAccount.setCurrency(account.getCurrency());
 			}
-			// NO actualizar: user, account_number, account_type, creation_date, etc.
 			
 			Account updatedAccount = accountService.updateAccount(existingAccount);
-			System.out.println("✅ Account updated successfully. New balance: " + updatedAccount.getBalance());
+			//System.out.println("✅ Account updated successfully. New balance: " + updatedAccount.getBalance());
 			
 			AccountDTO accountDTO = convertToDTO(updatedAccount);
 			return new ResponseEntity<>(accountDTO, HttpStatus.OK);
@@ -168,22 +164,21 @@ public class AccountController {
 		);
 	}
 
-	// NUEVO: Endpoint específico para actualizar solo el balance
+	//Endpoint específico para actualizar solo el balance
 	@PutMapping("/update-balance/{id}")
 	public ResponseEntity<AccountDTO> updateAccountBalance(@PathVariable("id") Long id, @RequestBody Map<String, Object> balanceData) {
 		try {
-        System.out.println("=== UPDATE ACCOUNT BALANCE ===");
-        System.out.println("Account ID: " + id);
-        System.out.println("New balance: " + balanceData.get("balance"));
+        //System.out.println("=== UPDATE ACCOUNT BALANCE ===");
+        //System.out.println("Account ID: " + id);
+        //System.out.println("New balance: " + balanceData.get("balance"));
         
         Account existingAccount = accountService.findAccountById(id);
         
-        // Solo actualizar el balance
         Double newBalance = ((Number) balanceData.get("balance")).doubleValue();
         existingAccount.setBalance(newBalance);
         
         Account updatedAccount = accountService.updateAccount(existingAccount);
-        System.out.println("✅ Account balance updated successfully: " + updatedAccount.getBalance());
+        //System.out.println("✅ Account balance updated successfully: " + updatedAccount.getBalance());
         
         AccountDTO accountDTO = convertToDTO(updatedAccount);
         return new ResponseEntity<>(accountDTO, HttpStatus.OK);

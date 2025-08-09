@@ -2,13 +2,10 @@ package com.tonilr.FinancialTracker.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import com.tonilr.FinancialTracker.Services.ReportSchedulerService;
 import com.tonilr.FinancialTracker.Services.EmailService;
 import com.tonilr.FinancialTracker.Entities.Users;
 import com.tonilr.FinancialTracker.Services.UsersServices;
-
 import java.util.Map;
 
 @RestController

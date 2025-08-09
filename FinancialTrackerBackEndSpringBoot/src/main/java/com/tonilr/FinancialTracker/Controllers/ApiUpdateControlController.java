@@ -5,8 +5,6 @@ import com.tonilr.FinancialTracker.Services.ApiUpdateControlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpStatus;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +34,7 @@ public class ApiUpdateControlController {
             return ResponseEntity.badRequest().build();
         }
     }
-
+    
     @PostMapping("/update/{type}")
     public ResponseEntity<?> recordUpdate(@PathVariable String type) {
         try {

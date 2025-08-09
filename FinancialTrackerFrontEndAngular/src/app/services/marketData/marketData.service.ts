@@ -13,7 +13,7 @@ export class MarketDataService {
     constructor(private http: HttpClient) {}
 
     private getAuthHeaders(): HttpHeaders {
-        const token = localStorage.getItem('jwt_token'); // CAMBIAR: de 'token' a 'jwt_token'
+        const token = localStorage.getItem('jwt_token');
         if (!token) {
             console.warn('No authentication token found in localStorage');
         }

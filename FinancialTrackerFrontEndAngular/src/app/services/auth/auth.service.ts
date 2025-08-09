@@ -8,7 +8,6 @@ import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -30,17 +29,17 @@ export class AuthService {
   }
 
   login(username: string, password: string, keepSignedIn: boolean = false): Observable<any> {
-    console.log('🔐 Login attempt:', { username, keepSignedIn });
+    //console.log('🔐 Login attempt:', { username, keepSignedIn });
 
     return this.http.post<any>(`${this.apiUrl}/login`, { username, password }).pipe(
         tap(response => {
             if (response.token) {
                 if (keepSignedIn) {
                     localStorage.setItem('jwt_token', response.token);
-                    console.log('✅ Token guardado en localStorage (Keep me signed in)');
+                    //console.log('✅ Token guardado en localStorage (Keep me signed in)');
                 } else {
                     sessionStorage.setItem('jwt_token', response.token);
-                    console.log('✅ Token guardado en sessionStorage (sesión normal)');
+                    //console.log('✅ Token guardado en sessionStorage (sesión normal)');
                 }
             }
         })

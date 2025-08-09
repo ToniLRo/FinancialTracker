@@ -35,7 +35,6 @@ export class AccountService {
     });
   }
 
-  // NUEVO: Método para manejar errores
   private handleError(error: HttpErrorResponse) {
     if (error.status === 403) {
       //console.error('Authentication error - token may be expired');
@@ -47,25 +46,24 @@ export class AccountService {
     return throwError(() => error);
   }
 
-  // Métodos de Account (existentes)
   getAccounts(): Observable<Account[]> {
-    console.log('🔄 Getting user accounts...');
+    //console.log('🔄 Getting user accounts...');
     const token = localStorage.getItem('jwt_token');
-    console.log('Token present:', !!token);
+    //console.log('Token present:', !!token);
     
     return this.http.get<Account[]>(`${this.accountApiUrl}/all`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
       tap(accounts => {
-        console.log('✅ Received accounts:', accounts);
-        console.log('Number of accounts:', accounts.length);
-        accounts.forEach((account, index) => {
-          console.log(`Account ${index}:`, {
-            id: account.account_Id,
-            name: account.holder_name,
-            userId: account.userId
-          });
-        });
+        //console.log('✅ Received accounts:', accounts);
+        //console.log('Number of accounts:', accounts.length);
+        //accounts.forEach((account, index) => {
+          //console.log(`Account ${index}:`, {
+          //  id: account.account_Id,
+          //  name: account.holder_name,
+          //  userId: account.userId
+          //});
+        //});
       }),
       catchError(this.handleError.bind(this))
     );
@@ -89,22 +87,21 @@ export class AccountService {
     });
   }
 
-  // Métodos de Transaction (usando el TransactionController existente)
   getAccountTransactions(accountId: number): Observable<Transaction[]> {
-    console.log('=== ACCOUNT SERVICE - GET TRANSACTIONS ===');
-    console.log('Request AccountId:', accountId);
-    console.log('Request URL:', `${this.transactionApiUrl}/account/${accountId}`);
+    //console.log('=== ACCOUNT SERVICE - GET TRANSACTIONS ===');
+    //console.log('Request AccountId:', accountId);
+    //console.log('Request URL:', `${this.transactionApiUrl}/account/${accountId}`);
     
     const headers = this.getAuthHeaders();
-    console.log('Request Headers:', {
-      'Authorization': headers.get('Authorization')?.substring(0, 20) + '...',
-      'Content-Type': headers.get('Content-Type')
-    });
+    //console.log('Request Headers:', {
+    //  'Authorization': headers.get('Authorization')?.substring(0, 20) + '...',
+    //  'Content-Type': headers.get('Content-Type')
+    //});
     
     return this.http.get<Transaction[]>(`${this.transactionApiUrl}/account/${accountId}`, { 
       headers: headers 
     }).pipe(
-      tap(response => console.log('✅ Service Response:', response)),
+      //tap(response => console.log('✅ Service Response:', response)),
       catchError(error => {
         console.error('❌ Service Error:', error);
         return throwError(() => error);
@@ -120,7 +117,6 @@ export class AccountService {
     );
   }
 
-  // NUEVO: Actualizar transacción
   updateTransaction(transaction: any): Observable<any> {
     const token = localStorage.getItem('jwt_token');
     if (!token) {
@@ -138,7 +134,6 @@ export class AccountService {
       );
   }
 
-  // NUEVO: Eliminar transacción
   deleteTransaction(transactionId: number): Observable<any> {
     const token = localStorage.getItem('jwt_token');
     if (!token) {
@@ -155,7 +150,6 @@ export class AccountService {
       );
   }
 
-  // NUEVOS métodos para dashboard
   getDashboardData(): Observable<any> {
     const token = this.getToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -163,7 +157,6 @@ export class AccountService {
     return this.http.get<any>(`${this.dashboardApiUrl}/data`, { headers });
   }
 
-  // NUEVO: Método específico para actualizar solo el balance
   updateAccountBalance(accountId: number, balance: number): Observable<Account> {
     return this.http.put<Account>(`${this.accountApiUrl}/update-balance/${accountId}`, 
       { balance: balance }, 
@@ -172,7 +165,7 @@ export class AccountService {
   }
 
   getDataFromAPI(url: string): Observable<any> {
-    // Si la URL es externa (no es localhost), no enviamos headers de autenticación
+    // Si la URL es externa (no es localhost), no enviO headers de autenticación
     if (!url.includes('localhost')) {
         return this.http.get<any>(url);
     }

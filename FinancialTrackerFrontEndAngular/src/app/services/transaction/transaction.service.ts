@@ -35,14 +35,13 @@ export class TransactionService {
     return throwError(() => error);
   }
 
-  // NUEVO: Obtener todas las transacciones del usuario autenticado
   getAllUserTransactions(): Observable<Transaction[]> {
-    console.log('=== TRANSACTION SERVICE - GET ALL USER TRANSACTIONS ===');
+    //console.log('=== TRANSACTION SERVICE - GET ALL USER TRANSACTIONS ===');
     
     return this.http.get<Transaction[]>(`${this.transactionApiUrl}/user`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      tap(response => console.log('✅ All User Transactions Response:', response)),
+      //tap(response => console.log('✅ All User Transactions Response:', response)),
       catchError(error => {
         console.error('❌ Get All User Transactions Error:', error);
         return this.handleError(error);
@@ -50,15 +49,14 @@ export class TransactionService {
     );
   }
 
-  // Obtener transacciones por cuenta específica
   getAccountTransactions(accountId: number): Observable<Transaction[]> {
-    console.log('=== TRANSACTION SERVICE - GET ACCOUNT TRANSACTIONS ===');
-    console.log('Request AccountId:', accountId);
+    //console.log('=== TRANSACTION SERVICE - GET ACCOUNT TRANSACTIONS ===');
+    //console.log('Request AccountId:', accountId);
     
     return this.http.get<Transaction[]>(`${this.transactionApiUrl}/account/${accountId}`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      tap(response => console.log('✅ Account Transactions Response:', response)),
+      //tap(response => console.log('✅ Account Transactions Response:', response)),
       catchError(error => {
         console.error('❌ Get Account Transactions Error:', error);
         return this.handleError(error);
@@ -66,7 +64,6 @@ export class TransactionService {
     );
   }
 
-  // Agregar nueva transacción
   addTransaction(transaction: any): Observable<Transaction> {
     return this.http.post<Transaction>(`${this.transactionApiUrl}/add`, transaction, { 
       headers: this.getAuthHeaders() 
@@ -75,15 +72,14 @@ export class TransactionService {
     );
   }
 
-  // Actualizar transacción existente
   updateTransaction(transaction: any): Observable<Transaction> {
-    console.log('=== TRANSACTION SERVICE - UPDATE TRANSACTION ===');
-    console.log('Updating transaction:', transaction);
+    //console.log('=== TRANSACTION SERVICE - UPDATE TRANSACTION ===');
+    //console.log('Updating transaction:', transaction);
     
     return this.http.put<Transaction>(`${this.transactionApiUrl}/update`, transaction, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      tap(response => console.log('✅ Update Transaction Response:', response)),
+      //tap(response => console.log('✅ Update Transaction Response:', response)),
       catchError(error => {
         console.error('❌ Update Transaction Error:', error);
         return this.handleError(error);
@@ -91,15 +87,14 @@ export class TransactionService {
     );
   }
 
-  // Eliminar transacción
   deleteTransaction(transactionId: number): Observable<any> {
-    console.log('=== TRANSACTION SERVICE - DELETE TRANSACTION ===');
-    console.log('Deleting transaction ID:', transactionId);
+    //console.log('=== TRANSACTION SERVICE - DELETE TRANSACTION ===');
+    //console.log('Deleting transaction ID:', transactionId);
     
     return this.http.delete<any>(`${this.transactionApiUrl}/delete/${transactionId}`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      tap(response => console.log('✅ Delete Transaction Response:', response)),
+      //tap(response => console.log('✅ Delete Transaction Response:', response)),
       catchError(error => {
         console.error('❌ Delete Transaction Error:', error);
         return this.handleError(error);

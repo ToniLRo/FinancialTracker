@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
     if (this.authService.isLoggedIn()) {
       return true;
     } else {
-      console.log('⚠️ Acceso denegado: Usuario no autenticado');
+      //console.log('⚠️ Acceso denegado: Usuario no autenticado');
       this.router.navigate(['/LogIn']);
       return false;
     } 

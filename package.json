@@ -1,5 +1,13 @@
 {
   "dependencies": {
-    "ng2-charts": "^6.0.1"
+    "@angular/core": "^17.x.x",
+    "@angular/platform-browser": "^17.x.x",
+    "@angular/forms": "^17.x.x",
+    "@angular/common": "^17.x.x",
+    "@angular/router": "^17.x.x",
+    "@angular/compiler": "^17.x.x",
+    "@angular/compiler-cli": "^17.x.x",
+    "@angular/animations": "^17.x.x",
+    "@angular/http": "^17.x.x"
   }
 }

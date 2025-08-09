@@ -14,13 +14,14 @@ import java.util.Optional;
 @Repository
 public interface MarketDataRepo extends JpaRepository<MarketData,Long>{
     
-    // Consulta para encontrar datos por símbolo y tipo de activo
+    //Buscar datos por símbolo y tipo de activo
     List<MarketData> findBySymbolAndAssetType(String symbol, AssetType assetType);
 
-    // Consulta JPQL más simple y compatible
+    //Buscar datos más recientes por tipo de activo
     @Query("SELECT md FROM MarketData md WHERE md.assetType = :assetType AND md.date = (SELECT MAX(md2.date) FROM MarketData md2 WHERE md2.assetType = :assetType AND md2.symbol = md.symbol)")
     List<MarketData> findLatestByAssetType(@Param("assetType") AssetType assetType);
 
+    //Buscar datos más recientes por símbolo y tipo de activo
     @Query("SELECT md FROM MarketData md WHERE md.symbol = :symbol AND md.assetType = :assetType ORDER BY md.date DESC LIMIT 1")
     Optional<MarketData> findLatestBySymbolAndAssetType(@Param("symbol") String symbol, @Param("assetType") AssetType assetType);
 }

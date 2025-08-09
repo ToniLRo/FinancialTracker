@@ -8,6 +8,7 @@ import com.tonilr.FinancialTracker.Entities.UserSettings;
 
 @Repository
 public interface UserSettingsRepo extends JpaRepository<UserSettings, Long> {
+    //Buscar configuraciones por usuario
     @Query("SELECT us FROM UserSettings us WHERE us.user.user_Id = :userId")
     UserSettings findByUserId(@Param("userId") Long userId);
 }

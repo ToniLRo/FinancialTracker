@@ -1,8 +1,6 @@
 package com.tonilr.FinancialTracker.Entities;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -45,14 +43,12 @@ public class Account {
 	@Column(nullable = false, updatable = true)
 	private Date creation_date;
 	
-	// NUEVO: Campo para fecha de vencimiento (MM/YY)
 	@Column(nullable = true, updatable = true, length = 5)
 	private String good_thru;
 	
-	// NUEVO: Relación Many-to-One con Users
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "user_Id", nullable = true)
-	@JsonIgnore  // AGREGAR esta línea si da problemas de serialización
+	@JsonIgnore
 	private Users user;
 	
 	@JsonIgnore
@@ -75,7 +71,6 @@ public class Account {
 		this.user = user;
 	}
 
-	// Getters y setters existentes...
 	public Long getAccount_Id() {
 		return account_Id;
 	}
@@ -132,7 +127,6 @@ public class Account {
 		this.creation_date = creation_date;
 	}
 
-	// NUEVO: Getter y setter para good_thru
 	public String getGood_thru() {
 		return good_thru;
 	}
@@ -141,7 +135,6 @@ public class Account {
 		this.good_thru = good_thru;
 	}
 
-	// NUEVO: Getter y setter para user
 	public Users getUser() {
 		return user;
 	}
@@ -150,7 +143,6 @@ public class Account {
 		this.user = user;
 	}
 
-	// Getter y setter para transactions
 	public Set<Transaction> getTransactions() { return transactions; }
 	public void setTransactions(Set<Transaction> transactions) { this.transactions = transactions; }
 }

@@ -6,6 +6,8 @@ export interface Card {
     number: string;
     type: string;
     balance: number;
+    currency: string;
+    creation_date: string;
     validThru: string;
     frozen?: boolean;
     transactions?: Transaction[];

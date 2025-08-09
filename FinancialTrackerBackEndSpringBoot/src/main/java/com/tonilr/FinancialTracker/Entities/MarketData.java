@@ -4,10 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,7 +29,10 @@ public class MarketData {
     @Column(name = "date")
     private LocalDate date;
 
-    // Getters y Setters
+    
+    @Column(name = "base_currency")
+    private String baseCurrency;
+
     public Long getId() {
         return id;
     }
@@ -79,7 +80,6 @@ public class MarketData {
     @Column
     private BigDecimal volume;
 
-    // Getters y Setters
     public BigDecimal getOpen() {
         return open;
     }
@@ -126,13 +126,17 @@ public class MarketData {
     public String getMarket() {
         return market;
     }
-
+    
     public void setMarket(String market) {
         this.market = market;
     }
 
-    @Column(name = "base_currency")
-    private String baseCurrency;
+    public String getBaseCurrency() {
+        return baseCurrency;
+    }
 
-    // Getters y setters
+    public void setBaseCurrency(String baseCurrency) {
+        this.baseCurrency = baseCurrency;
+    }
+
 }

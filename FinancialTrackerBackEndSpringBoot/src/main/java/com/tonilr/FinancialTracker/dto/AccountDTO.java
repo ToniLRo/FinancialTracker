@@ -12,9 +12,8 @@ public class AccountDTO {
     private String currency;
     private Date creation_date;
     private String good_thru;
-    private Long userId; // Solo el ID del usuario, no la entidad completa
+    private Long userId;
 
-    // Constructores
     public AccountDTO() {}
 
     public AccountDTO(Long account_Id, String holder_name, String account_number, 
@@ -30,8 +29,7 @@ public class AccountDTO {
         this.good_thru = good_thru;
         this.userId = userId;
     }
-
-    // Getters y setters
+    
     public Long getAccount_Id() { return account_Id; }
     public void setAccount_Id(Long account_Id) { this.account_Id = account_Id; }
     

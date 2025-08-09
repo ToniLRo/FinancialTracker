@@ -8,8 +8,8 @@ export interface Account {
   balance: number;
   currency: string;
   creation_date?: string;
-  good_thru?: string; // NUEVO: Campo para MM/YY
-  userId?: number; // AGREGAR esta propiedad
+  good_thru?: string;
+  userId?: number;
   transactions?: Transaction[];
 }
 

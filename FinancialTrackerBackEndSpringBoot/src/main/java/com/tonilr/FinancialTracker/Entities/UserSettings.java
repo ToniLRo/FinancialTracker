@@ -1,7 +1,6 @@
 package com.tonilr.FinancialTracker.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,7 +8,7 @@ import jakarta.persistence.*;
 public class UserSettings {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long settings_id; // Cambiado de id a settings_id para evitar confusión
+    private Long settings_id;
     
     @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)

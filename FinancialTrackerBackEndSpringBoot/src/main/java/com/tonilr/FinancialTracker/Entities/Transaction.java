@@ -1,7 +1,6 @@
 package com.tonilr.FinancialTracker.Entities;
 
 import java.sql.Date;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -43,7 +42,6 @@ public class Transaction {
     @JoinColumn(name = "user_Id", nullable = true)
     private Users user;
 
-    // RELACIÓN: Many-to-One con Account
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_Id", nullable = false)
     private Account account;
@@ -71,7 +69,6 @@ public class Transaction {
 		this.account = account;
 	}
 
-	// Getters y setters existentes...
 	public Long getTransaction_Id() {
 		return transaction_Id;
 	}
@@ -136,7 +133,7 @@ public class Transaction {
 		this.user = user;
 	}
 
-	// Getter y setter para Account
+	
 	public Account getAccount() {
 		return account;
 	}

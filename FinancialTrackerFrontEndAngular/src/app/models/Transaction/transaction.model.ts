@@ -5,7 +5,8 @@ export interface Transaction {
   amount: number;
   type: string;
   referenceId?: string;
-  registerDate?: string; // NUEVO: Añadir registerDate
+  registerDate?: string;
   accountId?: number;
+  userId?: number;
 }
 

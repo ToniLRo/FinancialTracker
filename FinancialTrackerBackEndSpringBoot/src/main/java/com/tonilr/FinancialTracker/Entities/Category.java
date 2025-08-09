@@ -23,8 +23,6 @@ public class Category {
 	private String category_name;
 	@Column(nullable = false, updatable = true)
 	private String description;
-	//@Column(nullable = false, updatable = true)
-	//private String password;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "user_Id",nullable = true)
@@ -63,7 +61,6 @@ public class Category {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
 
 	public Users getUser() {
 		return user;

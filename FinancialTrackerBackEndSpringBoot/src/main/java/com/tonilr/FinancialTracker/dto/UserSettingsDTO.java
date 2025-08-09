@@ -8,10 +8,8 @@ public class UserSettingsDTO {
     private boolean monthlyReportEnabled;
     private String emailAddress;
 
-    // Constructor
     public UserSettingsDTO() {}
 
-    // Getters y Setters
     public Long getSettings_id() { return settings_id; }
     public void setSettings_id(Long settings_id) { this.settings_id = settings_id; }
 

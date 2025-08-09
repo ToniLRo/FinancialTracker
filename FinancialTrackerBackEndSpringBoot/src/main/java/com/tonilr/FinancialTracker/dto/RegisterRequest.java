@@ -20,7 +20,6 @@ public class RegisterRequest {
             message = "Password must contain at least one letter and one number")
     private String password;
 
-    // Constructores
     public RegisterRequest() {}
 
     public RegisterRequest(String username, String email, String password) {
@@ -29,7 +28,6 @@ public class RegisterRequest {
         this.password = password;
     }
 
-    // Getters y Setters
     public String getUsername() {
         return username;
     }

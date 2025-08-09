@@ -2,7 +2,6 @@ package com.tonilr.FinancialTracker.Entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +15,6 @@ import jakarta.persistence.Id;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.OneToOne;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 
 @Entity
 @Table(name = "Users")
@@ -35,7 +33,6 @@ public class Users {
 	@Column(nullable = false, updatable = true)
 	private Date register_date;
 
-	// AGREGAR @JsonIgnore para evitar serialización lazy
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private Set<Transaction> transactions = new HashSet<Transaction>();
@@ -43,7 +40,6 @@ public class Users {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Category> categories = new HashSet<Category>();
 
-	// AGREGAR @JsonIgnore para evitar serialización lazy
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private Set<Account> accounts = new HashSet<Account>();
@@ -119,7 +115,6 @@ public class Users {
 		this.categories = categories;
 	}
 
-	// NUEVO: Getter y setter para accounts
 	public Set<Account> getAccounts() {
 		return accounts;
 	}

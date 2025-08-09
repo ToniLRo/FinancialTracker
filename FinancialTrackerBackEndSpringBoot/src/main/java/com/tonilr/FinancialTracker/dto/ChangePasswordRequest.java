@@ -5,7 +5,6 @@ public class ChangePasswordRequest {
     private String newPassword;
     private String confirmPassword;
 
-    // Constructores
     public ChangePasswordRequest() {}
 
     public ChangePasswordRequest(String currentPassword, String newPassword, String confirmPassword) {
@@ -13,8 +12,7 @@ public class ChangePasswordRequest {
         this.newPassword = newPassword;
         this.confirmPassword = confirmPassword;
     }
-
-    // Getters y Setters
+    
     public String getCurrentPassword() {
         return currentPassword;
     }

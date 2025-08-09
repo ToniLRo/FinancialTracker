@@ -1,4 +1,3 @@
-// src/main/java/com/tonilr/FinancialTracker/dto/PasswordResetTokenRequest.java
 package com.tonilr.FinancialTracker.dto;
 
 public class PasswordResetTokenRequest {

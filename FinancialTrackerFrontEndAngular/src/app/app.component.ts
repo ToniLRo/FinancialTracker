@@ -36,7 +36,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.authService.currentUser$.subscribe(user => {
         //console.log('Usuario actual:', user);
-        // Forzar detección de cambios
         this.forceChangeDetection();
       })
     );

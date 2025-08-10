@@ -55,7 +55,6 @@ main {
   visibility: visible;
 }
 
-/* Sidebar - ESTILO ORIGINAL */
 .sidebar {
   background-color: rgba(38,43,46,255) !important;
   width: 280px;
@@ -65,7 +64,6 @@ main {
   transition: transform 0.3s ease;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
-  /* IMPORTANTE: Flexbox para posicionar elementos */
   display: flex !important;
   flex-direction: column !important;
 }
@@ -216,12 +214,11 @@ main {
   transform: translateX(5px);
 }
 
-/* Sección de usuario - POSICIONADA AL FINAL */
 .user-section {
-  margin-top: auto !important; /* <-- Empuja la sección al final */
+  margin-top: auto !important; 
   padding-top: 20px;
-  flex-shrink: 0; /* <-- No se comprime */
-  border-top: 1px solid rgba(255, 255, 255, 0.1); /* <-- Línea separadora */
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .user-divider {
@@ -264,7 +261,7 @@ p {
     transform: translateX(-100%);
     box-shadow: 2px 0 20px rgba(0,0,0,0.4);
     background-color: rgba(38,43,46,255) !important;
-    display: flex !important; /* <-- Mantener flexbox en móvil */
+    display: flex !important;
     flex-direction: column !important;
   }
   
@@ -285,12 +282,10 @@ p {
     display: block;
   }
   
-  /* Asegurar que la navegación principal ocupe el espacio */
   .nav.nav-pills.flex-column.mb-auto {
     flex: 1 !important;
   }
   
-  /* Asegurar que la sección de usuario esté al final */
   .user-section {
     margin-top: auto !important;
   }
@@ -310,7 +305,7 @@ p {
     position: relative;
     transform: none;
     background-color: rgba(38,43,46,255) !important;
-    display: flex !important; /* <-- Mantener flexbox en desktop */
+    display: flex !important;
     flex-direction: column !important;
   }
   
@@ -318,12 +313,10 @@ p {
     margin-left: 0;
   }
   
-  /* Asegurar que la navegación principal ocupe el espacio */
   .nav.nav-pills.flex-column.mb-auto {
     flex: 1 !important;
   }
   
-  /* Asegurar que la sección de usuario esté al final */
   .user-section {
     margin-top: auto !important;
   }
@@ -388,7 +381,6 @@ html {
   }
 }
 
-/* --- DEBUG SIDEBAR RESPONSIVE --- */
 @media (max-width: 768px) {
   .sidebar {
     position: fixed !important;
@@ -466,7 +458,7 @@ html {
     z-index: 1 !important;
     width: 280px !important;
     left: 0 !important;
-    display: flex !important; /* <-- Mantener flexbox */
+    display: flex !important;
     flex-direction: column !important;
     background-color: rgba(38,43,46,255) !important;
   }

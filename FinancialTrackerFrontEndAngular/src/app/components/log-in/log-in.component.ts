@@ -41,7 +41,7 @@ export class LogINComponent implements OnInit {
       return;
     }
 
-    console.log('📝 Estado del checkbox:', this.keepSignedIn);
+    //console.log('📝 Estado del checkbox:', this.keepSignedIn);
     
     this.authService.login(this.loginData.username, this.loginData.password, this.keepSignedIn)
       .subscribe({
@@ -49,7 +49,7 @@ export class LogINComponent implements OnInit {
           this.loginSuccess = '¡Login exitoso!';
           this.isLoading = false;
           
-          console.log('Login response:', response); // Debug: ver qué está llegando
+          //console.log('Login response:', response); // Debug: ver qué está llegando
           
           this.authService.setCurrentUser({
             userId: response.userId,

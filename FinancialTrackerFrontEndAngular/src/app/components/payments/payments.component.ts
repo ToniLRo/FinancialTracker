@@ -54,7 +54,6 @@ export class PaymentsComponent implements OnInit {
   public isLoading: boolean = false;
   public error: string | null = null;
 
-  // NUEVO: Edit/Delete properties
   public editingTransaction: Transaction | null = null;
   public deletingTransaction: Transaction | null = null;
   public editTransactionForm!: FormGroup;
@@ -74,7 +73,6 @@ export class PaymentsComponent implements OnInit {
     this.loadInitialData();
   }
 
-  // NUEVO: Initialize edit form
   private initializeEditForm(): void {
     this.editTransactionForm = this.formBuilder.group({
       date: ['', Validators.required],
@@ -86,7 +84,6 @@ export class PaymentsComponent implements OnInit {
     });
   }
 
-  // NUEVO: Validador personalizado para amount
   private validateAmount(control: any) {
     const value = control.value;
     
@@ -122,8 +119,8 @@ export class PaymentsComponent implements OnInit {
       this.accounts = accounts || [];
       this.allTransactions = transactions || [];
       
-      console.log('Loaded accounts:', this.accounts.length);
-      console.log('Loaded transactions:', this.allTransactions.length);
+      //console.log('Loaded accounts:', this.accounts.length);
+      //console.log('Loaded transactions:', this.allTransactions.length);
       
       // Aplicar filtros iniciales
       this.applyFilters();
@@ -139,7 +136,7 @@ export class PaymentsComponent implements OnInit {
   }
 
   applyFilters(): void {
-    console.log('Applying filters:', this.filters);
+    //console.log('Applying filters:', this.filters);
     
     this.filteredTransactions = this.allTransactions.filter(transaction => {
       // Filtro por cuenta
@@ -191,7 +188,7 @@ export class PaymentsComponent implements OnInit {
       return true;
     });
     
-    console.log('Filtered transactions:', this.filteredTransactions.length);
+    //console.log('Filtered transactions:', this.filteredTransactions.length);
     
     // Recalcular paginación
     this.calculatePages();
@@ -200,7 +197,7 @@ export class PaymentsComponent implements OnInit {
   }
 
   clearFilters(): void {
-    console.log('Clearing all filters...');
+    //console.log('Clearing all filters...');
     
     // Reset filters object
     this.filters = {};
@@ -234,7 +231,7 @@ export class PaymentsComponent implements OnInit {
       this.amountMaxInput.nativeElement.value = '';
     }
     
-    console.log('All form inputs reset to default values');
+    //console.log('All form inputs reset to default values');
     
     // Apply filters (which will show all transactions now)
     this.applyFilters();
@@ -380,9 +377,8 @@ export class PaymentsComponent implements OnInit {
     return transaction.id;
   }
 
-  // NUEVO: Edit transaction
   editTransaction(transaction: Transaction): void {
-    console.log('Editing transaction:', transaction);
+    //console.log('Editing transaction:', transaction);
     
     this.editingTransaction = { ...transaction }; // Clone to avoid reference issues
     
@@ -396,21 +392,19 @@ export class PaymentsComponent implements OnInit {
       referenceId: transaction.referenceId || ''
     });
 
-    // Show modal
     this.showEditModal();
   }
 
-  // NUEVO: Save edited transaction
   async saveTransaction(): Promise<void> {
     if (this.editTransactionForm.invalid || !this.editingTransaction) {
-      console.log('Form is invalid or no transaction selected');
+      //console.log('Form is invalid or no transaction selected');
       return;
     }
 
     // Validación adicional
     const amount = this.editTransactionForm.value.amount;
     if (amount === 0 || Math.abs(amount) < 0.01) {
-      console.log('Amount cannot be zero or too small');
+      //console.log('Amount cannot be zero or too small');
       return;
     }
 
@@ -420,12 +414,10 @@ export class PaymentsComponent implements OnInit {
     try {
       const formValue = this.editTransactionForm.value;
       
-      // NUEVO: Calcular la diferencia en el balance
       const originalAmount = this.editingTransaction.amount;
       const newAmount = formValue.amount;
       const balanceDifference = newAmount - originalAmount;
       
-      // NUEVO: Obtener la cuenta afectada
       const affectedAccount = this.accounts.find(acc => acc.account_Id === formValue.accountId);
       if (!affectedAccount) {
         this.error = 'Account not found for this transaction.';
@@ -444,19 +436,16 @@ export class PaymentsComponent implements OnInit {
         referenceId: formValue.referenceId || null
       };
 
-      console.log('Sending update request:', updateRequest);
+      //console.log('Sending update request:', updateRequest);
 
-      // NUEVO: Llamar a la API para actualizar
       const updatedTransaction = await this.transactionService.updateTransaction(updateRequest).toPromise();
       
-      console.log('Transaction updated successfully:', updatedTransaction);
+      //console.log('Transaction updated successfully:', updatedTransaction);
       
-      // NUEVO: Actualizar el balance de la cuenta
       affectedAccount.balance += balanceDifference;
       
-      // NUEVO: Guardar el balance actualizado en la base de datos
       await this.accountService.updateAccount(affectedAccount).toPromise();
-      console.log('✅ Account balance updated in database');
+      //console.log('✅ Account balance updated in database');
       
       // Actualizar la transacción en la lista local
       const index = this.allTransactions.findIndex(t => t.id === this.editingTransaction!.id);
@@ -467,8 +456,7 @@ export class PaymentsComponent implements OnInit {
 
       this.closeEditModal();
       
-      // Mostrar mensaje de éxito con información del balance
-      console.log(`✅ Transaction updated successfully. Balance adjusted: ${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${affectedAccount.currency}`);
+      //console.log(`✅ Transaction updated successfully. Balance adjusted: ${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${affectedAccount.currency}`);
       this.notificationService.showSuccess(
         `${balanceDifference > 0 ? '+' : ''}${balanceDifference.toFixed(2)} ${affectedAccount.currency}`,
         updatedTransaction!.type
@@ -493,14 +481,12 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
-  // NUEVO: Delete transaction
   deleteTransaction(transaction: Transaction): void {
-    console.log('Requesting to delete transaction:', transaction);
+    //console.log('Requesting to delete transaction:', transaction);
     this.deletingTransaction = transaction;
     this.showDeleteModal();
   }
 
-  // NUEVO: Confirm delete
   async confirmDelete(): Promise<void> {
     if (!this.deletingTransaction) return;
 
@@ -508,12 +494,10 @@ export class PaymentsComponent implements OnInit {
     this.error = null; // Clear previous errors
     
     try {
-      console.log('Deleting transaction:', this.deletingTransaction.id);
+      //console.log('Deleting transaction:', this.deletingTransaction.id);
 
-      // NUEVO: Calcular el impacto en el balance (revertir la transacción)
-      const balanceImpact = -this.deletingTransaction.amount; // Revertir el monto
+      const balanceImpact = -this.deletingTransaction.amount;
       
-      // NUEVO: Obtener la cuenta afectada
       const affectedAccount = this.accounts.find(acc => acc.account_Id === this.deletingTransaction!.accountId);
       if (!affectedAccount) {
         this.error = 'Account not found for this transaction.';
@@ -521,17 +505,14 @@ export class PaymentsComponent implements OnInit {
         return;
       }
 
-      // NUEVO: Llamar a la API para eliminar
       await this.transactionService.deleteTransaction(this.deletingTransaction.id).toPromise();
       
-      console.log('Transaction deleted successfully from database');
+      //console.log('Transaction deleted successfully from database');
       
-      // NUEVO: Actualizar el balance de la cuenta
       affectedAccount.balance += balanceImpact;
       
-      // NUEVO: Guardar el balance actualizado en la base de datos
       await this.accountService.updateAccount(affectedAccount).toPromise();
-      console.log('✅ Account balance updated in database');
+      //console.log('✅ Account balance updated in database');
       
       // Remover de la lista local
       this.allTransactions = this.allTransactions.filter(t => t.id !== this.deletingTransaction!.id);
@@ -540,7 +521,7 @@ export class PaymentsComponent implements OnInit {
       this.closeDeleteModal();
       
       // Mostrar mensaje de éxito con información del balance
-      console.log(`✅ Transaction deleted successfully. Balance adjusted: ${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${affectedAccount.currency}`);
+      //console.log(`✅ Transaction deleted successfully. Balance adjusted: ${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${affectedAccount.currency}`);
       this.notificationService.showSuccess(
         `${balanceImpact > 0 ? '+' : ''}${balanceImpact.toFixed(2)} ${affectedAccount.currency}`,
         this.deletingTransaction!.type
@@ -562,7 +543,6 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
-  // NUEVO: Modal management
   private showEditModal(): void {
     // Using Bootstrap modal
     const modal = new (window as any).bootstrap.Modal(document.getElementById('editTransactionModal'));
@@ -593,7 +573,6 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
-  // NUEVO: Get editable transaction types (exclude 'All')
   getEditableTransactionTypes(): string[] {
     return this.transactionTypes.filter(type => type !== 'All');
   }

@@ -585,7 +585,6 @@ body, html {
   color: var(--text-muted) !important;
 }
 
-/* Actions Column - MEJORADO */
 :host .actions-cell {
   min-width: 120px;
   text-align: center;
@@ -602,7 +601,7 @@ body, html {
   font-size: 0.8rem;
   border-radius: 6px;
   transition: all 0.3s ease;
-  border-width: 1.5px !important; /* AGREGADO: Mejor grosor de borde */
+  border-width: 1.5px !important;
 }
 
 .btn-outline-primary {
@@ -629,7 +628,6 @@ body, html {
   border-color: #dc3545 !important;
 }
 
-/* CORREGIDO: Modal Styles - Forzar fondo oscuro */
 .modal-content {
   background-color: rgba(33,37,41,255) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -664,7 +662,6 @@ body, html {
   opacity: 1 !important;
 }
 
-/* CORREGIDO: Form Styles in Modal - Más específico */
 .modal .form-label {
   color: white !important;
   font-weight: 500;
@@ -704,7 +701,6 @@ body, html {
   font-size: 0.85rem;
 }
 
-/* CORREGIDO: Transaction Preview in Delete Modal */
 .transaction-preview {
   background-color: rgba(255, 255, 255, 0.05) !important;
   padding: 15px;
@@ -721,14 +717,12 @@ body, html {
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
-/* CORREGIDO: Alert in Modal */
 .modal .alert-warning {
   background-color: rgba(255, 193, 7, 0.1) !important;
   border-color: rgba(255, 193, 7, 0.3) !important;
   color: #ffc107 !important;
 }
 
-/* CORREGIDO: Modal Buttons */
 .modal .btn-primary {
   background-color: #21be72 !important;
   border-color: #21be72 !important;
@@ -763,18 +757,15 @@ body, html {
   border-color: #c82333 !important;
 }
 
-/* CORREGIDO: Disabled state */
 .modal .btn:disabled {
   opacity: 0.6 !important;
   cursor: not-allowed !important;
 }
 
-/* NUEVO: Forzar overlay del modal */
 .modal-backdrop {
   background-color: rgba(0, 0, 0, 0.8) !important;
 }
 
-/* NUEVO: Asegurar que el modal esté por encima */
 .modal {
   z-index: 1055 !important;
 }
@@ -783,7 +774,6 @@ body, html {
   margin: 1.75rem auto !important;
 }
 
-/* NUEVO: Estilos adicionales para inputs */
 .modal input[type="date"] {
   color-scheme: dark !important;
 }
@@ -814,7 +804,7 @@ body, html {
   }
 }
 
-/* NUEVO: Estilos globales para modales (si es necesario) */
+/* Estilos globales para modales (si es necesario) */
 body .modal-content {
   background-color: rgba(33,37,41,255) !important;
   color: white !important;
@@ -827,13 +817,13 @@ body .modal-footer {
   color: white !important;
 }
 
-/* NUEVO: Fix para select options en modo oscuro */
+/* Fix para select options en modo oscuro */
 body .modal select option {
   background-color: rgba(33,37,41,255) !important;
   color: white !important;
 }
 
-/* NUEVO: Estilos específicos para modales custom */
+/* Estilos específicos para modales custom */
 .custom-modal .custom-modal-content {
   background-color: rgba(33,37,41,255) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;

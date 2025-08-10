@@ -61,10 +61,10 @@ export class ProfileComponent implements OnInit {
   debugUserData(): void {
     const currentUser = this.authService.getCurrentUser();
     const localStorageUser = localStorage.getItem('currentUser');
-    console.log('Current user from service:', currentUser);
-    console.log('LocalStorage user:', localStorageUser);
+    //console.log('Current user from service:', currentUser);
+    //console.log('LocalStorage user:', localStorageUser);
     if (localStorageUser) {
-      console.log('Parsed localStorage user:', JSON.parse(localStorageUser));
+      //console.log('Parsed localStorage user:', JSON.parse(localStorageUser));
     }
   }
 
@@ -166,13 +166,13 @@ export class ProfileComponent implements OnInit {
 
   getMemberSince(): string {
     const currentUser = this.authService.getCurrentUser();
-    console.log('Current user:', currentUser);
+    //console.log('Current user:', currentUser);
     
     if (currentUser && currentUser.registerDate) {
       try {
         const registerDate = new Date(currentUser.registerDate);
         if (isNaN(registerDate.getTime())) {
-          console.log('Invalid date:', currentUser.registerDate);
+          //console.log('Invalid date:', currentUser.registerDate);
           return 'Fecha no disponible';
         }
         const formattedDate = registerDate.toLocaleDateString('es-ES', {

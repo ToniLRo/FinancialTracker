@@ -69,16 +69,16 @@
     
 
   .cards{
-    max-width: 800px; /* Limita el ancho máximo */
-    height: auto; /* Ajusta automáticamente la altura */
-    max-height: 300px; /* Limita la altura máxima */
-    margin: 0 auto; /* Centra el canvas dentro del contenedor */
+    max-width: 800px;
+    height: auto;
+    max-height: 300px;
+    margin: 0 auto;
   }
   .myChart {
-  width: 100%; /* Ajusta el ancho según el contenedor padre */
-  max-width: 800px; /* Tamaño máximo en píxeles */
-  height: auto; /* Mantiene la proporción del gráfico */
-  max-height: 300px; /* Tamaño máximo en altura */
+  width: 100%;
+  max-width: 800px;
+  height: auto; 
+  max-height: 300px;
   }
   .graphicAndCardData{
       display: grid;
@@ -119,14 +119,14 @@ box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23);
 
 .wrapper i:first-child {
 left: -22px;
-z-index: 10; /* Asegúrate que sea mayor que el de las tarjetas */
+z-index: 10;
 
 
 }
 
 .wrapper i:last-child {
 right: 22px;
-z-index: 10; /* Asegúrate que sea mayor que el de las tarjetas */
+z-index: 10;
 
 }
 
@@ -144,10 +144,10 @@ scrollbar-width: 0;
 .carousel {
 display: flex;
 overflow-x: auto;
-scroll-snap-type: x mandatory; /* Ayuda a que las tarjetas se alineen al hacer scroll */
--webkit-overflow-scrolling: touch; /* Suaviza el scroll en dispositivos táctiles */
+scroll-snap-type: x mandatory;
+-webkit-overflow-scrolling: touch;
 scroll-behavior: smooth;
-width: 90%; /* Ajusta el tamaño según tus necesidades */
+width: 90%;
 }
 
 .carousel::-webkit-scrollbar {
@@ -205,9 +205,9 @@ pointer-events: auto;
 
 .card {
     flex: 0 0 auto;
-    width: 80%; /* Ajusta el ancho de la tarjeta */
-    margin-right: 10%; /* Deja un margen para que la siguiente tarjeta se vea parcialmente */
-    scroll-snap-align: start; /* Alineación para el scroll suave */
+    width: 80%;
+    margin-right: 10%;
+    scroll-snap-align: start;
     box-sizing: border-box;
   
     background-color: transparent;
@@ -948,7 +948,7 @@ text-align: center;
 
 /* Estilos para resaltar la tarjeta activa del swiper */
 .swiper-slide-active .card {
-  transform: scale(1.3); /* Remover scale, usar dimensiones directas */
+  transform: scale(1.3);
   transition: all 0.3s ease;
   z-index: 10;
   box-shadow: 0 8px 32px rgba(0, 183, 255, 0.3);
@@ -1021,9 +1021,9 @@ text-align: center;
 
 /* Estilos para las tarjetas no activas (más pequeñas y opacas) */
 .swiper-slide:not(.swiper-slide-active) .card {
-  width: 272px !important; /* 320px * 0.85 = 272px */
-  height: 170px !important; /* 200px * 0.85 = 170px */
-  transform: none; /* Remover scale, usar dimensiones directas */
+  width: 272px !important;
+  height: 170px !important;
+  transform: none; 
   transition: all 0.3s ease;
   opacity: 0.6;
 }
@@ -1034,8 +1034,8 @@ text-align: center;
 
 /* Efecto hover para las tarjetas no activas */
 .swiper-slide:not(.swiper-slide-active) .card:hover {
-  width: 288px !important; /* 320px * 0.9 = 288px */
-  height: 180px !important; /* 200px * 0.9 = 180px */
+  width: 288px !important;
+  height: 180px !important;
   opacity: 0.8;
 }
 
@@ -1051,13 +1051,13 @@ text-align: center;
   }
   
   .swiper-slide:not(.swiper-slide-active) .card {
-    width: 256px !important; /* 320px * 0.8 = 256px */
-    height: 160px !important; /* 200px * 0.8 = 160px */
+    width: 256px !important;
+    height: 160px !important;
   }
   
   .swiper-slide:not(.swiper-slide-active) .card:hover {
-    width: 272px !important; /* 320px * 0.85 = 272px */
-    height: 170px !important; /* 200px * 0.85 = 170px */
+    width: 272px !important;
+    height: 170px !important;
   }
 }
 
@@ -1239,7 +1239,6 @@ text-align: center;
     color: #ff4757;
 }
 
-/* NUEVO: Estilos para botones con estados */
 .button-27.processing {
   opacity: 0.6;
   cursor: not-allowed;
@@ -1250,7 +1249,6 @@ text-align: center;
   transform: scale(1.05);
 }
 
-/* NUEVO: Estilos mejorados para el modal */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -1345,7 +1343,6 @@ text-align: center;
   100% { transform: rotate(360deg); }
 }
 
-/* MEJORAR: Error message styling */
 .error-message {
   background-color: rgba(255, 71, 87, 0.1);
   border: 1px solid rgba(255, 71, 87, 0.3);
@@ -1356,7 +1353,6 @@ text-align: center;
   font-size: 14px;
 }
 
-/* NUEVO: Estilos para el input de good_thru */
 .good-thru-input {
   font-family: 'Courier New', monospace;
   letter-spacing: 2px;
@@ -1384,7 +1380,6 @@ text-align: center;
   background-color: rgba(255, 71, 87, 0.1);
 }
 
-/* NUEVOS estilos para modales de Withdraw/Deposit */
 .withdraw-modal .modal-header h3 {
   color: #ff4757;
 }
@@ -1504,7 +1499,6 @@ text-align: center;
   border-color: #1ea663;
 }
 
-/* NUEVO: Balance preview para withdraw (rojo) */
 .balance-preview-withdraw {
   display: flex;
   align-items: center;
@@ -1522,7 +1516,6 @@ text-align: center;
   color: #ff4757;
 }
 
-/* NUEVOS: Estilos para iconos de transacciones */
 .transaction-icon-container {
   width: 45px;
   height: 45px;
@@ -1591,13 +1584,11 @@ text-align: center;
   font-size: 14px;
 }
 
-/* MEJORAR: Hover effect en transaction summary */
 .transactions details summary:hover .transaction-icon-container {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* MEJORAR: No transactions message */
 .no-transactions {
   text-align: center;
   color: rgba(255, 255, 255, 0.6);
@@ -1742,7 +1733,7 @@ text-align: center;
   }
 }
 
-/* NUEVO: Estilos específicos para el modal de Inspect Mode */
+/* Estilos específicos para el modal de Inspect Mode */
 .inspect-modal {
   max-width: 800px;
   max-height: 90vh;

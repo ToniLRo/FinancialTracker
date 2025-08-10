@@ -209,7 +209,7 @@
             <td class="register-date-cell">
               {{ formatDate(transaction.registerDate || transaction.date) }}
             </td>
-            <td class="actions-cell"> <!-- NUEVA CELDA DE ACCIONES -->
+            <td class="actions-cell">
               <div class="action-buttons">
                 <button 
                   class="btn btn-sm btn-outline-primary me-1" 
@@ -279,7 +279,7 @@
     </div>
   </div>
 
-  <!-- NUEVO: Edit Transaction Modal -->
+  <!-- Edit Transaction Modal -->
   <div class="modal fade custom-modal" id="editTransactionModal" tabindex="-1" *ngIf="editingTransaction">
     <div class="modal-dialog modal-lg">
       <div class="modal-content custom-modal-content">
@@ -364,7 +364,7 @@
                   step="0.01"
                   [class.is-invalid]="editTransactionForm.get('amount')?.invalid && editTransactionForm.get('amount')?.touched">
                 <div class="invalid-feedback">
-                  <!-- NUEVO: Mensajes de error más específicos -->
+                  <!-- Mensajes de error más específicos -->
                   <span *ngIf="editTransactionForm.get('amount')?.errors?.['required']">
                     Amount is required
                   </span>
@@ -407,7 +407,7 @@
     </div>
   </div>
 
-  <!-- NUEVO: Delete Confirmation Modal -->
+  <!-- Delete Confirmation Modal -->
   <div class="modal fade custom-modal" id="deleteTransactionModal" tabindex="-1" *ngIf="deletingTransaction">
     <div class="modal-dialog">
       <div class="modal-content custom-modal-content">

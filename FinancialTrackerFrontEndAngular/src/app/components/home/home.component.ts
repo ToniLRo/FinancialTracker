@@ -21,7 +21,7 @@ import { throwError } from 'rxjs';
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('myChart', { static: false }) myChart!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('categoriesChart', { static: false }) categoriesChart!: ElementRef<HTMLCanvasElement>; // NUEVO
+  @ViewChild('categoriesChart', { static: false }) categoriesChart!: ElementRef<HTMLCanvasElement>;
   @ViewChild('carousel', { static: false }) carousel!: ElementRef<HTMLDivElement>;
   @ViewChild('wrapper', { static: false }) wrapper!: ElementRef<HTMLDivElement>;
   @ViewChild('arrowLeft', { static: false }) arrowLeft!: ElementRef<HTMLDivElement>;
@@ -36,7 +36,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     accounts: [],
     monthlyIncomeChart: {},
     monthlyExpenseChart: {},
-    categoryBreakdown: {} // NUEVO: datos por categoría
+    categoryBreakdown: {}
   };
 
   // Market data
@@ -47,12 +47,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // Loading states
   isLoadingDashboard = false;
   isLoadingChart = false;
-  isLoadingCategories = false; // NUEVO
+  isLoadingCategories = false;
   chartError = false;
-  categoriesError = false; // NUEVO
+  categoriesError = false;
   
   // Categories data
-  topCategories: any[] = []; // NUEVO
+  topCategories: any[] = [];
 
   private firstCardWidth!: number;
   private isDragging = false;
@@ -60,9 +60,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private startScrollLeft!: number;
   private timeoutId: any;
   private chart: Chart | null = null;
-  private categoriesChartInstance: any = null; // Cambiar de Chart | null a any
+  private categoriesChartInstance: any = null;
   private chartInitialized = false;
-  public categoriesChartInitialized = false; // NUEVO
+  public categoriesChartInitialized = false;
   private dataLoaded = false;
 
   constructor(
@@ -84,8 +84,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       Tooltip, 
       Legend, 
       LineController,
-      DoughnutController,  // NUEVO
-      ArcElement          // NUEVO
+      DoughnutController,
+      ArcElement
     );
   }
   
@@ -102,22 +102,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.tryInitializeChart();
       
-      // NUEVO: Forzar inicialización de categorías
       this.forceInitializeCategories();
       
       this.initTableScrollDetection();
-    }, 300); // Aumentar timeout
+    }, 300);
   }
 
   ngOnDestroy(): void {
     this.destroyChart();
-    this.destroyCategoriesChart(); // NUEVO
+    this.destroyCategoriesChart();
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
   }
 
-  // CORREGIR: loadDashboardData para NO usar fallback nunca
+  //loadDashboardData: NO usar fallback nunca
   loadDashboardData(): void {
     this.isLoadingDashboard = true;
     this.isLoadingCategories = true;
@@ -292,7 +291,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               ticks: {
                 color: 'rgb(255, 255, 255)',
                 font: {
-                  size: 11 // Un poco más grande
+                  size: 11
                 }
               },
               grid: {
@@ -308,12 +307,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
               labels: {
                 color: 'rgb(255, 255, 255)',
                 font: {
-                  size: 13, // Un poco más grande
+                  size: 13,
                   family: 'Arial',
                   weight: 'bold'
                 },
-                boxWidth: 18, // Un poco más grande
-                padding: 14, // Un poco más grande
+                boxWidth: 18,
+                padding: 14,
                 usePointStyle: true
               }
             },
@@ -394,14 +393,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return labels;
   }
 
-  // CORREGIR: getIncomeData para manejar el formato correcto del backend
+  // getIncomeData: manejar el formato correcto del backend
   getIncomeData(): number[] {
     const monthlyData = this.dashboardData.monthlyIncomeChart || {};
     const labels = this.getMonthLabels();
     
     //console.log('📊 Raw monthly income data from backend:', monthlyData);
     
-    // El backend envía datos con formato "YYYY-MM", necesitamos convertir a nombres de mes
+    // El backend envía datos con formato "YYYY-MM", convierto de "YYYY-MM" a nombres de mes
     const data = labels.map((month, index) => {
       // Calcular la fecha correspondiente al mes
       const currentDate = new Date();
@@ -409,7 +408,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       const yearMonth = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
       
       const value = monthlyData[yearMonth];
-      // CORREGIR: Usar valor absoluto para income
+      // Usar valor absoluto para income
       const result = typeof value === 'number' ? Math.abs(value) : 0;
       
       //console.log(`Income for ${month} (${yearMonth}):`, result);
@@ -420,14 +419,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return data;
   }
 
-  // CORREGIR: getExpenseData para manejar el formato correcto del backend  
+  // getExpenseData: manejar el formato correcto del backend  
   getExpenseData(): number[] {
     const monthlyData = this.dashboardData.monthlyExpenseChart || {};
     const labels = this.getMonthLabels();
     
     //console.log('📊 Raw monthly expense data from backend:', monthlyData);
     
-    // El backend envía datos con formato "YYYY-MM", necesitamos convertir a nombres de mes
+    // El backend envía datos con formato "YYYY-MM", convierto de "YYYY-MM" a nombres de mes
     const data = labels.map((month, index) => {
       // Calcular la fecha correspondiente al mes
       const currentDate = new Date();
@@ -435,7 +434,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       const yearMonth = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
       
       const value = monthlyData[yearMonth];
-      // CORREGIR: Usar valor absoluto para expenses
       const result = typeof value === 'number' ? Math.abs(value) : 0;
       
       //console.log(`Expense for ${month} (${yearMonth}):`, result);
@@ -448,7 +446,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Método para reinicializar el gráfico manualmente
   reinitializeChart(): void {
-    console.log('🔄 Manual chart reinitialization requested...');
+    //console.log('🔄 Manual chart reinitialization requested...');
     this.destroyChart();
     this.chartInitialized = false;
     this.tryInitializeChart();
@@ -456,23 +454,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-  // MEJORAR: loadFallbackCategoryData con más variedad y valores más realistas
-  // ELIMINAR COMPLETAMENTE: loadFallbackCategoryData
-  // Comentar o eliminar este método completo porque está generando datos falsos
-
-  // CORREGIR: tryInitializeCategoriesChart para SIEMPRE inicializar
+  
+  // tryInitializeCategoriesChart: SIEMPRE inicializar
   tryInitializeCategoriesChart(): void {
-    console.log('🎯 Trying to initialize categories chart...');
-    console.log('📊 Categories available:', this.topCategories?.length || 0);
+    //console.log('🎯 Trying to initialize categories chart...');
+    //console.log('📊 Categories available:', this.topCategories?.length || 0);
     
     if (this.categoriesChart && !this.categoriesChartInitialized) {
-      // SIEMPRE inicializar, incluso sin datos
-      console.log('🎯 Initializing categories chart...');
+      //console.log('🎯 Initializing categories chart...');
       this.initCategoriesChart();
     }
   }
 
-  // CORREGIR: initCategoriesChart para manejar datos vacíos
+  // initCategoriesChart: manejar datos vacíos
   initCategoriesChart(): void {
     if (!this.categoriesChart?.nativeElement) {
       return;
@@ -483,7 +477,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       const canvas = this.categoriesChart.nativeElement;
-      // Ajustar tamaño del canvas
       canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : 400;
       canvas.height = 240;
       
@@ -512,7 +505,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       // Obtener datos con colores dinámicos
       const categoryData = this.getCategoryChartData();
       
-      // SIEMPRE crear el gráfico, incluso con datos vacíos
       this.categoriesChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -568,7 +560,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.categoriesChartInitialized = true;
       this.isLoadingCategories = false;
-      console.log('✅ Categories chart initialized successfully');
+      //console.log('✅ Categories chart initialized successfully');
 
     } catch (error) {
       console.error('❌ Error initializing categories chart:', error);
@@ -577,7 +569,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // CORREGIR: getCategoryChartData para manejar datos vacíos
+  // getCategoryChartData: manejar datos vacíos
   getCategoryChartData(): any {
     // Si no hay categorías, mostrar mensaje de "No Data"
     if (!this.topCategories || this.topCategories.length === 0) {
@@ -590,7 +582,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       };
     }
 
-    // MOSTRAR TODAS LAS CATEGORÍAS (gastos e ingresos)
+    // Mostrar todas las categorías (gastos e ingresos)
     const labels = this.topCategories.map(cat => {
       const isIncome = this.isIncomeCategory(cat.name);
       const type = isIncome ? ' (Income)' : ' (Expense)';
@@ -600,7 +592,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const values = this.topCategories.map(cat => Math.abs(cat.amount || 0));
     const total = values.reduce((sum, val) => sum + val, 0);
     
-    // GENERAR COLORES DINÁMICOS basados en el tipo de categoría
+    // Generar colores dinámicos basados en el tipo de categoría
     const colors = this.topCategories.map(cat => {
       const isIncome = this.isIncomeCategory(cat.name);
       if (isIncome) {
@@ -622,7 +614,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return { labels, values, total, colors, borderColors };
   }
 
-  // NUEVA FUNCIÓN: Determinar si una categoría es de ingresos
+  // Determinar si una categoría es de ingresos
   isIncomeCategory(categoryName: string): boolean {
     const incomeCategories = [
       'INCOME', 'SALARY', 'DEPOSIT', 'REVENUE', 'PROFIT', 'GAIN',
@@ -632,18 +624,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return incomeCategories.includes(categoryName);
   }
 
-  // MEJORAR: destroyCategoriesChart usando Chart.getChart
   destroyCategoriesChart(): void {
-    // Método 1: Destruir usando Chart.getChart
     if (this.categoriesChart?.nativeElement) {
       const existingChart = Chart.getChart(this.categoriesChart.nativeElement);
       if (existingChart) {
-        console.log('🗑️ Destroying chart via Chart.getChart, ID:', existingChart.id);
+        //console.log('🗑️ Destroying chart via Chart.getChart, ID:', existingChart.id);
         existingChart.destroy();
       }
     }
     
-    // Método 2: Destruir nuestra instancia
     if (this.categoriesChartInstance) {
       try {
         this.categoriesChartInstance.destroy();
@@ -665,7 +654,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // NUEVO: Reinicializar gráfico de categorías
+  // Reinicializar gráfico de categorías
   reinitializeCategoriesChart(): void {
     //console.log('🔄 Manual categories chart reinitialization requested...');
     this.destroyCategoriesChart();
@@ -673,7 +662,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tryInitializeCategoriesChart();
   }
 
-  // NUEVO: Obtener icono por categoría
+  // Obtener icono por categoría
   getCategoryIcon(categoryName: string): string {
     const icons: { [key: string]: string } = {
       'EXPENSE': '💸',
@@ -701,11 +690,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return icons[categoryName] || '📊';
   }
 
-  // Resto de métodos del carrusel y utilidades permanecen igual...
+  // Resto de métodos del carrusel y utilidades
   loadMarketData(): void {
     this.loadCryptoPrices();
-    this.loadStockData(); // Cambiamos loadStockPrices por loadStockData
-    this.loadCurrencyPrices(); // Añadimos esta línea
+    this.loadStockData();
+    this.loadCurrencyPrices();
 
     // Configurar actualizaciones periódicas
     this.cryptoUpdateTimers = setInterval(() => this.loadCryptoPrices(), this.UPDATE_INTERVALS.CRYPTO);
@@ -714,15 +703,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
 }
 
-// Añadimos el nuevo método para cargar divisas
+  // Cargar divisas
 loadCurrencyPrices(): void {
     this.apiUpdateControlService.checkUpdateStatus('FOREX').subscribe({
         next: (response) => {
-            console.log('🔍 Estado de actualización FOREX:', {
-                debeActualizar: response.shouldUpdate,
-                ultimaActualizacion: new Date(response.lastUpdate).toLocaleString(),
-                proximaActualizacion: new Date(response.nextUpdate).toLocaleString()
-            });
+            //console.log('🔍 Estado de actualización FOREX:', {
+            //    debeActualizar: response.shouldUpdate,
+            //    ultimaActualizacion: new Date(response.lastUpdate).toLocaleString(),
+            //    proximaActualizacion: new Date(response.nextUpdate).toLocaleString()
+            //});
 
             if (response.shouldUpdate) {
                 this.makeForexApiCall();
@@ -741,35 +730,35 @@ private makeForexApiCall(): void {
     const apiKey = environment.exchangerateApiKey;
     const baseUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
     
-    console.log('🚀 Iniciando llamada a API de divisas:', {
-        url: baseUrl,
-        apiKeyPresent: !!apiKey,
-        timestamp: new Date().toLocaleString()
-    });
+    //console.log('🚀 Iniciando llamada a API de divisas:', {
+        //url: baseUrl,
+        //apiKeyPresent: !!apiKey,
+        //timestamp: new Date().toLocaleString()
+    //});
     
     this.accountService.getDataFromAPI(baseUrl).subscribe({
         next: (data: any) => {
-            console.log('✅ Datos de divisas recibidos:', {
-                status: data?.status,
-                hasRates: !!data?.conversion_rates,
-                ratesCount: data?.conversion_rates ? Object.keys(data.conversion_rates).length : 0
-            });
+            //console.log('✅ Datos de divisas recibidos:', {
+                //status: data?.status,
+                //hasRates: !!data?.conversion_rates,
+                //ratesCount: data?.conversion_rates ? Object.keys(data.conversion_rates).length : 0
+            //});
             
             // Usar Date.now() con validación
             const saveTime = Date.now();
             if (saveTime < new Date('2025-01-01').getTime()) {
                 localStorage.setItem('lastForexUpdate', saveTime.toString());
             }
-            console.log('💾 Timestamp de actualización guardado:', new Date(saveTime).toLocaleString());
+            //console.log('💾 Timestamp de actualización guardado:', new Date(saveTime).toLocaleString());
             
             const mainCurrencies = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'NZD'];
             
             this.currencyPrices = mainCurrencies.map(currency => {
                 const rate = data.conversion_rates[currency];
-                console.log(`📊 Procesando ${currency}:`, {
-                    rate,
-                    symbol: `USD/${currency}`
-                });
+                //console.log(`📊 Procesando ${currency}:`, {
+                    //rate,
+                    //symbol: `USD/${currency}`
+                //});
 
                 const previousRate = rate * (1 + (Math.random() * 0.02 - 0.01));
                 
@@ -786,7 +775,9 @@ private makeForexApiCall(): void {
                 };
 
                 this.marketDataService.saveMarketData(marketData).subscribe({
-                    next: () => console.log(`💾 Datos de ${currency} guardados en BD`),
+                    next: () => {
+                        //console.log(`💾 Datos de ${currency} guardados en BD`),
+                    },
                     error: (err) => console.error(`❌ Error guardando ${currency} en BD:`, err)
                 });
 
@@ -798,14 +789,16 @@ private makeForexApiCall(): void {
                 };
             });
             
-            console.log('✅ Procesamiento de divisas completado:', {
-                divisasProcesadas: this.currencyPrices.length,
-                primerasDivisas: this.currencyPrices.slice(0, 2)
-            });
+            //console.log('✅ Procesamiento de divisas completado:', {
+                //divisasProcesadas: this.currencyPrices.length,
+                //primerasDivisas: this.currencyPrices.slice(0, 2)
+            //});
 
             // Registrar la actualización exitosa
             this.apiUpdateControlService.recordUpdate('FOREX').subscribe({
-                next: () => console.log('✅ Timestamp de FOREX actualizado'),
+                next: () => {
+                    //console.log('✅ Timestamp de FOREX actualizado'),
+                },
                 error: (err) => console.error('❌ Error actualizando timestamp:', err)
             });
             
@@ -823,18 +816,18 @@ private makeForexApiCall(): void {
 }
 
 private loadForexFromDatabase(): void {
-    console.log('🔄 Intentando cargar divisas desde base de datos...');
+    //console.log('🔄 Intentando cargar divisas desde base de datos...');
     
     this.marketDataService.getLastMarketData('FOREX').subscribe({
         next: (data) => {
-            console.log('📥 Datos recibidos de BD:', {
-                hayDatos: !!data,
-                cantidad: data?.length || 0,
-                primerosDatos: data?.slice(0, 2) || []
-            });
+            //console.log('📥 Datos recibidos de BD:', {
+                //hayDatos: !!data,
+                //cantidad: data?.length || 0,
+                //primerosDatos: data?.slice(0, 2) || []
+            //});
 
             if (!data || data.length === 0) {
-                console.log('⚠️ No hay datos de divisas disponibles en base de datos');
+                //console.log('⚠️ No hay datos de divisas disponibles en base de datos');
                 return;
             }
             
@@ -846,18 +839,18 @@ private loadForexFromDatabase(): void {
                     name: this.getCurrencyName(forex.symbol.split('/')[1])
                 };
                 
-                console.log(`📊 Procesando divisa desde BD:`, {
-                    symbol: forex.symbol,
-                    datos: currencyData
-                });
+                //console.log(`📊 Procesando divisa desde BD:`, {
+                    //symbol: forex.symbol,
+                    //datos: currencyData
+                //});
 
                 return currencyData;
             });
 
-            console.log('✅ Carga desde BD completada:', {
-                divisasCargadas: this.currencyPrices.length,
-                primerasDivisas: this.currencyPrices.slice(0, 2)
-            });
+            //console.log('✅ Carga desde BD completada:', {
+                //divisasCargadas: this.currencyPrices.length,
+                //primerasDivisas: this.currencyPrices.slice(0, 2)
+            //});
         },
         error: (err) => {
             console.error('❌ Error cargando divisas desde BD:', {
@@ -930,11 +923,11 @@ private getCurrencyName(code: string): string {
   loadStockData(): void {
     this.apiUpdateControlService.checkUpdateStatus('STOCK').subscribe({
         next: (response) => {
-            console.log('🔍 Estado de actualización STOCKS:', {
-                debeActualizar: response.shouldUpdate,
-                ultimaActualizacion: new Date(response.lastUpdate).toLocaleString(),
-                proximaActualizacion: new Date(response.nextUpdate).toLocaleString()
-            });
+            //console.log('🔍 Estado de actualización STOCKS:', {
+            //    debeActualizar: response.shouldUpdate,
+            //    ultimaActualizacion: new Date(response.lastUpdate).toLocaleString(),
+            //    proximaActualizacion: new Date(response.nextUpdate).toLocaleString()
+            //});
 
             if (response.shouldUpdate) {
                 this.makeStockApiCall();
@@ -1222,7 +1215,7 @@ private getStaticStockData(symbol: string): any {
     }
   }
 
-  // NUEVO: Detectar scroll en tablas para efectos visuales
+  // Detectar scroll en tablas para efectos visuales
   initTableScrollDetection(): void {
     const tableContainers = document.querySelectorAll('.table-container');
     
@@ -1237,7 +1230,6 @@ private getStaticStockData(symbol: string): any {
     });
   }
 
-  // CORREGIR COMPLETAMENTE: processCategoryData para usar SOLO backend data
   processCategoryData(): void {
     const categoryData = this.dashboardData.categoryBreakdown || {};
     
@@ -1270,7 +1262,7 @@ private getStaticStockData(symbol: string): any {
       this.categoriesError = false;
     }
   }
-  // NUEVO: Formatear nombres de categorías para mejor visualización
+  // Formatear nombres de categorías para mejor visualización
   formatCategoryName(categoryName: string): string {
     const nameMap: { [key: string]: string } = {
       'EXPENSE': 'General',
@@ -1286,7 +1278,7 @@ private getStaticStockData(symbol: string): any {
     return nameMap[categoryName] || categoryName;
   }
 
-  // CORREGIR COMPLETAMENTE: forceInitializeCategories para NO usar fallback
+  // forceInitializeCategories para NO usar fallback
   forceInitializeCategories(): void {
     //console.log('🚀 FORCING CATEGORIES INITIALIZATION');
     

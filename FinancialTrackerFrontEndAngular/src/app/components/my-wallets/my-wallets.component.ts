@@ -105,17 +105,17 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   loadAccounts() {
-    console.log('Loading accounts');
+    //console.log('Loading accounts');
     this.accountService.getAccounts().subscribe({
       next: (accounts) => {
-        console.log('✅ Loaded user accounts:', accounts);
+        //console.log('✅ Loaded user accounts:', accounts);
         this.accounts = accounts;
         
         // Debug cada cuenta individualmente
         this.accounts.forEach((account, index) => {
-          console.log(`Account ${index}:`, account);
-          console.log(`Account ${index} ID:`, account.account_Id);
-          console.log(`Account ${index} ID type:`, typeof account.account_Id);
+          //console.log(`Account ${index}:`, account);
+          //console.log(`Account ${index} ID:`, account.account_Id);
+          //console.log(`Account ${index} ID type:`, typeof account.account_Id);
         });
         
         if (this.accounts.length > 0) {
@@ -132,7 +132,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           // Cargar transacciones para la cuenta activa
           //console.log('Selected account:', this.selectedAccount);
           if (this.selectedAccount) {
-            console.log('Loading transactions for selected account:', this.selectedAccount);
+            //console.log('Loading transactions for selected account:', this.selectedAccount);
             this.loadTransactionsForAccount(this.selectedAccount);
           }
         }
@@ -146,7 +146,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   loadTransactionsForAccount(account: Account) {
-    console.log('Loading transactions for account:', account.account_Id);
+    //console.log('Loading transactions for account:', account.account_Id);
     if (account.account_Id != null && account.account_Id !== undefined) {
       const token = localStorage.getItem('jwt_token');
       if (!token) {
@@ -156,7 +156,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
 
       this.accountService.getAccountTransactions(account.account_Id).subscribe({
         next: (transactions) => {
-          console.log('✅ API Response received:', transactions);
+          //console.log('✅ API Response received:', transactions);
           
           // Guardar en la cuenta
           account.transactions = transactions;
@@ -164,10 +164,10 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           // NUEVO: Si es la cuenta activa, actualizar la lista visible
           if (this.selectedAccount && this.selectedAccount.account_Id === account.account_Id) {
             this.activeAccountTransactions = transactions;
-            console.log('✅ Updated activeAccountTransactions:', this.activeAccountTransactions);
+            //console.log('✅ Updated activeAccountTransactions:', this.activeAccountTransactions);
           }
           
-          console.log(`✅ Loaded ${transactions.length} transactions for account ${account.account_Id}`);
+          //console.log(`✅ Loaded ${transactions.length} transactions for account ${account.account_Id}`);
         },
         error: (error) => {
           console.error('❌ API Error:', error);
@@ -183,25 +183,25 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   updateActiveAccount() {
-    console.log('=== UPDATE ACTIVE ACCOUNT ===');
+    //console.log('=== UPDATE ACTIVE ACCOUNT ===');
     if (this.swiper && this.accounts.length > 0) {
       const realIndex = this.swiper.realIndex || this.swiper.activeIndex;
-      console.log('Swiper realIndex:', realIndex);
-      console.log('Current activeAccountIndex:', this.activeAccountIndex);
+      //console.log('Swiper realIndex:', realIndex);
+      //console.log('Current activeAccountIndex:', this.activeAccountIndex);
       
       this.activeAccountIndex = realIndex;
       this.selectedAccount = this.accounts[realIndex];
       
-      console.log('New selectedAccount:', this.selectedAccount);
-      console.log('Selected account has transactions?', !!this.selectedAccount?.transactions);
+      //console.log('New selectedAccount:', this.selectedAccount);
+      //console.log('Selected account has transactions?', !!this.selectedAccount?.transactions);
       
       // NUEVO: Actualizar inmediatamente las transacciones visibles
       this.activeAccountTransactions = this.selectedAccount?.transactions || [];
-      console.log('✅ Updated activeAccountTransactions:', this.activeAccountTransactions);
+      //console.log('✅ Updated activeAccountTransactions:', this.activeAccountTransactions);
       
       // Cargar transacciones si no existen
       if (this.selectedAccount && (!this.selectedAccount.transactions || this.selectedAccount.transactions.length === 0)) {
-        console.log('🔄 Loading transactions for account...');
+        //console.log('🔄 Loading transactions for account...');
         this.loadTransactionsForAccount(this.selectedAccount);
       }
     } else {
@@ -214,19 +214,19 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   selectAccount(account: Account, index: number) {
-    console.log('=== SELECT ACCOUNT ===');
-    console.log('Selected account:', account);
+    //console.log('=== SELECT ACCOUNT ===');
+    //console.log('Selected account:', account);
     
     this.selectedAccount = account;
     this.activeAccountIndex = index;
     
     // NUEVO: Actualizar inmediatamente las transacciones visibles
     this.activeAccountTransactions = account.transactions || [];
-    console.log('✅ Set activeAccountTransactions:', this.activeAccountTransactions);
+    //console.log('✅ Set activeAccountTransactions:', this.activeAccountTransactions);
     
     // Cargar transacciones si no existen
     if (!account.transactions || account.transactions.length === 0) {
-      console.log('🔄 Loading transactions...');
+      //console.log('🔄 Loading transactions...');
       this.loadTransactionsForAccount(account);
     }
     
@@ -269,7 +269,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     
     this.isEdit = true;
     this.showForm = true;
-    console.log('📝 Opening edit form for account:', this.selectedAccount);
+    //console.log('📝 Opening edit form for account:', this.selectedAccount);
   }
 
   saveAccount(account: Account) {
@@ -284,7 +284,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       // EDITAR cuenta existente
       this.accountService.updateAccount(account).subscribe({
         next: (updatedAccount) => {
-          console.log('✅ Account updated successfully:', updatedAccount);
+          //console.log('✅ Account updated successfully:', updatedAccount);
           
           // Actualizar la cuenta en la lista local
           const index = this.accounts.findIndex(a => a.account_Id === account.account_Id);
@@ -314,7 +314,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       // CREAR nueva cuenta
       this.accountService.addAccount(account).subscribe({
         next: (newAccount) => {
-          console.log('✅ Account created successfully:', newAccount);
+          //console.log('✅ Account created successfully:', newAccount);
           
           // Añadir la nueva cuenta con propiedades adicionales
           const accountWithExtras = {
@@ -365,7 +365,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       
       this.accountService.deleteAccount(activeAccount.account_Id).subscribe({
         next: () => {
-          console.log('✅ Account deleted successfully');
+          //console.log('✅ Account deleted successfully');
           
           // Eliminar cuenta de la lista local
           this.accounts = this.accounts.filter(a => a.account_Id !== activeAccount.account_Id);
@@ -491,7 +491,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   }
 
   saveTransaction() {
-    console.log('Saving transaction:', this.transactionForm);
+    //console.log('Saving transaction:', this.transactionForm);
     if (!this.validateTransaction() || this.isProcessing) return;
 
     this.isProcessing = true;
@@ -505,8 +505,8 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    console.log('Token length:', token.length); // Debug
-    console.log('Sending transaction data:', this.transactionForm); // Debug
+    //console.log('Token length:', token.length); // Debug
+    //console.log('Sending transaction data:', this.transactionForm); // Debug
 
     if (this.selectedAccount && this.selectedAccount.account_Id) {
       // Calcular el monto final (negativo para gastos/retiros, positivo para ingresos/depósitos)
@@ -528,7 +528,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       
       this.accountService.addTransaction(transactionData).subscribe({
         next: (newTransaction) => {
-          console.log('Transaction created successfully:', newTransaction); // Debug
+          //console.log('Transaction created successfully:', newTransaction); // Debug
           // Actualizar balance de la cuenta
           this.selectedAccount!.balance += finalAmount;
           
@@ -543,7 +543,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
           
           // NUEVO: Actualizar inmediatamente la lista visible
           this.activeAccountTransactions = [...this.selectedAccount!.transactions];
-          console.log('✅ Updated activeAccountTransactions with new transaction');
+          //console.log('✅ Updated activeAccountTransactions with new transaction');
           
           this.closeAllForms();
           this.isProcessing = false;
@@ -571,11 +571,11 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
   // MEJORAR: updateAccountBalance para enviar solo campos necesarios
   updateAccountBalance(account: Account): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log('🔄 Updating account balance:', account.account_Id, account.balance);
+      //console.log('🔄 Updating account balance:', account.account_Id, account.balance);
       
       this.accountService.updateAccountBalance(account.account_Id!, account.balance).subscribe({
         next: (updatedAccount) => {
-          console.log('✅ Balance updated successfully:', updatedAccount.balance);
+          //console.log('✅ Balance updated successfully:', updatedAccount.balance);
           
           // Actualizar localmente
           const index = this.accounts.findIndex(a => a.account_Id === updatedAccount.account_Id);
@@ -766,7 +766,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
 
   // Mantener solo para debug si necesitas
   getActiveAccountTransactions() {
-    console.log('⚠️ getActiveAccountTransactions called - should use activeAccountTransactions property instead');
+    //console.log('⚠️ getActiveAccountTransactions called - should use activeAccountTransactions property instead');
     return this.activeAccountTransactions;
   }
 
@@ -1100,11 +1100,11 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       accountId: activeAccount.account_Id
     };
 
-    console.log('Processing withdraw:', withdrawTransaction);
+    //console.log('Processing withdraw:', withdrawTransaction);
 
     this.accountService.addTransaction(withdrawTransaction).subscribe({
       next: (savedTransaction) => {
-        console.log('✅ Withdraw transaction saved:', savedTransaction);
+        //console.log('✅ Withdraw transaction saved:', savedTransaction);
 
         // Actualizar balance local
         activeAccount.balance -= this.withdrawForm.amount;
@@ -1194,11 +1194,11 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       accountId: activeAccount.account_Id
     };
 
-    console.log('Processing deposit:', depositTransaction);
+    //console.log('Processing deposit:', depositTransaction);
 
     this.accountService.addTransaction(depositTransaction).subscribe({
       next: (savedTransaction) => {
-        console.log('✅ Deposit transaction saved:', savedTransaction);
+        //console.log('✅ Deposit transaction saved:', savedTransaction);
 
         // Actualizar balance local
         activeAccount.balance += this.depositForm.amount;
@@ -1304,7 +1304,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
 
     this.accountService.updateTransaction(this.editingTransaction).subscribe({
       next: (updatedTransaction) => {
-        console.log('✅ Transaction updated successfully:', updatedTransaction);
+        //console.log('✅ Transaction updated successfully:', updatedTransaction);
         
         // NUEVO: Actualizar el balance de la cuenta
         if (this.selectedAccount) {
@@ -1407,14 +1407,15 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     try {
       // 1. Eliminar transacción del backend
       await this.accountService.deleteTransaction(this.transactionToDelete.id).toPromise();
-      console.log('✅ Transaction deleted successfully');
+      
+      //console.log('✅ Transaction deleted successfully');
       
       // 2. Actualizar el balance de la cuenta localmente
       if (this.selectedAccount) {
         const previousBalance = this.selectedAccount.balance;
         this.selectedAccount.balance += balanceImpact;
         
-        console.log(`Balance adjustment: ${previousBalance} + (${balanceImpact}) = ${this.selectedAccount.balance}`);
+        //console.log(`Balance adjustment: ${previousBalance} + (${balanceImpact}) = ${this.selectedAccount.balance}`);
         
         // 3. Actualizar también en la lista de cuentas
         const accountIndex = this.accounts.findIndex(a => a.account_Id === this.selectedAccount?.account_Id);
@@ -1424,7 +1425,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
         
         // 4. CRÍTICO: Guardar el balance actualizado en la base de datos
         await this.updateAccountBalance(this.selectedAccount);
-        console.log('✅ Account balance saved to database');
+        //console.log('✅ Account balance saved to database');
       }
       
       // 5. Remover la transacción de la lista local
@@ -1472,7 +1473,7 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
     alert(message);
     
     // Opción 2: Console log para debug
-    console.log('✅ SUCCESS:', message);
+    //console.log('✅ SUCCESS:', message);
     
     // TODO: Implementar toast/snackbar más adelante
   }

@@ -63,7 +63,7 @@ export class ResetPasswordComponent implements OnInit {
 
       this.authService.resetPassword(resetData).subscribe({
         next: (response) => {
-          this.success = 'Password has been reset successfully. Redirecting to login...';
+          //this.success = 'Password has been reset successfully. Redirecting to login...';
           setTimeout(() => {
             this.router.navigate(['/login']);
           }, 2000);

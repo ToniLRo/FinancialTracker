@@ -264,7 +264,6 @@
   height: 1rem;
 }
 
-/* Form validation styles */
 .form-control.ng-invalid.ng-touched {
   border: 2px solid #ff4081;
   box-shadow: 0 0 0 0.2rem rgba(255, 64, 129, 0.25);

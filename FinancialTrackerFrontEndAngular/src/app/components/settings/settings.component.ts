@@ -17,7 +17,7 @@ export class SettingsComponent implements OnInit {
         emailNotificationsEnabled: false,
         weeklyReportEnabled: false,
         monthlyReportEnabled: false,
-        emailAddress: ''  // Este campo debería inicializarse con el email del usuario
+        emailAddress: ''
     };
 
     isTestingWeekly = false;
@@ -34,17 +34,17 @@ export class SettingsComponent implements OnInit {
     ngOnInit() {
         const cached = localStorage.getItem('userSettings');
         if (cached) {
-            console.log('[Settings] Cargando settings desde CACHE (localStorage)');
+            //console.log('[Settings] Cargando settings desde CACHE (localStorage)');
             this.notificationSettings = JSON.parse(cached);
         } else {
-            console.log('[Settings] Cargando settings desde BDD (petición al backend)');
+            //console.log('[Settings] Cargando settings desde BDD (petición al backend)');
             const userId = this.authService.getCurrentUser()?.userId;
             if (userId) {
                 this.userService.getUserSettings(userId).subscribe({
                     next: (settings) => {
                         this.notificationSettings = settings;
                         localStorage.setItem('userSettings', JSON.stringify(settings));
-                        console.log('[Settings] Settings guardados en cache tras cargar de BDD');
+                        //console.log('[Settings] Settings guardados en cache tras cargar de BDD');
                     },
                     error: (error) => {
                         console.error('[Settings] Error al cargar configuraciones desde BDD:', error);
@@ -79,7 +79,7 @@ export class SettingsComponent implements OnInit {
         this.userService.updateUserSettings(userId, this.notificationSettings).subscribe({
             next: () => {
                 localStorage.setItem('userSettings', JSON.stringify(this.notificationSettings));
-                console.log('[Settings] Settings guardados en cache tras actualizar en BDD');
+                //console.log('[Settings] Settings guardados en cache tras actualizar en BDD');
                 this.notificationService.showSuccess('Configuración guardada correctamente');
                 // Mostrar mensaje de éxito
             },
@@ -97,7 +97,7 @@ export class SettingsComponent implements OnInit {
         this.emailService.testWeeklyReport(userId).subscribe({
             next: (res) => {
                 this.notificationService.showSuccess('Reporte semanal de prueba enviado correctamente');
-                console.log('[Settings] Reporte semanal de prueba enviado:', res);
+                //console.log('[Settings] Reporte semanal de prueba enviado:', res);
             },
             error: (err) => {
                 this.notificationService.showError('Error al enviar el reporte semanal de prueba');
@@ -116,7 +116,7 @@ export class SettingsComponent implements OnInit {
         this.emailService.testMonthlyReport(userId).subscribe({
             next: (res) => {
                 this.notificationService.showSuccess('Reporte mensual de prueba enviado correctamente');
-                console.log('[Settings] Reporte mensual de prueba enviado:', res);
+                //console.log('[Settings] Reporte mensual de prueba enviado:', res);
             },
             error: (err) => {
                 this.notificationService.showError('Error al enviar el reporte mensual de prueba');
@@ -129,22 +129,22 @@ export class SettingsComponent implements OnInit {
     }
 
     testSuccessNotification() {
-        console.log('Testing success notification');
+        //console.log('Testing success notification');
         this.toastr.success('¡Operación completada!', 'Éxito');
     }
 
     testErrorNotification() {
-        console.log('Testing error notification');
+        //console.log('Testing error notification');
         this.toastr.error('Algo salió mal', 'Error');
     }
 
     testWarningNotification() {
-        console.log('Testing warning notification');
+        //console.log('Testing warning notification');
         this.toastr.warning('Ten cuidado', 'Advertencia');
     }
 
     testInfoNotification() {
-        console.log('Testing info notification');
+        //console.log('Testing info notification');
         this.toastr.info('Información importante', 'Info');
     }
 }

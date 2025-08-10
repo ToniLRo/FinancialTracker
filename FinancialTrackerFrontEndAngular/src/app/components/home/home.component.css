@@ -10,7 +10,7 @@
         max-height: 100vh;
         width: 100%;
         background-color: rgba(33,37,41,255);
-        padding: 8px; /* Reducido de 12px a 8px */
+        padding: 8px;
     }
     .header{
         display: flex;
@@ -18,7 +18,7 @@
         justify-content: space-between;
         width: 100%;
         max-width: 100%;
-        margin-bottom: 0.4%; /* Reducido de 0.6% a 0.4% */
+        margin-bottom: 0.4%;
     }
     .title{
         width: fit-content;
@@ -30,7 +30,7 @@
     .financialData{
         display: grid;
         grid-template-columns: auto auto auto auto;
-        padding: 2px; /* Reducido de 3px a 2px */
+        padding: 2px;
     }
     .content-data{
         text-align: left;
@@ -39,7 +39,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1%; /* Reducido de 3% a 2% */
+        margin-bottom: 1%;
     }
     .footer-data{
         display: flex;
@@ -49,46 +49,46 @@
     .grid-item-yellow {
         border-radius: 1rem;
         background:    linear-gradient(to top right, rgba(33,37,41,255) 70%, rgba(222,184,135,1) 100%);
-        font-size: 20px; /* Reducido de 22px a 20px */
+        font-size: 20px;
         box-sizing: border-box;
         text-align: center;
-        padding: 10px; /* Reducido de 12px a 10px */
-        margin-right: 5%; /* Reducido de 6% a 5% */
+        padding: 10px;
+        margin-right: 5%;
     }
     .grid-item-green {
         border-radius: 1rem;
         background:    linear-gradient(to top right, rgba(33,37,41,255) 70%, #21be72 100%);
-        font-size: 20px; /* Reducido de 22px a 20px */
+        font-size: 20px;
         box-sizing: border-box;
         text-align: center;
-        padding: 10px; /* Reducido de 12px a 10px */
-        margin-right: 5%; /* Reducido de 6% a 5% */
+        padding: 10px;
+        margin-right: 5%;
     }
     .grid-item-blue {
         border-radius: 1rem;
         background:    linear-gradient(to top right, rgba(33,37,41,255) 70%, cornflowerblue 100%);
         box-sizing: border-box;
         text-align: center;
-        padding: 10px; /* Reducido de 12px a 10px */
-        margin-right: 5%; /* Reducido de 6% a 5% */
+        padding: 10px;
+        margin-right: 5%;
     }
 
     .grid-item-blue h5{
-      font-size: 1.1rem !important; /* Reducido de 22px a 20px */
+      font-size: 1.1rem !important;
   }
 
     .grid-item-yellow h5{
-      font-size: 1.1rem !important; /* Reducido de 22px a 20px */
+      font-size: 1.1rem !important;
   }
 
   .grid-item-green h5{
-    font-size: 1.1rem !important; /* Reducido de 22px a 20px */
+    font-size: 1.1rem !important;
   }
 
 
     .icon-item-yellow{
-        height: 30px; /* Reducido de 35px a 30px */
-        width: 30px; /* Reducido de 35px a 30px */
+        height: 30px;
+        width: 30px;
         border-radius: 50%;  
         background-color: burlywood; 
         display: flex;
@@ -96,8 +96,8 @@
         align-items: center;   
     }
     .icon-item-green{
-        height: 30px; /* Reducido de 35px a 30px */
-        width: 30px; /* Reducido de 35px a 30px */
+        height: 30px;
+        width: 30px;
         border-radius: 50%;  
         background-color:#21be72;
         display: flex;
@@ -105,8 +105,8 @@
         align-items: center;   
     }
     .icon-item-blue{
-        height: 30px; /* Reducido de 35px a 30px */
-        width: 30px; /* Reducido de 35px a 30px */
+        height: 30px;
+        width: 30px;
         border-radius: 50%;  
         background-color:cornflowerblue; 
         display: flex;
@@ -117,79 +117,79 @@
         width: 100%;
         max-width: 600px;
         height: auto;
-        max-height: 260px; /* Aumentado de 240px a 260px */
-        min-height: 220px; /* Aumentado de 200px a 220px */
+        max-height: 260px;
+        min-height: 220px;
         margin: 0 auto;
     }
     .cards{
       max-width: 600px;
       height: auto;
-      max-height: 260px; /* Aumentado de 240px a 260px */
-      min-height: 220px; /* Aumentado de 200px a 220px */
+      max-height: 260px;
+      min-height: 220px;
       margin: 0 auto;
     }
     .myChart {
     width: 100%;
     max-width: 600px;
     height: auto;
-    max-height: 260px; /* Aumentado de 240px a 260px */
-    min-height: 220px; /* Aumentado de 200px a 220px */
+    max-height: 260px;
+    min-height: 220px;
     }
     .graphicAndCardData{
         display: grid;
         grid-template-columns: auto auto;
         padding: 2px;
-        margin-bottom: 12px; /* Un poco más de espacio */
+        margin-bottom: 12px;
     }
     
     .APIsData{
         display: grid;
         grid-template-columns: auto auto auto;
-        padding: 2px; /* Reducido de 3px a 2px */
+        padding: 2px;
     }
 
 
     
 .wrapper {
-  max-width: 450px; /* Reducido de 480px a 450px */
+  max-width: 450px;
   width: 100%;
   position: relative;
 
 }
 
 .wrapper i {
-  height: 40px; /* Reducido de 45px a 40px */
-  width: 40px; /* Reducido de 45px a 40px */
+  height: 40px;
+  width: 40px;
   background: #21be72;
   text-align: center;
-  line-height: 40px; /* Reducido de 45px a 40px */
+  line-height: 40px;
   border-radius: 50%;
   cursor: pointer;
   position: absolute;
   top: 50%;
-  font-size: 1.1rem; /* Reducido de 1.2rem a 1.1rem */
+  font-size: 1.1rem;
   transform: translateY(-50%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.23); /* Reducido de 3px 6px a 2px 4px */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.23);
 
 }
 
 .wrapper i:first-child {
-  left: -18px; /* Reducido de -20px a -18px */
-  z-index: 10; /* Asegúrate que sea mayor que el de las tarjetas */
+  left: -18px;
+  z-index: 10;
 
 
 }
 
 .wrapper i:last-child {
-  right: 18px; /* Reducido de 20px a 18px */
-  z-index: 10; /* Asegúrate que sea mayor que el de las tarjetas */
+  right: 18px;
+  z-index: 10;
 
 }
 
 .wrapper .carousel {
   display: grid;
   grid-auto-flow: column;
-  gap: 12px; /* Reducido de 14px a 12px */
+  gap: 12px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
@@ -200,10 +200,10 @@
 .carousel {
   display: flex;
   overflow-x: auto;
-  scroll-snap-type: x mandatory; /* Ayuda a que las tarjetas se alineen al hacer scroll */
-  -webkit-overflow-scrolling: touch; /* Suaviza el scroll en dispositivos táctiles */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
-  width: 85%; /* Reducido de 88% a 85% */
+  width: 85%;
 }
 
 .carousel::-webkit-scrollbar {
@@ -263,9 +263,9 @@
 .card {
 
   flex: 0 0 auto;
-  width: 80%; /* Ajusta el ancho de la tarjeta */
-  margin-right: 10%; /* Deja un margen para que la siguiente tarjeta se vea parcialmente */
-  scroll-snap-align: start; /* Alineación para el scroll suave */
+  width: 80%;
+  margin-right: 10%;
+  scroll-snap-align: start;
   box-sizing: border-box;
 
   background-color: transparent;
@@ -599,53 +599,53 @@ overflow-x: hidden;}
 /* Market Data Tables */
 .marketData {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Reducido de 280px a 260px */
-    gap: 8px; /* Reducido de 12px a 8px */
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 8px;
 }
 
 .market-table {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    border-radius: 10px; /* Reducido de 12px a 10px */
-    padding: 8px; /* Reducido de 12px a 8px */
+    border-radius: 10px;
+    padding: 8px;
     color: white;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); /* Reducido de 6px 24px a 4px 16px */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .market-table h5 {
-    margin: 0 0 6px 0; /* Reducido de 8px a 6px */
+    margin: 0 0 6px 0;
     font-weight: 600;
     text-align: center;
     color: #fff;
-    font-size: 0.8rem; /* Reducido de 0.9rem a 0.8rem */
+    font-size: 0.8rem;
 }
 
 .table-container {
-    max-height: 180px; /* Reducido de 220px a 180px */
+    max-height: 180px;
     overflow-y: auto;
-    border-radius: 6px; /* Reducido de 8px a 6px */
+    border-radius: 6px;
 }
 
 .table-dark {
     background: transparent;
-    font-size: 0.75rem; /* Reducido de 0.8rem a 0.75rem */
+    font-size: 0.75rem;
 }
 
 .table-dark th {
     background: rgba(255, 255, 255, 0.1);
     border: none;
-    padding: 4px 3px; /* Reducido de 6px 4px a 4px 3px */
+    padding: 4px 3px;
     font-weight: 600;
     color: #fff;
     text-align: center;
-    font-size: 0.7rem; /* Reducido de 0.75rem a 0.7rem */
+    font-size: 0.7rem;
 }
 
 .table-dark td {
     border: none;
-    padding: 4px 3px; /* Reducido de 6px 4px a 4px 3px */
+    padding: 4px 3px;
     vertical-align: middle;
     text-align: center;
-    font-size: 0.7rem; /* Reducido de 0.75rem a 0.7rem */
+    font-size: 0.7rem;
 }
 
 .symbol-cell {
@@ -701,11 +701,11 @@ overflow-x: hidden;}
 
 /* Chart title */
 .chart-title {
-    margin: 0 0 8px 0; /* Reducido de 15px a 8px */
+    margin: 0 0 8px 0;
     text-align: center;
     font-weight: 600;
     color: #fff;
-    font-size: 0.9rem; /* Reducido el tamaño de la fuente */
+    font-size: 0.9rem;
 }
 
 /* Responsive adjustments */
@@ -753,14 +753,13 @@ overflow-x: hidden;}
     }
 }
 
-/* ====== RESPONSIVE DASHBOARD LAYOUT ====== */
 .content {
     position: relative;
-    min-height: 100vh; /* CAMBIO: min-height en lugar de height fijo */
+    min-height: 100vh;
     width: 100%;
     background-color: rgba(33,37,41,255);
     padding: 20px;
-    overflow-y: auto; /* NUEVO: Permitir scroll vertical */
+    overflow-y: auto;
 }
 
 .header {
@@ -769,7 +768,7 @@ overflow-x: hidden;}
     justify-content: space-between;
     width: 100%;
     max-width: 100%;
-    margin-bottom: 1rem; /* MEJORADO: Más espacio */
+    margin-bottom: 1rem;
 }
 
 .title {
@@ -783,41 +782,37 @@ overflow-x: hidden;}
     font-weight: 600;
 }
 
-/* ====== FINANCIAL DATA CARDS - RESPONSIVE GRID ====== */
 .financialData {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* MEJORADO: Responsive */
-    gap: 1.5rem; /* NUEVO: Gap consistente */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 2rem;
-    padding: 0; /* LIMPIO: Sin padding extra */
+    padding: 0;
 }
 
-/* ====== CHART AND CARDS SECTION ====== */
 .graphicAndCardData {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* MEJORADO: Proporciones iguales */
-    gap: 2rem; /* NUEVO: Espaciado consistente */
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
     margin-bottom: 2rem;
-    align-items: start; /* NUEVO: Alineación superior */
+    align-items: start;
 }
 
-/* ====== MARKET DATA SECTION - RESPONSIVE GRID ====== */
 .APIsData {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* MEJORADO: Responsive */
-    gap: 1.5rem; /* NUEVO: Espaciado consistente */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
-/* ====== CARD IMPROVEMENTS ====== */
 .grid-item-yellow, .grid-item-green, .grid-item-blue {
     border-radius: 1.5rem;
     font-size: 30px;
     box-sizing: border-box;
     text-align: center;
-    padding: 1.5rem; /* MEJORADO: Padding responsive */
-    margin: 0; /* LIMPIO: Sin margen individual */
-    min-height: 160px; /* NUEVO: Altura mínima */
+    padding: 1.5rem;
+    margin: 0;
+    min-height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -835,11 +830,10 @@ overflow-x: hidden;}
     background: linear-gradient(135deg, rgba(33,37,41,255) 30%, cornflowerblue 100%);
 }
 
-/* ====== CHART CONTAINER ====== */
 .cards {
-    max-width: 100%; /* MEJORADO: Usar todo el ancho disponible */
+    max-width: 100%;
     height: auto;
-    min-height: 300px; /* NUEVO: Altura mínima */
+    min-height: 300px;
     margin: 0;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 1.5rem;
@@ -851,26 +845,24 @@ overflow-x: hidden;}
     width: 100%;
     max-width: 100%;
     height: auto;
-    min-height: 250px; /* NUEVO: Altura mínima */
-    max-height: 350px; /* AJUSTADO: Altura máxima mayor */
+    min-height: 250px;
+    max-height: 350px;
 }
 
-/* ====== MY CARDS SECTION IMPROVEMENTS ====== */
 .wrapper {
-    max-width: 100%; /* MEJORADO: Usar todo el ancho */
+    max-width: 100%;
     width: 100%;
     position: relative;
-    padding: 1rem 0; /* MEJORADO: Padding vertical */
+    padding: 1rem 0;
 }
 
-/* ====== MARKET TABLES - RESPONSIVE ====== */
 .market-table {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     border-radius: 15px;
-    padding: 1.5rem; /* MEJORADO: Padding consistente */
+    padding: 1.5rem;
     color: white;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    min-height: 400px; /* NUEVO: Altura mínima */
+    min-height: 400px;
     display: flex;
     flex-direction: column;
 }
@@ -884,15 +876,14 @@ overflow-x: hidden;}
 }
 
 .table-container {
-    flex: 1; /* NUEVO: Usar espacio disponible */
-    max-height: none; /* REMOVIDO: Límite de altura */
-    min-height: 300px; /* NUEVO: Altura mínima */
+    flex: 1;
+    max-height: none;
+    min-height: 300px;
     overflow-y: auto;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.05);
 }
 
-/* ====== TABLE IMPROVEMENTS ====== */
 .table-dark {
     background: transparent;
     font-size: 0.9rem;
@@ -903,29 +894,28 @@ overflow-x: hidden;}
 .table-dark th {
     background: rgba(255, 255, 255, 0.1);
     border: none;
-    padding: 12px 8px; /* MEJORADO: Más padding */
+    padding: 12px 8px;
     font-weight: 600;
     color: #fff;
     text-align: center;
-    position: sticky; /* NUEVO: Header fijo */
+    position: sticky;
     top: 0;
     z-index: 10;
 }
 
 .table-dark td {
     border: none;
-    padding: 12px 8px; /* MEJORADO: Más padding */
+    padding: 12px 8px;
     vertical-align: middle;
     text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* NUEVO: Separadores sutiles */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .table-dark tbody tr:hover {
-    background: rgba(255, 255, 255, 0.1); /* NUEVO: Hover effect */
+    background: rgba(255, 255, 255, 0.1);
     transition: background 0.2s ease;
 }
 
-/* ====== SCROLLBAR STYLING ====== */
 .table-container::-webkit-scrollbar {
     width: 6px;
 }
@@ -944,9 +934,6 @@ overflow-x: hidden;}
     background: rgba(255, 255, 255, 0.5);
 }
 
-/* ====== RESPONSIVE BREAKPOINTS ====== */
-
-/* Tablets */
 @media screen and (max-width: 1200px) {
     .financialData {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1043,7 +1030,7 @@ overflow-x: hidden;}
     }
 }
 
-/* ====== UTILITY CLASSES ====== */
+/* Utility classes*/
 .w-100 { width: 100%; }
 .h-100 { height: 100%; }
 .flex-1 { flex: 1; }
@@ -1052,7 +1039,7 @@ overflow-x: hidden;}
 .mb-1 { margin-bottom: 1rem; }
 .mb-2 { margin-bottom: 2rem; }
 
-/* ====== LOADING AND EMPTY STATES ====== */
+/* Loading and empty states*/
 .loading-spinner {
     display: flex;
     justify-content: center;
@@ -1071,16 +1058,16 @@ overflow-x: hidden;}
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* ====== PERFORMANCE OPTIMIZATIONS ====== */
+/* Performance optimizations*/
 .market-table,
 .grid-item-yellow,
 .grid-item-green,
 .grid-item-blue {
     will-change: transform;
-    transform: translateZ(0); /* Hardware acceleration */
+    transform: translateZ(0);
 }
 
-/* ====== ACCESSIBILITY IMPROVEMENTS ====== */
+/* Accessibility improvements*/
 @media (prefers-reduced-motion: reduce) {
     * {
         animation-duration: 0.01ms !important;
@@ -1089,13 +1076,13 @@ overflow-x: hidden;}
     }
 }
 
-/* ====== FOCUS STYLES ====== */
+/* Focus styles*/
 .table-dark tbody tr:focus-within {
     outline: 2px solid #21be72;
     outline-offset: 2px;
 }
 
-/* ====== PRINT STYLES ====== */
+/* Print styles*/
 @media print {
     .content {
         background: white !important;
@@ -1113,59 +1100,52 @@ overflow-x: hidden;}
     }
 }
 
-/* Hacer todo más compacto */
 .content {
-    height: 100vh; /* Volver a altura fija */
-    padding: 15px; /* Reducir padding */
-    overflow: hidden; /* Sin scroll */
+    height: 100vh;
+    padding: 15px;
+    overflow: hidden;
 }
 
-/* Cards financieras más pequeñas */
 .grid-item-yellow, .grid-item-green, .grid-item-blue {
-    min-height: 120px; /* Reducir altura mínima */
+    min-height: 120px;
     padding: 0.8rem;
-    font-size: 1.2rem; /* Texto más pequeño */
+    font-size: 1.2rem;
 }
 
-/* Gráfico más compacto */
 .cards {
     min-height: 280px;
 }
 
-/* Tablas más compactas */
 .market-table { 
-    min-height: 300px; /* Reducir altura mínima */
+    min-height: 300px;
     padding: 1rem;
 }
 
 .table-dark th,
 .table-dark td {
-    padding: 8px 6px; /* Reducir padding */
-    font-size: 0.85rem; /* Texto más pequeño */
+    padding: 8px 6px;
+    font-size: 0.85rem;
 }
 
-/* Carrusel de tarjetas más pequeño */
 .card {
-    width: 280px; /* Tarjetas más pequeñas */
+    width: 280px;
     height: 170px;
 }
 
-/* Espaciado más compacto */
 .financialData,
 .graphicAndCardData,
 .APIsData {
-    gap: 1rem; /* Reducir gaps */
+    gap: 1rem;
     margin-bottom: 1rem;
 }
 
-/* ====== SCROLL ESPECÍFICO PARA TABLAS ====== */
 .market-table {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     border-radius: 15px;
     padding: 1.5rem;
     color: white;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    height: 350px; /* Altura fija para mantener layout */
+    height: 350px;
     display: flex;
     flex-direction: column;
 }
@@ -1176,25 +1156,24 @@ overflow-x: hidden;}
     text-align: center;
     color: #fff;
     font-size: 1.1rem;
-    flex-shrink: 0; /* El título no se reduce */
+    flex-shrink: 0;
 }
 
 .table-container {
-    flex: 1; /* Toma el espacio restante */
-    overflow-y: auto; /* Scroll vertical */
-    overflow-x: auto; /* Scroll horizontal si es necesario */
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.05);
-    min-height: 0; /* Permite que el flex funcione correctamente */
+    min-height: 0;
 }
 
-/* ====== ESTILOS DE TABLA OPTIMIZADOS ====== */
 .table-dark {
     background: transparent;
-    font-size: 0.85rem; /* Texto más compacto */
+    font-size: 0.85rem;
     margin: 0;
     width: 100%;
-    min-width: 280px; /* Ancho mínimo para scroll horizontal */
+    min-width: 280px;
 }
 
 .table-dark th {
@@ -1204,19 +1183,19 @@ overflow-x: hidden;}
     font-weight: 600;
     color: #fff;
     text-align: center;
-    position: sticky; /* Header fijo durante scroll */
+    position: sticky;
     top: 0;
     z-index: 10;
-    white-space: nowrap; /* Evita que el texto se corte */
+    white-space: nowrap;
 }
 
 .table-dark td {
     border: none;
-    padding: 8px 6px; /* Padding compacto */
+    padding: 8px 6px;
     vertical-align: middle;
     text-align: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    white-space: nowrap; /* Evita que el texto se corte */
+    white-space: nowrap;
 }
 
 .table-dark tbody tr:hover {
@@ -1224,7 +1203,6 @@ overflow-x: hidden;}
     transition: background 0.2s ease;
 }
 
-/* ====== SCROLLBARS PERSONALIZADOS ====== */
 .table-container::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -1249,26 +1227,25 @@ overflow-x: hidden;}
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* ====== ESTILOS PARA CELDAS ESPECÍFICAS ====== */
 .symbol-cell {
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    min-width: 80px; /* Ancho mínimo para símbolos */
+    min-width: 80px;
 }
 
 .price-cell {
     font-weight: 600;
     color: #f8f9fa;
-    min-width: 100px; /* Ancho mínimo para precios */
-    font-family: 'Courier New', monospace; /* Fuente monospace para números */
+    min-width: 100px;
+    font-family: 'Courier New', monospace;
 }
 
 .change-cell {
     font-weight: 600;
-    min-width: 80px; /* Ancho mínimo para cambios */
+    min-width: 80px;
 }
 
 .change-cell.positive {
@@ -1279,13 +1256,11 @@ overflow-x: hidden;}
     color: #ff4757;
 }
 
-/* ====== ICONOS EN LAS CELDAS ====== */
 .crypto-icon, .stock-icon, .currency-icon {
     font-size: 1rem;
-    flex-shrink: 0; /* Los iconos no se reducen */
+    flex-shrink: 0;
 }
 
-/* ====== INDICADORES DE SCROLL ====== */
 .table-container::before {
     content: '';
     position: absolute;
@@ -1304,10 +1279,9 @@ overflow-x: hidden;}
     opacity: 1;
 }
 
-/* ====== RESPONSIVE PARA TABLAS ====== */
 @media screen and (max-width: 1200px) {
     .market-table {
-        height: 320px; /* Altura ligeramente menor en tablets */
+        height: 320px;
     }
     
     .table-dark {
@@ -1322,13 +1296,13 @@ overflow-x: hidden;}
 
 @media screen and (max-width: 768px) {
     .market-table {
-        height: 300px; /* Altura menor en móviles */
+        height: 300px;
         padding: 1rem;
     }
     
     .table-dark {
         font-size: 0.75rem;
-        min-width: 250px; /* Ancho mínimo menor en móviles */
+        min-width: 250px;
     }
     
     .table-dark th,
@@ -1354,7 +1328,6 @@ overflow-x: hidden;}
     }
 }
 
-/* ====== LOADING STATE PARA TABLAS ====== */
 .table-loading {
     display: flex;
     justify-content: center;
@@ -1368,7 +1341,6 @@ overflow-x: hidden;}
     height: 2rem;
 }
 
-/* ====== EMPTY STATE PARA TABLAS ====== */
 .table-empty {
     text-align: center;
     padding: 2rem;
@@ -1380,7 +1352,6 @@ overflow-x: hidden;}
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* ====== MEJORAS DE ACCESIBILIDAD ====== */
 .table-container:focus-within {
     outline: 2px solid #21be72;
     outline-offset: 2px;
@@ -1391,12 +1362,10 @@ overflow-x: hidden;}
     outline: none;
 }
 
-/* ====== SMOOTH SCROLLING ====== */
 .table-container {
     scroll-behavior: smooth;
 }
 
-/* ====== SCROLL SHADOWS (EFECTO VISUAL) ====== */
 .table-container {
     position: relative;
 }
@@ -1418,7 +1387,6 @@ overflow-x: hidden;}
     opacity: 1;
 }
 
-/* ====== CATEGORIES SECTION - IGUAL QUE CHART SECTION ====== */
 .grid-item-green.categories {
     background: linear-gradient(135deg, #1a1d23 0%, #2d3748 50%, #21be72 100%);
     display: flex;
@@ -1433,42 +1401,12 @@ overflow-x: hidden;}
     color: #fff;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     letter-spacing: 0.5px;
-    text-align: center; /* IGUAL que el otro gráfico */
-    font-size: 0.9rem; /* Reducido el tamaño de la fuente */
-    margin: 0 0 6px 0; /* Reducido el margin */
+    text-align: center;
+    font-size: 0.9rem;
+    margin: 0 0 6px 0;
 }
 
-/* REMOVER: categories-chart-container específico */
-/* USAR: .cards igual que el otro gráfico */
-
-/* REMOVER: categoriesChart específico */
-/* USAR: .myChart igual que el otro gráfico */
-
-/* ====== REMOVER CATEGORY SUMMARY ====== */
-/* Comentar o eliminar todo el CSS de category-summary */
-/*
-.category-summary {
-    margin-top: 1rem;
-    max-height: 150px;
-    overflow-y: auto;
-    padding: 0 0.5rem;
-}
-
-.category-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    margin-bottom: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-... resto del CSS de category-summary ...
-*/
-
-/* ====== LOADING AND ERROR STATES ====== */
+/* Loading and error states*/
 .loading-spinner {
     display: flex;
     justify-content: center;
@@ -1503,7 +1441,7 @@ overflow-x: hidden;}
     border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* ====== RESPONSIVE ADJUSTMENTS ====== */
+/* Responsive adjustments*/
 @media screen and (max-width: 768px) {
     .categories-chart-container {
         min-height: 180px;

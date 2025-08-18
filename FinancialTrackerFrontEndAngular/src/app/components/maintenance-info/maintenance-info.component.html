@@ -1,1 +1,79 @@
-<p>maintenance-info works!</p>
+<div class="maintenance-container">
+    <div class="maintenance-header">
+      <div class="maintenance-icon">🔧</div>
+      <h1>Aplicacion Inactiva</h1>
+      <p class="subtitle">Aplicación temporalmente no disponible</p>
+    </div>
+  
+    <div class="maintenance-content" *ngIf="!isLoading && !error">
+      <div class="status-card" [class]="getStatusClass()">
+        <div class="status-header">
+          <h2>Estado del Sistema</h2>
+          <span class="status-badge">{{ maintenanceInfo?.scheduleStatus || 'INACTIVO' }}</span>
+        </div>
+        
+        <div class="status-message">
+          <p>{{ maintenanceInfo?.message }}</p>
+        </div>
+  
+        <div class="schedule-info">
+          <div class="info-item">
+            <span class="label">Horario Actual:</span>
+            <span class="value">{{ maintenanceInfo?.schedule || 'N/A' }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Próximo Inicio:</span>
+            <span class="value">{{ maintenanceInfo?.nextStart || 'N/A' }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="label">Hora Local:</span>
+            <span class="value">{{ getCurrentTime() }}</span>
+          </div>
+        </div>
+      </div>
+  
+      <div class="info-card">
+        <h3>📋 Información para el usuario</h3>
+        <div class="recruiter-info">
+          <p><strong>Horario de Trabajo:</strong> Lunes a Viernes, 10:00 - 19:00 (CET)</p>
+          <p><strong>Fin de Semana:</strong> Cerrado (Sábados y Domingos)</p>
+          <p><strong>Motivo:</strong> Optimización de costos en Railway</p>
+          <p><strong>Contacto:</strong> La aplicación estará disponible durante el horario laboral</p>
+        </div>
+      </div>
+  
+      <div class="action-card">
+        <button class="btn btn-primary" (click)="refreshInfo()">
+          🔄 Actualizar Información
+        </button>
+        <p class="note">La información se actualiza automáticamente cada 5 minutos</p>
+      </div>
+    </div>
+  
+    <div class="loading" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Cargando información del sistema...</p>
+    </div>
+  
+
+    <div class="error" *ngIf="error">
+
+      <div class="info-card">
+        <h3>📋 Información para el usuario</h3>
+        <div class="recruiter-info">
+          <p><strong>Horario de la Aplicación:</strong> Lunes a Viernes, 10:00 - 19:00 (CET)</p>
+          <p><strong>Fin de Semana:</strong> Cerrado (Sábados y Domingos)</p>
+          <p><strong>Motivo:</strong> Optimización de costos.</p>
+          <p><strong>Contacto:</strong> La aplicación estará disponible durante el horario indicado.</p>
+        </div>
+      </div>
+      
+      <div class="error-icon">⚠️</div>
+      <h3>Error de Conexión</h3>
+      <p>No se pudo obtener la información del sistema.</p>
+      <button class="btn btn-primary" (click)="refreshInfo()">Reintentar</button>
+
+    </div>
+  </div>

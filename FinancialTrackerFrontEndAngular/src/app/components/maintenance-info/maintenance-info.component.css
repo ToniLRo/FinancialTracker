@@ -1,0 +1,254 @@
+.maintenance-container {
+    min-height: 100vh;
+    background: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333333;
+  }
+  
+  .maintenance-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .maintenance-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+    color: #666666;
+  }
+  
+  .maintenance-header h1 {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    color: #333333;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+    color: #666666;
+    margin: 0;
+  }
+  
+  .maintenance-content {
+    max-width: 800px;
+    width: 100%;
+  }
+  
+  .status-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 20px;
+    border: 1px solid #E0E0E0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+  
+  .status-card.status-active {
+    border-left: 5px solid #4CAF50;
+  
+  .status-card.status-maintenance {
+    border-left: 5px solid #FF9800;
+  }
+  
+  .status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .status-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #333333;
+  }
+  
+  .status-badge {
+    background: #E8F5E8;
+    color: #2E7D32;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .status-badge.status-maintenance {
+    background: #FFF3E0;
+    color: #E65100;
+  }
+  
+  .status-message {
+    margin-bottom: 25px;
+  }
+  
+  .status-message p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0;
+    color: #666666;
+  }
+  
+  .schedule-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .info-item {
+    background: #F8F9FA;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #E9ECEF;
+  }
+  
+  .info-item .label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6C757D;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .info-item .value {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333333;
+  }
+  
+  .info-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid #E0E0E0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+  
+  .info-card h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #333333;
+  }
+  
+  .recruiter-info {
+    margin-top: 20px;
+  }
+  
+  .recruiter-info p {
+    margin: 10px 0;
+    line-height: 1.6;
+    color: #666666;
+  }
+  
+  .action-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    border: 1px solid #E0E0E0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+  
+  .btn {
+    background: #F8F9FA;
+    color: #333333;
+    border: 1px solid #DEE2E6;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .btn:hover {
+    background: #E9ECEF;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-primary {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: #FFFFFF;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(45deg, #45a049, #4CAF50);
+  }
+  
+  .note {
+    margin: 15px 0 0 0;
+    font-size: 0.9rem;
+    color: #6C757D;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #E9ECEF;
+    border-top: 3px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+  
+  .error-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #DC3545;
+  }
+  
+  .error h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #333333;
+  }
+  
+  .error p {
+    margin: 0 0 20px 0;
+    color: #666666;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  @media (max-width: 768px) {
+    .maintenance-header h1 {
+      font-size: 2rem;
+    }
+    
+    .schedule-info {
+      grid-template-columns: 1fr;
+    }
+    
+    .status-card, .info-card, .action-card {
+      padding: 20px;
+    }
+  }
+  }

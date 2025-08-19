@@ -123,9 +123,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     
     this.accountService.getDashboardData().subscribe({
       next: (data) => {
-        //console.log('✅ Raw dashboard data from backend:', data);
-        //console.log('🔍 Category breakdown keys:', Object.keys(data.categoryBreakdown || {}));
-        //console.log('🔍 Category breakdown values:', Object.values(data.categoryBreakdown || {}));
         
         this.dashboardData = {
           ...this.dashboardData,
@@ -160,7 +157,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadFallbackData(): void {
-    //console.log('🔄 Loading fallback data...');
     const currentDate = new Date();
     const fallbackIncomeData: { [key: string]: number } = {};
     const fallbackExpenseData: { [key: string]: number } = {};
@@ -185,7 +181,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     
     this.dataLoaded = true;
-    //console.log('✅ Fallback data loaded:', this.dashboardData);
   }
 
   tryInitializeChart(): void {
@@ -194,10 +189,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // 2. El ViewChild está disponible
     // 3. El gráfico no ha sido inicializado aún
     if (this.dataLoaded && this.myChart && !this.chartInitialized) {
-      //console.log('🎯 Attempting to initialize chart...');
       this.initChart();
     } else {
-      //console.log('⏳ Chart initialization pending:', {
       //  dataLoaded: this.dataLoaded,
       //  myChartAvailable: !!this.myChart,
       //  chartInitialized: this.chartInitialized
@@ -356,7 +349,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   updateChart(): void {
     if (!this.chart) {
-      //console.log('⚠️ Chart not initialized, attempting to initialize...');
       this.tryInitializeChart();
       return;
     }
@@ -398,7 +390,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const monthlyData = this.dashboardData.monthlyIncomeChart || {};
     const labels = this.getMonthLabels();
     
-    //console.log('📊 Raw monthly income data from backend:', monthlyData);
     
     // El backend envía datos con formato "YYYY-MM", convierto de "YYYY-MM" a nombres de mes
     const data = labels.map((month, index) => {
@@ -411,11 +402,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       // Usar valor absoluto para income
       const result = typeof value === 'number' ? Math.abs(value) : 0;
       
-      //console.log(`Income for ${month} (${yearMonth}):`, result);
       return result;
     });
     
-    //console.log('📊 Processed income data:', data);
     return data;
   }
 
@@ -424,7 +413,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const monthlyData = this.dashboardData.monthlyExpenseChart || {};
     const labels = this.getMonthLabels();
     
-    //console.log('📊 Raw monthly expense data from backend:', monthlyData);
     
     // El backend envía datos con formato "YYYY-MM", convierto de "YYYY-MM" a nombres de mes
     const data = labels.map((month, index) => {
@@ -436,17 +424,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       const value = monthlyData[yearMonth];
       const result = typeof value === 'number' ? Math.abs(value) : 0;
       
-      //console.log(`Expense for ${month} (${yearMonth}):`, result);
       return result;
     });
     
-    //console.log('📊 Processed expense data:', data);
     return data;
   }
 
   // Método para reinicializar el gráfico manualmente
   reinitializeChart(): void {
-    //console.log('🔄 Manual chart reinitialization requested...');
     this.destroyChart();
     this.chartInitialized = false;
     this.tryInitializeChart();
@@ -457,11 +442,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   
   // tryInitializeCategoriesChart: SIEMPRE inicializar
   tryInitializeCategoriesChart(): void {
-    //console.log('🎯 Trying to initialize categories chart...');
-    //console.log('📊 Categories available:', this.topCategories?.length || 0);
     
     if (this.categoriesChart && !this.categoriesChartInitialized) {
-      //console.log('🎯 Initializing categories chart...');
       this.initCategoriesChart();
     }
   }
@@ -490,7 +472,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         try {
           this.categoriesChartInstance.destroy();
         } catch (error) {
-          console.log('Warning destroying our chart instance:', error);
         }
         this.categoriesChartInstance = null;
       }
@@ -560,7 +541,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.categoriesChartInitialized = true;
       this.isLoadingCategories = false;
-      //console.log('✅ Categories chart initialized successfully');
 
     } catch (error) {
       console.error('❌ Error initializing categories chart:', error);
@@ -628,7 +608,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.categoriesChart?.nativeElement) {
       const existingChart = Chart.getChart(this.categoriesChart.nativeElement);
       if (existingChart) {
-        //console.log('🗑️ Destroying chart via Chart.getChart, ID:', existingChart.id);
         existingChart.destroy();
       }
     }
@@ -637,7 +616,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       try {
         this.categoriesChartInstance.destroy();
       } catch (error) {
-        console.log('Warning destroying chart:', error);
       }
       this.categoriesChartInstance = null;
     }
@@ -656,7 +634,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Reinicializar gráfico de categorías
   reinitializeCategoriesChart(): void {
-    //console.log('🔄 Manual categories chart reinitialization requested...');
     this.destroyCategoriesChart();
     this.categoriesChartInitialized = false;
     this.tryInitializeCategoriesChart();
@@ -707,12 +684,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 loadCurrencyPrices(): void {
     this.apiUpdateControlService.checkUpdateStatus('FOREX').subscribe({
         next: (response) => {
-            //console.log('🔍 Estado de actualización FOREX:', {
-            //    debeActualizar: response.shouldUpdate,
-            //    ultimaActualizacion: new Date(response.lastUpdate).toLocaleString(),
-            //    proximaActualizacion: new Date(response.nextUpdate).toLocaleString()
-            //});
-
             if (response.shouldUpdate) {
                 this.makeForexApiCall();
             } else {
@@ -730,35 +701,18 @@ private makeForexApiCall(): void {
     const apiKey = environment.exchangerateApiKey;
     const baseUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
     
-    //console.log('🚀 Iniciando llamada a API de divisas:', {
-        //url: baseUrl,
-        //apiKeyPresent: !!apiKey,
-        //timestamp: new Date().toLocaleString()
-    //});
-    
     this.accountService.getDataFromAPI(baseUrl).subscribe({
         next: (data: any) => {
-            //console.log('✅ Datos de divisas recibidos:', {
-                //status: data?.status,
-                //hasRates: !!data?.conversion_rates,
-                //ratesCount: data?.conversion_rates ? Object.keys(data.conversion_rates).length : 0
-            //});
-            
             // Usar Date.now() con validación
             const saveTime = Date.now();
             if (saveTime < new Date('2025-01-01').getTime()) {
                 localStorage.setItem('lastForexUpdate', saveTime.toString());
             }
-            //console.log('💾 Timestamp de actualización guardado:', new Date(saveTime).toLocaleString());
             
             const mainCurrencies = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'NZD'];
             
             this.currencyPrices = mainCurrencies.map(currency => {
                 const rate = data.conversion_rates[currency];
-                //console.log(`📊 Procesando ${currency}:`, {
-                    //rate,
-                    //symbol: `USD/${currency}`
-                //});
 
                 const previousRate = rate * (1 + (Math.random() * 0.02 - 0.01));
                 
@@ -776,7 +730,6 @@ private makeForexApiCall(): void {
 
                 this.marketDataService.saveMarketData(marketData).subscribe({
                     next: () => {
-                        //console.log(`💾 Datos de ${currency} guardados en BD`),
                     },
                     error: (err) => console.error(`❌ Error guardando ${currency} en BD:`, err)
                 });
@@ -789,15 +742,9 @@ private makeForexApiCall(): void {
                 };
             });
             
-            //console.log('✅ Procesamiento de divisas completado:', {
-                //divisasProcesadas: this.currencyPrices.length,
-                //primerasDivisas: this.currencyPrices.slice(0, 2)
-            //});
-
             // Registrar la actualización exitosa
             this.apiUpdateControlService.recordUpdate('FOREX').subscribe({
                 next: () => {
-                    //console.log('✅ Timestamp de FOREX actualizado'),
                 },
                 error: (err) => console.error('❌ Error actualizando timestamp:', err)
             });
@@ -816,18 +763,12 @@ private makeForexApiCall(): void {
 }
 
 private loadForexFromDatabase(): void {
-    //console.log('🔄 Intentando cargar divisas desde base de datos...');
     
     this.marketDataService.getLastMarketData('FOREX').subscribe({
         next: (data) => {
-            //console.log('📥 Datos recibidos de BD:', {
-                //hayDatos: !!data,
-                //cantidad: data?.length || 0,
-                //primerosDatos: data?.slice(0, 2) || []
-            //});
+
 
             if (!data || data.length === 0) {
-                //console.log('⚠️ No hay datos de divisas disponibles en base de datos');
                 return;
             }
             
@@ -839,18 +780,12 @@ private loadForexFromDatabase(): void {
                     name: this.getCurrencyName(forex.symbol.split('/')[1])
                 };
                 
-                //console.log(`📊 Procesando divisa desde BD:`, {
-                    //symbol: forex.symbol,
-                    //datos: currencyData
-                //});
+
 
                 return currencyData;
             });
 
-            //console.log('✅ Carga desde BD completada:', {
-                //divisasCargadas: this.currencyPrices.length,
-                //primerasDivisas: this.currencyPrices.slice(0, 2)
-            //});
+
         },
         error: (err) => {
             console.error('❌ Error cargando divisas desde BD:', {
@@ -881,7 +816,6 @@ private getCurrencyName(code: string): string {
     
     this.accountService.getDataFromAPI(cryptoUrl).subscribe({
       next: (data: any[]) => {
-        //console.log('✅ Crypto data loaded:', data);
         
         this.cryptoPrices = data.map(coin => ({
           symbol: coin.symbol.toUpperCase(),
@@ -903,7 +837,6 @@ private getCurrencyName(code: string): string {
             volume: coin.total_volume || 0,
             market: 'USD'
           };
-          //console.log('✅ Crypto data going to save:', marketData);
 
 
           // El backend ahora actualizará en lugar de crear nuevo
@@ -923,11 +856,6 @@ private getCurrencyName(code: string): string {
   loadStockData(): void {
     this.apiUpdateControlService.checkUpdateStatus('STOCK').subscribe({
         next: (response) => {
-            //console.log('🔍 Estado de actualización STOCKS:', {
-            //    debeActualizar: response.shouldUpdate,
-            //    ultimaActualizacion: new Date(response.lastUpdate).toLocaleString(),
-            //    proximaActualizacion: new Date(response.nextUpdate).toLocaleString()
-            //});
 
             if (response.shouldUpdate) {
                 this.makeStockApiCall();
@@ -948,18 +876,12 @@ private makeStockApiCall(): void {
 
     this.accountService.getDataFromAPI(url).subscribe({
         next: (data: any) => {
-            console.log('✅ Datos recibidos de API:', data);
 
             // Para cada símbolo
             Object.entries(data).forEach(([symbol, stockData]: [string, any]) => {
                 if (stockData.status === 'ok' && stockData.values?.length > 0) {
                     const latestData = stockData.values[0];  // Último dato
-                    console.log(`📊 Procesando ${symbol}:`, {
-                        datetime: latestData.datetime,
-                        open: latestData.open,
-                        close: latestData.close,
-                        volume: latestData.volume
-                    });
+
 
                     const marketData = {
                         symbol: symbol,
@@ -994,7 +916,7 @@ private makeStockApiCall(): void {
 
                     // Guardar en BD
                     this.marketDataService.saveMarketData(marketData).subscribe({
-                        next: () => console.log(`💾 ${symbol} guardado en BD`),
+                        //next: () => console.log(`💾 ${symbol} guardado en BD`),
                         error: (err) => console.error(`❌ Error guardando ${symbol}:`, err)
                     });
                 }
@@ -1011,7 +933,6 @@ private loadStocksFromDatabase(): void {
     this.marketDataService.getLastMarketData('STOCK').subscribe({
         next: (data) => {
             if (!data || data.length === 0) {
-                console.log('ℹ️ No stock data available in database');
                 return;
             }
 
@@ -1021,14 +942,12 @@ private loadStocksFromDatabase(): void {
                 change: this.calculateChange(stock.open, stock.close),
                 name: this.getCompanyName(stock.symbol)
             }));
-            //console.log('✅ Loaded stock data from database');
         },
         error: (err) => console.error('❌ Error loading stocks from database:', err)
     });
 }
 
 private updateStockPrice(marketData: any): void {
-    console.log(`🔄 Actualizando precio para ${marketData.symbol}`);
     
     const index = this.stockPrices.findIndex(s => s.symbol === marketData.symbol);
     const stockPrice = {
@@ -1038,26 +957,20 @@ private updateStockPrice(marketData: any): void {
         name: this.getCompanyName(marketData.symbol)
     };
 
-    console.log(`📊 Nuevo precio para ${marketData.symbol}:`, stockPrice);
 
     if (index === -1) {
         this.stockPrices.push(stockPrice);
-        console.log(`➕ Añadido nuevo stock: ${marketData.symbol}`);
     } else {
         this.stockPrices[index] = stockPrice;
-        console.log(`🔄 Actualizado stock existente: ${marketData.symbol}`);
     }
 
-    console.log(`📈 Total stocks en UI: ${this.stockPrices.length}`);
 }
 
 private loadFallbackStockData(symbol: string): void {
-    console.log('🔄 Cargando datos de fallback para stocks...');
     
     this.marketDataService.getLastMarketData('STOCK').subscribe({
         next: (data) => {
             if (!data || data.length === 0) {
-                console.log('ℹ️ No hay datos de fallback disponibles');
                 return;
             }
 
@@ -1066,17 +979,14 @@ private loadFallbackStockData(symbol: string): void {
                 data.forEach((stockData: any) => {
                     this.updateStockPrice(stockData);
                 });
-                console.log(`✅ Cargados ${data.length} stocks de fallback`);
             } else {
                 const stockData = data.find((s: any) => s.symbol === symbol);
                 if (stockData) {
                     this.updateStockPrice(stockData);
-                    console.log(`✅ Datos de fallback cargados para ${symbol}`);
                 }
             }
         },
         error: (err) => {
-            console.log('ℹ️ No se pudieron obtener datos de fallback');
         }
     });
 }
@@ -1280,7 +1190,6 @@ private getStaticStockData(symbol: string): any {
 
   // forceInitializeCategories para NO usar fallback
   forceInitializeCategories(): void {
-    //console.log('🚀 FORCING CATEGORIES INITIALIZATION');
     
     // NO usar datos de fallback
     // this.loadFallbackCategoryData(); // ELIMINAR ESTA LÍNEA
@@ -1295,7 +1204,6 @@ private getStaticStockData(symbol: string): any {
       if (this.topCategories && this.topCategories.length > 0) {
         this.tryInitializeCategoriesChart();
       } else {
-        console.log('⚠️ No real categories available for forced initialization');
         this.categoriesError = true;
       }
     }, 100);
@@ -1318,12 +1226,10 @@ private getStaticStockData(symbol: string): any {
   }
 
   private loadFallbackCryptoData(): void {
-    console.log('🔄 Intentando cargar datos de fallback para cryptos...');
     
     this.marketDataService.getLastMarketData('CRYPTO').subscribe({
         next: (data) => {
             if (!data || data.length === 0) {
-                console.log('ℹ️ No hay datos de fallback disponibles para cryptos');
                 return;
             }
             
@@ -1333,10 +1239,8 @@ private getStaticStockData(symbol: string): any {
                 change: this.calculateChange(crypto.open, crypto.close),
                 name: crypto.symbol
             }));
-            console.log('✅ Datos de fallback de crypto cargados');
         },
         error: (err) => {
-            console.log('ℹ️ No se pudieron obtener datos de fallback para cryptos');
         }
     });
 }

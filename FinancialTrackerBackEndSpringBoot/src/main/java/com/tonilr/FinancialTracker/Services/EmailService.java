@@ -11,6 +11,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.List;
+import com.tonilr.FinancialTracker.Entities.Users;
+import com.tonilr.FinancialTracker.repos.UsersRepo;
 
 @Service
 public class EmailService {
@@ -21,8 +24,8 @@ public class EmailService {
     @Autowired
     private TransactionServices transactionService;
 
-    // Eliminar la inyección de UsersService y usar el servicio que ya tiene los datos necesarios
-    // private UsersServices usersService;
+    @Autowired
+    private UsersRepo usersRepo;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -57,7 +60,6 @@ public class EmailService {
         }
     }
 
-
     // Método existente para reset de password
     public void sendWeeklyReport(String toEmail, Long userId) {
         LocalDate endDate = LocalDate.now();
@@ -76,44 +78,66 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    // Método programado que se ejecuta automáticamente - SIN PARÁMETROS
     @Scheduled(cron = "0 0 9 1 * *") // Primer día del mes 9AM
-    public void sendMonthlyReport(String toEmail, Long userId) {
+    public void sendMonthlyReport() {
         try {
-            //System.out.println("📊 Generando reporte mensual");
-            //System.out.println("📧 Email destino: " + toEmail);
-            //System.out.println("👤 Usuario ID: " + userId);
-
+            System.out.println("📊 Iniciando envío de reportes mensuales...");
+            
+            // Obtener todos los usuarios (por ahora todos, ya que no hay campo active)
+            List<Users> allUsers = usersRepo.findAll();
+            System.out.println("👥 Usuarios encontrados: " + allUsers.size());
+            
             LocalDate endDate = LocalDate.now();
             LocalDate startDate = endDate.minusMonths(1);
-            //System.out.println("📅 Periodo: " + startDate + " a " + endDate);
+            
+            for (Users user : allUsers) {
+                try {
+                    sendMonthlyReportForUser(user.getEmail(), user.getUser_Id(), startDate, endDate);
+                    System.out.println("✅ Reporte enviado para usuario: " + user.getEmail());
+                } catch (Exception e) {
+                    System.err.println("❌ Error enviando reporte para usuario " + user.getEmail() + ": " + e.getMessage());
+                    // Continuar con el siguiente usuario
+                }
+            }
+            
+            System.out.println("🎉 Proceso de reportes mensuales completado");
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error general en sendMonthlyReport: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
+    // Método privado para enviar reporte a un usuario específico
+    private void sendMonthlyReportForUser(String toEmail, Long userId, LocalDate startDate, LocalDate endDate) {
+        try {
             Map<Object, Double> currentMonthTotals = transactionService
                 .getCategoryTotalsByDateRange(userId, startDate, endDate);
-            //System.out.println("💰 Totales por categoría: " + currentMonthTotals);
 
             double totalIncome = transactionService.getTotalIncome(userId, startDate, endDate);
             double totalExpenses = transactionService.getTotalExpenses(userId, startDate, endDate);
-            //System.out.println("📈 Ingresos totales: " + totalIncome);
-            //System.out.println("📉 Gastos totales: " + totalExpenses);
 
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
-            //System.out.println("📧 Remitente: " + fromEmail);
             message.setTo(toEmail);
             message.setSubject("Tu Resumen Mensual - Financial Tracker");
 
             String emailBody = formatMonthlyReport(currentMonthTotals, totalIncome, totalExpenses, startDate);
-            //System.out.println("📝 Cuerpo del email generado");
             message.setText(emailBody);
 
-            //System.out.println("📨 Enviando email...");
             mailSender.send(message);
-            //System.out.println("✅ Email enviado correctamente");
+            
         } catch (Exception e) {
-            System.err.println("❌ Error en sendMonthlyReport: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Could not send monthly report: " + e.getMessage());
+            throw new RuntimeException("Could not send monthly report for user " + userId + ": " + e.getMessage());
         }
+    }
+
+    // Método público para enviar reporte manual (con parámetros)
+    public void sendMonthlyReport(String toEmail, Long userId) {
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusMonths(1);
+        sendMonthlyReportForUser(toEmail, userId, startDate, endDate);
     }
 
     private String formatWeeklyReport(Map<Object, Double> categoryTotals, LocalDate startDate, LocalDate endDate) {

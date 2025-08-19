@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script optimizado para gestionar horarios en Railway
-# Integrado con optimizaciones de memoria y CPU
+# Integrado con optimizaciones de memoria y CPU para reducir costos
 
 RAILWAY_APP_ID="2984dca1-0f61-43b5-a3d3-226ee13fc9d0"
 RAILWAY_TOKEN="8b4989af-d29e-4e54-8385-35f3257b33e4"
@@ -11,6 +11,11 @@ RAILWAY_PROJECT_ID="8e5843ac-2088-4c98-b09a-7359a4a3c30e"
 BUSINESS_START_HOUR=10
 BUSINESS_END_HOUR=19
 TIMEZONE="Europe/Madrid"
+
+# Umbrales de memoria para optimización automática
+MEMORY_WARNING_THRESHOLD=75
+MEMORY_CRITICAL_THRESHOLD=90
+MEMORY_EMERGENCY_THRESHOLD=95
 
 # Función para verificar si es horario de funcionamiento
 is_business_hours() {
@@ -33,6 +38,44 @@ is_business_hours() {
         return 0  # true - dentro del horario
     else
         return 1  # false - fuera del horario
+    fi
+}
+
+# Función para verificar estado de memoria del sistema
+check_memory_status() {
+    echo "🧠 Verificando estado de memoria del sistema..."
+    
+    # Obtener métricas de memoria desde la API
+    local memory_response=$(curl -s "https://financialtracker-production.up.railway.app/api/system/metrics/memory" 2>/dev/null)
+    
+    if [[ $memory_response == *"heapUsagePercent"* ]]; then
+        # Extraer porcentaje de uso de memoria
+        local memory_usage=$(echo $memory_response | grep -o '"heapUsagePercent":[0-9.]*' | cut -d':' -f2)
+        local memory_pressure=$(echo $memory_response | grep -o '"memoryPressure":"[^"]*"' | cut -d'"' -f4)
+        
+        echo "📊 Uso de memoria: ${memory_usage}%"
+        echo "🚨 Presión de memoria: ${memory_pressure}"
+        
+        # Determinar si se necesita optimización
+        if (( $(echo "$memory_usage >= $MEMORY_EMERGENCY_THRESHOLD" | bc -l) )); then
+            echo "🚨 MEMORIA CRÍTICA - Ejecutando optimización de emergencia"
+            trigger_emergency_optimization
+            return 2  # Código de emergencia
+        elif (( $(echo "$memory_usage >= $MEMORY_CRITICAL_THRESHOLD" | bc -l) )); then
+            echo "⚠️ MEMORIA CRÍTICA - Ejecutando optimización crítica"
+            trigger_critical_optimization
+            return 1  # Código de crítica
+        elif (( $(echo "$memory_usage >= $MEMORY_WARNING_THRESHOLD" | bc -l) )); then
+            echo "⚠️ MEMORIA ALTA - Ejecutando optimización preventiva"
+            trigger_preventive_optimization
+            return 0  # Código de advertencia
+        else
+            echo "✅ Memoria OK - No se requiere optimización"
+            return 0
+        fi
+    else
+        echo "⚠️ No se pudo obtener métricas de memoria"
+        return 0
     fi
 }
 
@@ -83,13 +126,23 @@ hibernate_services() {
 
 # Función para ejecutar optimizaciones
 run_optimizations() {
-    echo " Ejecutando optimizaciones de memoria y CPU..."
+    echo "🔄 Ejecutando optimizaciones de memoria y CPU..."
     
     # Verificar si el servicio está respondiendo
-    local health_check=$(curl -s "https://tu-app.railway.app/actuator/health" 2>/dev/null)
+    local health_check=$(curl -s "https://financialtracker-production.up.railway.app/api/system/health" 2>/dev/null)
     
     if [[ $health_check == *"UP"* ]]; then
         echo "✅ Servicio respondiendo, aplicando optimizaciones..."
+        
+        # Verificar estado de memoria
+        local memory_status=$(check_memory_status)
+        
+        # Aplicar optimizaciones según el estado
+        case $memory_status in
+            0) echo "✅ Memoria en buen estado, optimizaciones básicas aplicadas" ;;
+            1) echo "⚠️ Optimizaciones críticas aplicadas" ;;
+            2) echo "🚨 Optimizaciones de emergencia aplicadas" ;;
+        esac
         
         # Aplicar optimizaciones JVM si es posible
         if command -v jcmd >/dev/null 2>&1; then
@@ -97,12 +150,59 @@ run_optimizations() {
             # Aquí podrías ejecutar comandos JVM si tienes acceso
         fi
         
-        # Limpiar caché Redis si está disponible
-        echo "🧹 Limpiando caché Redis..."
-        # curl -X POST "https://tu-app.railway.app/api/admin/clear-cache" 2>/dev/null || true
-        
     else
-        echo "⚠️  Servicio no responde, saltando optimizaciones"
+        echo "⚠️ Servicio no responde, saltando optimizaciones"
+    fi
+}
+
+# Función para optimización preventiva
+trigger_preventive_optimization() {
+    echo "🔄 Ejecutando optimización preventiva..."
+    
+    # Llamar a la API de optimización
+    local response=$(curl -s -X POST "https://financialtracker-production.up.railway.app/api/system/metrics/memory/optimize" 2>/dev/null)
+    
+    if [[ $response == *"SUCCESS"* ]]; then
+        echo "✅ Optimización preventiva completada"
+    else
+        echo "⚠️ Error en optimización preventiva: $response"
+    fi
+}
+
+# Función para optimización crítica
+trigger_critical_optimization() {
+    echo "🚨 Ejecutando optimización crítica..."
+    
+    # Llamar a la API de optimización de emergencia
+    local response=$(curl -s -X POST "https://financialtracker-production.up.railway.app/api/system/metrics/memory/emergency-cleanup" 2>/dev/null)
+    
+    if [[ $response == *"SUCCESS"* ]]; then
+        echo "✅ Optimización crítica completada"
+    else
+        echo "❌ Error en optimización crítica: $response"
+    fi
+}
+
+# Función para optimización de emergencia
+trigger_emergency_optimization() {
+    echo "🚨🚨 EJECUTANDO OPTIMIZACIÓN DE EMERGENCIA 🚨🚨"
+    
+    # Llamar a la API de optimización de emergencia
+    local response=$(curl -s -X POST "https://financialtracker-production.up.railway.app/api/system/metrics/memory/emergency-cleanup" 2>/dev/null)
+    
+    if [[ $response == *"SUCCESS"* ]]; then
+        echo "✅ Optimización de emergencia completada"
+    else
+        echo "❌ Error en optimización de emergencia: $response"
+    fi
+    
+    # Optimización adicional de recursos
+    local resource_response=$(curl -s -X POST "https://financialtracker-production.up.railway.app/api/system/metrics/resources/emergency-optimize" 2>/dev/null)
+    
+    if [[ $resource_response == *"SUCCESS"* ]]; then
+        echo "✅ Optimización de recursos de emergencia completada"
+    else
+        echo "⚠️ Error en optimización de recursos: $resource_response"
     fi
 }
 
@@ -119,6 +219,10 @@ run_cleanup() {
     # Limpiar archivos temporales
     rm -rf /tmp/* 2>/dev/null || true
     echo "✅ Archivos temporales limpiados"
+    
+    # Limpiar cache de la aplicación si es posible
+    echo "🧹 Limpiando cache de aplicación..."
+    curl -s -X POST "https://financialtracker-production.up.railway.app/api/system/metrics/memory/optimize" 2>/dev/null || true
 }
 
 # Función para mostrar estado del sistema
@@ -126,7 +230,7 @@ show_system_status() {
     echo "📊 === ESTADO DEL SISTEMA ==="
     echo "🕐 Hora actual: $(date)"
     echo "🌍 Zona horaria: $(date +%Z)"
-    echo " Día: $(date +%A)"
+    echo "📅 Día: $(date +%A)"
     echo "⏰ Horario de negocio: ${BUSINESS_START_HOUR}:00 - ${BUSINESS_END_HOUR}:00"
     
     if is_business_hours; then
@@ -137,6 +241,11 @@ show_system_status() {
     
     echo "🚂 Railway App ID: $RAILWAY_APP_ID"
     echo "📁 Project ID: $RAILWAY_PROJECT_ID"
+    
+    # Mostrar estado de memoria si es posible
+    echo ""
+    echo "🧠 === ESTADO DE MEMORIA ==="
+    check_memory_status > /dev/null 2>&1
 }
 
 # Función para mostrar ayuda
@@ -151,11 +260,13 @@ show_help() {
     echo "  -f, --force    Forzar activación/desactivación"
     echo "  -o, --optimize Solo ejecutar optimizaciones"
     echo "  -c, --cleanup  Solo ejecutar limpieza"
+    echo "  -m, --memory   Verificar solo estado de memoria"
     echo ""
     echo "Ejemplos:"
     echo "  $0              # Ejecutar automáticamente según horario"
     echo "  $0 --status     # Ver estado actual"
     echo "  $0 --force      # Forzar cambio de estado"
+    echo "  $0 --memory     # Verificar estado de memoria"
 }
 
 # Función principal con manejo de argumentos
@@ -170,7 +281,7 @@ main() {
             exit 0
             ;;
         -f|--force)
-            echo " Modo forzado activado"
+            echo "🔄 Modo forzado activado"
             if is_business_hours; then
                 hibernate_services
             else
@@ -183,6 +294,10 @@ main() {
             ;;
         -c|--cleanup)
             run_cleanup
+            exit 0
+            ;;
+        -m|--memory)
+            check_memory_status
             exit 0
             ;;
         "")

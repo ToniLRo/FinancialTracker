@@ -6,30 +6,39 @@ import { PaymentsComponent } from './components/payments/payments.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { LogINComponent } from './components/log-in/log-in.component';
 import { AuthGuard } from './services/auth/auth.guard';
+import { MaintenanceGuard } from './guards/maintenance.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { MaintenanceInfoComponent } from './components/maintenance-info/maintenance-info.component';
 
 const routes: Routes = [
-  {path: 'LogIn', component: LogINComponent},
-  {path: 'SignUp', component: SignUpComponent},
-  {path: 'ForgotPassword', component: ForgotPasswordComponent},
-  {path: 'ResetPassword', component: ResetPasswordComponent},
-  {path: 'Home', component: HomeComponent, canActivate: [AuthGuard] },
-  {path: 'MyWallets', component: MyWalletsComponent, canActivate: [AuthGuard] },
-  {path: 'Payments', component: PaymentsComponent, canActivate: [AuthGuard] },
-  {path: 'Profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  {
-    path: 'Settings',
-    component: SettingsComponent,
-    canActivate: [AuthGuard]  // Para proteger la ruta
-  },
-  { path:  '**', redirectTo: '/Home', pathMatch: 'full' }
+  // Rutas públicas que no requieren autenticación pero sí verificación de mantenimiento
+  { path: 'LogIn', component: LogINComponent, canActivate: [MaintenanceGuard] },
+  { path: 'SignUp', component: SignUpComponent, canActivate: [MaintenanceGuard] },
+  { path: 'ForgotPassword', component: ForgotPasswordComponent, canActivate: [MaintenanceGuard] },
+  { path: 'ResetPassword', component: ResetPasswordComponent, canActivate: [MaintenanceGuard] },
+  
+  // Ruta de mantenimiento (siempre accesible)
+  { path: 'maintenance', component: MaintenanceInfoComponent },
+  
+  // Rutas protegidas que requieren autenticación Y verificación de mantenimiento
+  { path: 'Home', component: HomeComponent, canActivate: [MaintenanceGuard, AuthGuard] },
+  { path: 'MyWallets', component: MyWalletsComponent, canActivate: [MaintenanceGuard, AuthGuard] },
+  { path: 'Payments', component: PaymentsComponent, canActivate: [MaintenanceGuard, AuthGuard] },
+  { path: 'Profile', component: ProfileComponent, canActivate: [MaintenanceGuard, AuthGuard] },
+  { path: 'Settings', component: SettingsComponent, canActivate: [MaintenanceGuard, AuthGuard] },
+  
+  // Ruta por defecto
+  { path: '**', redirectTo: '/Home', pathMatch: 'full' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes),
+    MaintenanceInfoComponent
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

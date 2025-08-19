@@ -4,6 +4,8 @@ import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { UsersService } from './services/users/users.service';
 import { AuthService } from './services/auth/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 @Component({
     selector: 'app-root',
@@ -14,11 +16,13 @@ import { AuthService } from './services/auth/auth.service';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'FinancialTracker';
   currentRoute: string = '';
+  isMaintenanceRoute = false;
   private subscription: Subscription = new Subscription();
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -28,6 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
         filter(event => event instanceof NavigationEnd)
       ).subscribe((event: NavigationEnd) => {
         this.currentRoute = event.urlAfterRedirects;
+        this.isMaintenanceRoute = event.url === '/maintenance';
         //console.log('Ruta actual:', this.currentRoute);
       })
     );
@@ -39,6 +44,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.forceChangeDetection();
       })
     );
+
+    // Verificar estado del sistema al iniciar
+    this.checkMaintenanceStatus();
   }
 
   ngOnDestroy() {
@@ -46,10 +54,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   shouldShowNavbar(): boolean {
-    // Rutas donde NO mostrar el navbar
-    const publicRoutes = ['/LogIn', '/SignUp'];
+    // No mostrar navbar en rutas públicas o mantenimiento
+    const publicRoutes = ['/LogIn', '/SignUp', '/maintenance'];
     
-    // No mostrar navbar si está en una ruta pública
     if (publicRoutes.some(route => this.currentRoute.includes(route))) {
       //console.log('No mostrar navbar - ruta pública:', this.currentRoute);
       return false;
@@ -64,6 +71,27 @@ export class AppComponent implements OnInit, OnDestroy {
     
     //console.log('Mostrar navbar - usuario logueado:', currentUser.username);
     return true;
+  }
+
+  private checkMaintenanceStatus() {
+    // Solo verificar en producción
+    if (environment.production) {
+      this.http.get(`${environment.apiUrl}/api/system/status`).subscribe({
+        next: (response: any) => {
+          const isActive = response.active;
+          if (!isActive && this.router.url !== '/maintenance') {
+            this.router.navigate(['/maintenance']);
+          }
+        },
+        error: (error) => {
+          console.error('Error checking maintenance status:', error);
+          // En caso de error, redirigir a mantenimiento
+          if (this.router.url !== '/maintenance') {
+            this.router.navigate(['/maintenance']);
+          }
+        }
+      });
+    }
   }
 
   private forceChangeDetection() {

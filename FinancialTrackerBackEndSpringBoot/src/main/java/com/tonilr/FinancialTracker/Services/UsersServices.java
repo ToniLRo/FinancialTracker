@@ -97,39 +97,51 @@ public class UsersServices {
 	}
 
 	public Map<String, Object> loginUser(LoginRequest request) {
-		// Autenticar usando Spring Security
-		authenticationManager.authenticate(
-			new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-		);
-		
-		// Buscar usuario por username
-		Users user = userRepo.findByUsername(request.getUsername())
-				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-		
-		// Verificar contraseña con validación estricta de mayúsculas/minúsculas
-		if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new RuntimeException("Credenciales incorrectas. Verifica tu usuario y contraseña.");
+		try {
+			// Buscar usuario por username primero
+			Users user = userRepo.findByUsername(request.getUsername())
+					.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+			
+			// Verificar contraseña con BCrypt
+			if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+				throw new RuntimeException("Credenciales incorrectas. Verifica tu usuario y contraseña.");
+			}
+			
+			// Autenticar usando Spring Security (esto es opcional pero mantiene la consistencia)
+			try {
+				authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+				);
+			} catch (Exception e) {
+				// Si falla la autenticación de Spring Security, continuamos con la validación manual
+				System.out.println("⚠️ Spring Security authentication failed, continuing with manual validation");
+			}
+			
+			// Generar token JWT
+			UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+				user.getUsername(), 
+				user.getPassword(), 
+				java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("USER"))
+			);
+			
+			String jwtToken = jwtService.generateToken(userDetails);
+			
+			// Crear respuesta
+			Map<String, Object> response = new HashMap<>();
+			response.put("token", jwtToken);
+			response.put("userId", user.getUser_Id());
+			response.put("username", user.getUsername());
+			response.put("email", user.getEmail());
+			response.put("registerDate", user.getRegisterDate() != null ? user.getRegisterDate().toString() : null);
+			response.put("message", "Login exitoso");
+			
+			System.out.println("✅ Login exitoso para usuario: " + user.getUsername());
+			return response;
+			
+		} catch (Exception e) {
+			System.err.println("❌ Error en login: " + e.getMessage());
+			throw new RuntimeException("Error en el login: " + e.getMessage());
 		}
-		
-		// Generar token JWT
-		UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-			user.getUsername(), 
-			user.getPassword(), 
-			java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("USER"))
-		);
-		
-		String jwtToken = jwtService.generateToken(userDetails);
-		
-		// Crear respuesta
-		Map<String, Object> response = new HashMap<>();
-		response.put("token", jwtToken);
-		response.put("userId", user.getUser_Id());
-		response.put("username", user.getUsername());
-		response.put("email", user.getEmail());
-		response.put("registerDate", user.getRegisterDate() != null ? user.getRegisterDate().toString() : null);
-		response.put("message", "Login exitoso");
-		
-		return response;
 	}
 
 	public Map<String, Object> changePassword(String username, ChangePasswordRequest request) {

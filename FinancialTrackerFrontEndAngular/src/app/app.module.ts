@@ -17,6 +17,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { SettingsComponent } from './components/settings/settings.component';
+
 import { EmailService } from './services/email/email.service';
 import { ToastrModule } from 'ngx-toastr';
 
@@ -32,7 +33,8 @@ import { ToastrModule } from 'ngx-toastr';
     ProfileComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    SettingsComponent
+    SettingsComponent,
+
   ],
   imports: [
     BrowserModule,

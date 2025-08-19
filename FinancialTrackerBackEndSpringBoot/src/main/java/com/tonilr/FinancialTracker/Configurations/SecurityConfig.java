@@ -62,6 +62,10 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.PUT, "/user/{userId}/settings").authenticated()
             .requestMatchers("/user/*/settings").authenticated()  // Añadir esta línea
             .requestMatchers("/account/**", "/transaction/**").authenticated() // Añadir transaction endpoints
+            // Permitir acceso público a endpoints del sistema
+            .requestMatchers("/api/system/**").permitAll()
+            .requestMatchers("/api/test/**").permitAll()
+            .requestMatchers("/actuator/**").permitAll()
             .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
@@ -113,6 +117,8 @@ public class SecurityConfig {
         // Permitir todos los orígenes que necesites
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:4200", 
+            "http://localhost:8080",
+            "http://localhost:3000",
             "https://myfinancialtracker.netlify.app",
             "https://financialtracker-production.up.railway.app"
         ));

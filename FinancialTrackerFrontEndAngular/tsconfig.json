@@ -24,7 +24,8 @@
     ],
     "useDefineForClassFields": false,
     "types": [
-      "body-parser"
+      "body-parser",
+      "jasmine"
     ]
   },
   "angularCompilerOptions": {

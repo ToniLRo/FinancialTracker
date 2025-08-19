@@ -21,8 +21,8 @@ export class MaintenanceInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadMaintenanceInfo();
-    // Actualizar cada 5 minutos
-    this.interval = setInterval(() => this.loadMaintenanceInfo(), 300000);
+    // Actualizar cada 3 minutos (más eficiente que 5 minutos)
+    this.interval = setInterval(() => this.loadMaintenanceInfo(), 180000);
   }
 
   ngOnDestroy() {
@@ -35,14 +35,14 @@ export class MaintenanceInfoComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = false;
 
-    this.http.get(`${environment.apiUrl}/api/app-status/status`)
+    this.http.get(`${environment.apiUrl}/api/system/status`)
       .subscribe({
         next: (response: any) => {
           this.maintenanceInfo = {
-            status: response.status || 'UNKNOWN',
-            schedule: response.schedule || 'N/A',
-            nextStart: response.nextStart || 'N/A',
-            scheduleStatus: response.scheduleStatus || 'UNKNOWN',
+            status: response.active ? 'UP' : 'DOWN',
+            schedule: `Lun-Vie ${response.fromHour}:00-${response.toHour}:00`,
+            nextStart: this.getNextStartTime(response),
+            scheduleStatus: response.active ? 'ACTIVO' : 'INACTIVO',
             message: this.generateMessage(response)
           };
           this.isLoading = false;
@@ -55,45 +55,40 @@ export class MaintenanceInfoComponent implements OnInit, OnDestroy {
       });
   }
 
+  private getNextStartTime(response: any): string {
+    if (response.active) {
+      return 'Disponible ahora';
+    }
+    
+    // Si es fin de semana, próximo lunes
+    const currentDay = response.currentDay;
+    if (currentDay === 'SATURDAY' || currentDay === 'SUNDAY') {
+      return 'Lunes 10:00';
+    }
+    
+    // Si es fuera de horario, próximo día laboral
+    return 'Próximo día laboral 10:00';
+  }
+
   private generateMessage(response: any): string {
-    if (response.status === 'UP' && response.scheduleStatus === 'ACTIVO') {
+    if (response.active) {
       return 'La aplicación está funcionando normalmente.';
     }
 
-    if (response.scheduleStatus === 'INACTIVO') {
-      return 'La aplicación está temporalmente cerrada por horario de trabajo.';
-    }
-
-    if (response.schedule && response.schedule.includes('Fin de semana')) {
+    if (response.currentDay === 'SATURDAY' || response.currentDay === 'SUNDAY') {
       return 'La aplicación está cerrada durante el fin de semana.';
     }
 
-    if (response.nextStart && response.nextStart.includes('Lunes')) {
-      return 'La aplicación estará disponible el próximo lunes a las 10:00.';
+    if (!response.active && response.currentTime) {
+      const currentHour = parseInt(response.currentTime.split(':')[0]);
+      if (currentHour < response.fromHour) {
+        return `La aplicación estará disponible hoy a las ${response.fromHour}:00.`;
+      } else if (currentHour >= response.toHour) {
+        return 'La aplicación estará disponible mañana a las 10:00.';
+      }
     }
 
     return 'La aplicación está temporalmente no disponible.';
-  }
-
-  getStatusClass(): string {
-    if (!this.maintenanceInfo) return '';
-    
-    if (this.maintenanceInfo.status === 'UP' && this.maintenanceInfo.scheduleStatus === 'ACTIVO') {
-      return 'status-active';
-    }
-    
-    return 'status-maintenance';
-  }
-
-  getCurrentTime(): string {
-    return new Date().toLocaleString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   }
 
   refreshInfo() {

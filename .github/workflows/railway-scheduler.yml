@@ -1,0 +1,52 @@
+name: Railway Scheduler
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # cada 15 min (cron en UTC)
+  workflow_dispatch:
+
+jobs:
+  scheduler:
+    # Si tu rama principal no es main, cambia esta condición
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+      TIMEZONE: Europe/Madrid
+      BUSINESS_START: "10:00"
+      BUSINESS_END: "19:00"
+    steps:
+      - name: Alternar estado del servicio en Railway según horario
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${RAILWAY_TOKEN:-}" ] || [ -z "${RAILWAY_SERVICE_ID:-}" ]; then
+            echo "Faltan secretos RAILWAY_TOKEN o RAILWAY_SERVICE_ID"; exit 1
+          fi
+
+          export TZ="$TIMEZONE"
+          current_day=$(date +%u)  # 1=Lunes, 7=Domingo
+          H=$(date +%H); M=$(date +%M)
+          current_minutes=$((10#$H*60 + 10#$M))
+          start_minutes=$((10#${BUSINESS_START%:*}*60 + 10#${BUSINESS_START#*:}))
+          end_minutes=$((10#${BUSINESS_END%:*}*60 + 10#${BUSINESS_END#*:}))
+
+          if [ "$current_day" -ge 1 ] && [ "$current_day" -le 5 ] && \
+             [ "$current_minutes" -ge "$start_minutes" ] && [ "$current_minutes" -le "$end_minutes" ]; then
+            pause=false
+            echo "Dentro de horario (${BUSINESS_START}-${BUSINESS_END}, L-V). Reanudando servicio."
+          else
+            pause=true
+            echo "Fuera de horario. Poniendo servicio en pausa."
+          fi
+
+          json="{\"query\":\"mutation { serviceUpdate(id: \\\"$RAILWAY_SERVICE_ID\\\", pause: $pause) { id } }\"}"
+
+          resp=$(curl -sS -X POST https://backboard.railway.app/graphql/v2 \
+            -H "Authorization: Bearer $RAILWAY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$json")
+
+          echo "$resp"
+          echo "$resp" | grep -q '"errors"' && { echo "Error en Railway GraphQL"; exit 1; }

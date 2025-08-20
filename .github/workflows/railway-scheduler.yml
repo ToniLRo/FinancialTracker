@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "*/15 * * * *"   # cada 15 min (cron en UTC)
   workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Modo de prueba (no modifica Railway)'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   scheduler:
@@ -13,6 +19,7 @@ jobs:
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
       TIMEZONE: Europe/Madrid
       BUSINESS_START: "10:00"
       BUSINESS_END: "19:00"
@@ -21,32 +28,118 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          
+          # Verificar secretos
           if [ -z "${RAILWAY_TOKEN:-}" ] || [ -z "${RAILWAY_SERVICE_ID:-}" ]; then
-            echo "Faltan secretos RAILWAY_TOKEN o RAILWAY_SERVICE_ID"; exit 1
+            echo "❌ Error: Faltan secretos RAILWAY_TOKEN o RAILWAY_SERVICE_ID"
+            exit 1
           fi
 
+          # Configurar timezone
           export TZ="$TIMEZONE"
+          
+          # Obtener información de tiempo actual
           current_day=$(date +%u)  # 1=Lunes, 7=Domingo
-          H=$(date +%H); M=$(date +%M)
-          current_minutes=$((10#$H*60 + 10#$M))
-          start_minutes=$((10#${BUSINESS_START%:*}*60 + 10#${BUSINESS_START#*:}))
-          end_minutes=$((10#${BUSINESS_END%:*}*60 + 10#${BUSINESS_END#*:}))
+          current_hour=$(date +%H | sed 's/^0*//')  # Remover ceros iniciales
+          current_minute=$(date +%M | sed 's/^0*//')  # Remover ceros iniciales
+          
+          # Manejar casos especiales (hora 00 -> 0)
+          current_hour=${current_hour:-0}
+          current_minute=${current_minute:-0}
+          
+          # Calcular minutos totales desde medianoche
+          current_minutes=$((current_hour * 60 + current_minute))
+          
+          # Parsear horarios de negocio
+          start_hour=$(echo "$BUSINESS_START" | cut -d: -f1 | sed 's/^0*//')
+          start_minute=$(echo "$BUSINESS_START" | cut -d: -f2 | sed 's/^0*//')
+          end_hour=$(echo "$BUSINESS_END" | cut -d: -f1 | sed 's/^0*//')
+          end_minute=$(echo "$BUSINESS_END" | cut -d: -f2 | sed 's/^0*//')
+          
+          # Manejar casos especiales
+          start_hour=${start_hour:-0}
+          start_minute=${start_minute:-0}
+          end_hour=${end_hour:-0}
+          end_minute=${end_minute:-0}
+          
+          start_minutes=$((start_hour * 60 + start_minute))
+          end_minutes=$((end_hour * 60 + end_minute))
 
+          # Información de debug
+          echo "🕐 Hora actual: $(date '+%Y-%m-%d %H:%M %Z')"
+          echo "📅 Día de la semana: $current_day (1=Lunes, 7=Domingo)"
+          echo "⏰ Minutos actuales: $current_minutes"
+          echo "📝 Horario de negocio: $start_minutes - $end_minutes minutos"
+
+          # Determinar si debe estar activo
           if [ "$current_day" -ge 1 ] && [ "$current_day" -le 5 ] && \
              [ "$current_minutes" -ge "$start_minutes" ] && [ "$current_minutes" -le "$end_minutes" ]; then
             pause=false
-            echo "Dentro de horario (${BUSINESS_START}-${BUSINESS_END}, L-V). Reanudando servicio."
+            echo "✅ Dentro de horario (${BUSINESS_START}-${BUSINESS_END}, L-V). Reanudando servicio."
           else
             pause=true
-            echo "Fuera de horario. Poniendo servicio en pausa."
+            echo "🚫 Fuera de horario. Poniendo servicio en pausa."
           fi
 
+          # DEBUG: Mostrar información de secretos (sin revelar valores completos)
+          echo "🔍 Debug: Verificando configuración..."
+          echo "🔍 Debug: RAILWAY_TOKEN configurado: $([ -n "${RAILWAY_TOKEN:-}" ] && echo "SÍ" || echo "NO")"
+          echo "🔍 Debug: RAILWAY_SERVICE_ID configurado: $([ -n "${RAILWAY_SERVICE_ID:-}" ] && echo "SÍ" || echo "NO")"
+          echo "🔍 Debug: RAILWAY_PROJECT_ID configurado: $([ -n "${RAILWAY_PROJECT_ID:-}" ] && echo "SÍ" || echo "NO")"
+          
+          # Verificar PROJECT_ID
+          if [ -z "${RAILWAY_PROJECT_ID:-}" ]; then
+            echo "⚠️ Falta RAILWAY_PROJECT_ID. Intenta sin projectId (puede fallar)."
+          fi
+
+          echo "🔍 Debug: Construyendo JSON para GraphQL..."
+          
+          # Construir JSON con mutación estándar de Railway
           json="{\"query\":\"mutation { serviceUpdate(id: \\\"$RAILWAY_SERVICE_ID\\\", pause: $pause) { id } }\"}"
 
-          resp=$(curl -sS -X POST https://backboard.railway.app/graphql/v2 \
+          echo "🔍 Debug: JSON construido directamente"
+          echo "🔍 Debug: pause = $pause"
+          echo "🔍 Debug: JSON length = ${#json}"
+
+          # Verificar si es modo de prueba
+          if [ "${{ github.event.inputs.test_mode }}" = "true" ]; then
+            echo "🧪 MODO DE PRUEBA - No se enviará request a Railway"
+            echo "📡 JSON que se enviaría:"
+            echo "$json"
+            echo "✅ Prueba completada exitosamente"
+            exit 0
+          fi
+
+          echo "📡 Enviando request a Railway..."
+          
+          # Hacer llamada a Railway API
+          resp=$(curl -sS -w "HTTP_CODE:%{http_code}" -X POST https://backboard.railway.app/graphql/v2 \
             -H "Authorization: Bearer $RAILWAY_TOKEN" \
             -H "Content-Type: application/json" \
             -d "$json")
 
-          echo "$resp"
-          echo "$resp" | grep -q '"errors"' && { echo "Error en Railway GraphQL"; exit 1; }
+          # Separar respuesta y código HTTP
+          http_code=$(echo "$resp" | grep -o "HTTP_CODE:[0-9]*" | cut -d: -f2)
+          response_body=$(echo "$resp" | sed 's/HTTP_CODE:[0-9]*$//')
+
+          echo "📋 Respuesta HTTP: $http_code"
+          echo "📄 Respuesta: $response_body"
+          
+          # Verificar código HTTP
+          if [ "$http_code" != "200" ]; then
+            echo "❌ Error HTTP: $http_code"
+            exit 1
+          fi
+          
+          # Verificar errores en GraphQL
+          if echo "$response_body" | grep -q '"errors"'; then
+            echo "❌ Error en Railway GraphQL:"
+            echo "$response_body"
+            echo "🔎 Sugerencias:"
+            echo " - Verifica que el secreto RAILWAY_TOKEN sea un token de proyecto con permisos."
+            echo " - Añade el secreto RAILWAY_PROJECT_ID si no está definido."
+            echo " - Comprueba que RAILWAY_SERVICE_ID pertenece al proyecto indicado."
+            exit 1
+          fi
+          
+          echo "✅ Operación completada exitosamente"

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -78,36 +78,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    // Método programado que se ejecuta automáticamente - SIN PARÁMETROS
-    @Scheduled(cron = "0 0 9 1 * *") // Primer día del mes 9AM
-    public void sendMonthlyReport() {
-        try {
-            System.out.println("📊 Iniciando envío de reportes mensuales...");
-            
-            // Obtener todos los usuarios (por ahora todos, ya que no hay campo active)
-            List<Users> allUsers = usersRepo.findAll();
-            System.out.println("👥 Usuarios encontrados: " + allUsers.size());
-            
-            LocalDate endDate = LocalDate.now();
-            LocalDate startDate = endDate.minusMonths(1);
-            
-            for (Users user : allUsers) {
-                try {
-                    sendMonthlyReportForUser(user.getEmail(), user.getUser_Id(), startDate, endDate);
-                    System.out.println("✅ Reporte enviado para usuario: " + user.getEmail());
-                } catch (Exception e) {
-                    System.err.println("❌ Error enviando reporte para usuario " + user.getEmail() + ": " + e.getMessage());
-                    // Continuar con el siguiente usuario
-                }
-            }
-            
-            System.out.println("🎉 Proceso de reportes mensuales completado");
-            
-        } catch (Exception e) {
-            System.err.println("❌ Error general en sendMonthlyReport: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+
 
     // Método privado para enviar reporte a un usuario específico
     private void sendMonthlyReportForUser(String toEmail, Long userId, LocalDate startDate, LocalDate endDate) {

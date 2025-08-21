@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap, switchMap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { ScheduleService } from '../services/schedule.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,32 +9,19 @@ import { environment } from '../../environments/environment';
 export class MaintenanceGuard implements CanActivate {
 
   constructor(
-    private http: HttpClient,
+    private scheduleService: ScheduleService,
     private router: Router
   ) {}
 
   canActivate(): Observable<boolean> {
-
-    return this.http.get<{ active: boolean; maintenance: boolean; isProduction: boolean }>(`${environment.apiUrl}/api/system/status`).pipe(
-      tap(response => {
-      }),
-      map(response => {
-        
-        if (response.active) {
-          return true;
-        } else {
-          // Redirigir inmediatamente a mantenimiento
-          this.router.navigate(['/maintenance']);
-          return false;
-        }
-      }),
-      catchError(error => {
-        console.error('MaintenanceGuard: Error al verificar estado:', error);
-        
-        // Redirigir inmediatamente a mantenimiento en caso de error
-        this.router.navigate(['/maintenance']);
-        return of(false);
-      })
-    );
+    // Verificar si la aplicación está en modo mantenimiento
+    if (this.scheduleService.isMaintenanceMode()) {
+      // Redirigir inmediatamente a mantenimiento
+      this.router.navigate(['/maintenance']);
+      return of(false);
+    }
+    
+    // La aplicación está activa, permitir acceso
+    return of(true);
   }
 }

@@ -1,8 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-import { MaintenanceInfo } from '../../models/maintenance-info/maintenance-info.model';
+import { ScheduleService, ScheduleStatus } from '../../services/schedule.service';
 
 @Component({
   selector: 'app-maintenance-info',
@@ -12,12 +10,12 @@ import { MaintenanceInfo } from '../../models/maintenance-info/maintenance-info.
   styleUrls: ['./maintenance-info.component.css']
 })
 export class MaintenanceInfoComponent implements OnInit, OnDestroy {
-  maintenanceInfo: MaintenanceInfo | null = null;
-  isLoading = true; 
+  maintenanceInfo: any = null;
+  isLoading = false; 
   error = false;
   private interval: any;
 
-  constructor(private http: HttpClient) {}
+  constructor(private scheduleService: ScheduleService) {}
 
   ngOnInit() {
     this.loadMaintenanceInfo();
@@ -35,60 +33,23 @@ export class MaintenanceInfoComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = false;
 
-    this.http.get(`${environment.apiUrl}/api/system/status`)
-      .subscribe({
-        next: (response: any) => {
-          this.maintenanceInfo = {
-            status: response.active ? 'UP' : 'DOWN',
-            schedule: `Lun-Vie ${response.fromHour}:00-${response.toHour}:00`,
-            nextStart: this.getNextStartTime(response),
-            scheduleStatus: response.active ? 'ACTIVO' : 'INACTIVO',
-            message: this.generateMessage(response)
-          };
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Error loading maintenance info:', err);
-          this.error = true;
-          this.isLoading = false;
-        }
-      });
-  }
-
-  private getNextStartTime(response: any): string {
-    if (response.active) {
-      return 'Disponible ahora';
+    try {
+      const status = this.scheduleService.getSystemStatus();
+      
+      this.maintenanceInfo = {
+        status: status.active ? 'UP' : 'DOWN',
+        schedule: `Lun-Vie ${status.fromHour}:00-${status.toHour}:00`,
+        nextStart: this.scheduleService.getNextStartTime(),
+        scheduleStatus: status.active ? 'ACTIVO' : 'INACTIVO',
+        message: this.scheduleService.generateMaintenanceMessage()
+      };
+      
+      this.isLoading = false;
+    } catch (err) {
+      console.error('Error loading maintenance info:', err);
+      this.error = true;
+      this.isLoading = false;
     }
-    
-    // Si es fin de semana, próximo lunes
-    const currentDay = response.currentDay;
-    if (currentDay === 'SATURDAY' || currentDay === 'SUNDAY') {
-      return 'Lunes 10:00';
-    }
-    
-    // Si es fuera de horario, próximo día laboral
-    return 'Próximo día laboral 10:00';
-  }
-
-  private generateMessage(response: any): string {
-    if (response.active) {
-      return 'La aplicación está funcionando normalmente.';
-    }
-
-    if (response.currentDay === 'SATURDAY' || response.currentDay === 'SUNDAY') {
-      return 'La aplicación está cerrada durante el fin de semana.';
-    }
-
-    if (!response.active && response.currentTime) {
-      const currentHour = parseInt(response.currentTime.split(':')[0]);
-      if (currentHour < response.fromHour) {
-        return `La aplicación estará disponible hoy a las ${response.fromHour}:00.`;
-      } else if (currentHour >= response.toHour) {
-        return 'La aplicación estará disponible mañana a las 10:00.';
-      }
-    }
-
-    return 'La aplicación está temporalmente no disponible.';
   }
 
   refreshInfo() {

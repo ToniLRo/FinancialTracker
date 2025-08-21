@@ -2,7 +2,7 @@ package com.tonilr.FinancialTracker.Services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Service;
 
 import java.lang.management.ManagementFactory;
@@ -94,62 +94,9 @@ public class MemoryMonitorService {
         return status;
     }
     
-    /**
-     * Monitoreo programado cada 2 minutos
-     */
-    @Scheduled(fixedRate = 120000) // 2 minutos
-    public void logMemoryStatus() {
-        Map<String, Object> status = getMemoryStatus();
-        String pressure = (String) status.get("memoryPressure");
-        double heapUsage = (Double) status.get("heapUsagePercent");
-        
-        // Log según el nivel de presión
-        switch (pressure) {
-            case "CRITICAL":
-                if (criticalAlertCounter.incrementAndGet() <= 3) { // Máximo 3 alertas críticas
-                    log.error("🚨 MEMORIA CRÍTICA: Heap usado: {}%, Sistema: {}%", 
-                        heapUsage, status.get("systemMemoryUsage"));
-                    triggerEmergencyCleanup();
-                }
-                break;
-            case "HIGH":
-                if (alertCounter.incrementAndGet() <= 5) { // Máximo 5 alertas
-                    log.warn("⚠️ MEMORIA ALTA: Heap usado: {}%, Sistema: {}%", 
-                        heapUsage, status.get("systemMemoryUsage"));
-                    triggerMemoryOptimization();
-                }
-                break;
-            case "NORMAL":
-                log.info("✅ Memoria OK: Heap usado: {}%, Sistema: {}%", 
-                    heapUsage, status.get("systemMemoryUsage"));
-                // Resetear contadores si la memoria está bien
-                alertCounter.set(0);
-                criticalAlertCounter.set(0);
-                break;
-            case "LOW":
-                log.debug("💚 Memoria baja: Heap usado: {}%, Sistema: {}%", 
-                    heapUsage, status.get("systemMemoryUsage"));
-                break;
-        }
-    }
+
     
-    /**
-     * Limpieza programada cada 10 minutos
-     */
-    @Scheduled(fixedRate = 600000) // 10 minutos
-    public void scheduledCleanup() {
-        log.info("🧹 Ejecutando limpieza programada de memoria...");
-        performMemoryCleanup();
-    }
-    
-    /**
-     * Optimización programada cada 30 minutos
-     */
-    @Scheduled(fixedRate = 1800000) // 30 minutos
-    public void scheduledOptimization() {
-        log.info("🔄 Ejecutando optimización programada...");
-        performMemoryOptimization();
-    }
+
     
     /**
      * Determina el nivel de presión de memoria

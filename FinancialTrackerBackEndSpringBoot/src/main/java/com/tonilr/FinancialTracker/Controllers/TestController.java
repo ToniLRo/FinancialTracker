@@ -4,19 +4,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.tonilr.FinancialTracker.Services.UsersServices;
 import com.tonilr.FinancialTracker.Entities.Users;
+import com.tonilr.FinancialTracker.dto.UserSummaryDTO;
+import com.tonilr.FinancialTracker.dto.UsersListResponse;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Profile({"dev", "local"})
 @RequestMapping("/api/test")
 public class TestController {
 
-	@Autowired
-	private UsersServices usersServices;
+	private static final Logger logger = LoggerFactory.getLogger(TestController.class);
+
+	private final UsersServices usersServices;
+
+	public TestController(UsersServices usersServices) {
+		this.usersServices = usersServices;
+	}
 
 	@GetMapping("/ping")
 	public ResponseEntity<Map<String, Object>> ping() {
@@ -38,25 +48,23 @@ public class TestController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<Map<String, Object>> getUsers() {
+	public ResponseEntity<UsersListResponse> getUsers() {
 		try {
+			logger.info("Solicitando lista de usuarios de prueba");
 			List<Users> users = usersServices.findAllUsers();
-			Map<String, Object> response = new HashMap<>();
-			response.put("totalUsers", users.size());
-			response.put("users", users.stream().map(user -> {
-				Map<String, Object> userInfo = new HashMap<>();
-				userInfo.put("id", user.getUser_Id());
-				userInfo.put("username", user.getUsername());
-				userInfo.put("email", user.getEmail());
-				userInfo.put("registerDate", user.getRegisterDate());
-				return userInfo;
-			}).toList());
-			response.put("message", "Usuarios obtenidos correctamente");
+			List<UserSummaryDTO> userDtos = users.stream()
+				.map(user -> new UserSummaryDTO(
+					user.getUser_Id(),
+					user.getUsername(),
+					user.getEmail(),
+					user.getRegisterDate() != null ? user.getRegisterDate().toString() : null
+				))
+				.toList();
+			UsersListResponse response = new UsersListResponse(userDtos.size(), userDtos, "Usuarios obtenidos correctamente");
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-			Map<String, Object> errorResponse = new HashMap<>();
-			errorResponse.put("error", "Error obteniendo usuarios: " + e.getMessage());
-			return ResponseEntity.badRequest().body(errorResponse);
+			logger.error("Error obteniendo usuarios en TestController", e);
+			return ResponseEntity.badRequest().build();
 		}
 	}
 }

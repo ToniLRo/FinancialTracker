@@ -3,7 +3,7 @@ package com.tonilr.FinancialTracker.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Service;
 
 import java.lang.management.ManagementFactory;
@@ -105,63 +105,9 @@ public class ResourceOptimizationService {
         return status;
     }
     
-    /**
-     * Monitoreo programado cada 1 minuto
-     */
-    @Scheduled(fixedRate = 60000) // 1 minuto
-    public void logResourceStatus() {
-        Map<String, Object> status = getResourceStatus();
-        String pressure = (String) status.get("systemPressure");
-        double cpuUsage = (Double) status.get("cpuUsage");
-        int threadCount = (Integer) status.get("threadCount");
-        
-        // Log según el nivel de presión
-        switch (pressure) {
-            case "CRITICAL":
-                if (cpuAlertCounter.incrementAndGet() <= 3) {
-                    log.error("🚨 RECURSOS CRÍTICOS: CPU: {}%, Threads: {}, Presión: {}", 
-                        cpuUsage, threadCount, pressure);
-                    triggerEmergencyOptimization();
-                }
-                break;
-            case "HIGH":
-                if (cpuAlertCounter.incrementAndGet() <= 5) {
-                    log.warn("⚠️ RECURSOS ALTOS: CPU: {}%, Threads: {}, Presión: {}", 
-                        cpuUsage, threadCount, pressure);
-                    triggerResourceOptimization();
-                }
-                break;
-            case "NORMAL":
-                log.info("✅ Recursos OK: CPU: {}%, Threads: {}, Presión: {}", 
-                    cpuUsage, threadCount, pressure);
-                // Resetear contadores si los recursos están bien
-                cpuAlertCounter.set(0);
-                threadAlertCounter.set(0);
-                break;
-            case "LOW":
-                log.debug("💚 Recursos bajos: CPU: {}%, Threads: {}, Presión: {}", 
-                    cpuUsage, threadCount, pressure);
-                break;
-        }
-    }
+
     
-    /**
-     * Optimización programada cada 15 minutos
-     */
-    @Scheduled(fixedRate = 900000) // 15 minutos
-    public void scheduledOptimization() {
-        log.info("🔄 Ejecutando optimización programada de recursos...");
-        performResourceOptimization();
-    }
-    
-    /**
-     * Limpieza programada cada 20 minutos
-     */
-    @Scheduled(fixedRate = 1200000) // 20 minutos
-    public void scheduledCleanup() {
-        log.info("🧹 Ejecutando limpieza programada de recursos...");
-        performResourceCleanup();
-    }
+
     
     /**
      * Determina el nivel de presión del sistema

@@ -85,10 +85,7 @@ export class AppComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error checking maintenance status:', error);
-          // En caso de error, redirigir a mantenimiento
-          if (this.router.url !== '/maintenance') {
-            this.router.navigate(['/maintenance']);
-          }
+          // No redirigir por error del endpoint; mantener experiencia si estamos en horario
         }
       });
     }

@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { TransactionService } from 'src/app/services/transaction/transaction.service';
 import { AccountService } from 'src/app/services/account/account.service';
 import { Transaction } from 'src/app/models/Transaction/transaction.model';
@@ -21,7 +22,8 @@ export interface FilterCriteria {
     templateUrl: './payments.component.html',
     styleUrls: ['./payments.component.css'],
     encapsulation: ViewEncapsulation.None,
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentsComponent implements OnInit {
   // ViewChild references for form inputs
@@ -110,10 +112,10 @@ export class PaymentsComponent implements OnInit {
     this.error = null;
     
     try {
-      // Cargar cuentas y transacciones en paralelo
+      // Cargar cuentas y transacciones en paralelo usando firstValueFrom
       const [accounts, transactions] = await Promise.all([
-        this.accountService.getAccounts().toPromise(),
-        this.transactionService.getAllUserTransactions().toPromise()
+        firstValueFrom(this.accountService.getAccounts()),
+        firstValueFrom(this.transactionService.getAllUserTransactions())
       ]);
       
       this.accounts = accounts || [];

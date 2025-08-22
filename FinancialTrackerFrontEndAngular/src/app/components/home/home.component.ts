@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { HttpInterceptor, HttpHandler, HttpEvent, HttpRequest, HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { MarketTimerService } from 'src/app/services/market-timer.service';
 
 @Component({
     selector: 'home',
@@ -73,7 +74,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private marketDataService: MarketDataService,
     private apiUpdateControlService: ApiUpdateControlService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private marketTimerService: MarketTimerService
   ) {
     Chart.register(
       CategoryScale, 
@@ -114,6 +116,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
+    
+    // Limpiar timers de mercado usando el servicio
+    this.marketTimerService.cleanup();
   }
 
   //loadDashboardData: NO usar fallback nunca
@@ -673,12 +678,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadStockData();
     this.loadCurrencyPrices();
 
-    // Configurar actualizaciones periódicas
-    this.cryptoUpdateTimers = setInterval(() => this.loadCryptoPrices(), this.UPDATE_INTERVALS.CRYPTO);
-    this.forexUpdateTimers = setInterval(() => this.loadCurrencyPrices(), this.UPDATE_INTERVALS.FOREX);
-    this.stockUpdateTimers = setInterval(() => this.loadStockData(), this.UPDATE_INTERVALS.STOCKS);
-
-}
+    // Configurar actualizaciones periódicas usando el servicio optimizado
+    this.marketTimerService.startTimer('CRYPTO', () => this.loadCryptoPrices());
+    this.marketTimerService.startTimer('FOREX', () => this.loadCurrencyPrices());
+    this.marketTimerService.startTimer('STOCKS', () => this.loadStockData());
+  }
 
   // Cargar divisas
 loadCurrencyPrices(): void {
@@ -1247,14 +1251,6 @@ private getStaticStockData(symbol: string): any {
 
 private readonly STOCK_SYMBOLS = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'META', 'NVDA', 'JPM'];
 
-private readonly UPDATE_INTERVALS = {
-    CRYPTO: 5 * 60 * 1000,    // 5 minutos
-    FOREX: 32 * 60 * 1000,    // 32 minutos (45 llamadas/día)
-    STOCKS: 16 * 60 * 1000    // 16 minutos
-};
-
-private cryptoUpdateTimers: { [key: string]: any } = {};
-private forexUpdateTimers: { [key: string]: any } = {};
-private stockUpdateTimers: { [key: string]: any } = {};
+// Los intervalos ahora se manejan en MarketTimerService
 
 }

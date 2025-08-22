@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, tap, shareReplay, take } from 'rxjs/operators';
 import { Transaction } from 'src/app/models/Transaction/transaction.model';
 import { environment } from 'src/environments/environment';
 
@@ -10,18 +10,31 @@ import { environment } from 'src/environments/environment';
 })
 export class TransactionService {
   private transactionApiUrl = environment.apiUrl+"/transaction";
+  
+  // Cache de headers para evitar recrearlos en cada request
+  private authHeaders$ = new BehaviorSubject<HttpHeaders | null>(null);
 
   constructor(private http: HttpClient) { }
 
   private getAuthHeaders(): HttpHeaders {
+    // Usar cache de headers si existe
+    if (this.authHeaders$.value) {
+      return this.authHeaders$.value;
+    }
+    
     const token = localStorage.getItem('jwt_token');
     if (!token) {
       console.warn('No authentication token found in localStorage');
     }
-    return new HttpHeaders({
+    
+    const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
+    
+    // Cachear headers
+    this.authHeaders$.next(headers);
+    return headers;
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -36,12 +49,10 @@ export class TransactionService {
   }
 
   getAllUserTransactions(): Observable<Transaction[]> {
-    //console.log('=== TRANSACTION SERVICE - GET ALL USER TRANSACTIONS ===');
-    
     return this.http.get<Transaction[]>(`${this.transactionApiUrl}/user`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      //tap(response => console.log('✅ All User Transactions Response:', response)),
+      shareReplay(1), // Cachea las transacciones del usuario
       catchError(error => {
         console.error('❌ Get All User Transactions Error:', error);
         return this.handleError(error);
@@ -50,13 +61,10 @@ export class TransactionService {
   }
 
   getAccountTransactions(accountId: number): Observable<Transaction[]> {
-    //console.log('=== TRANSACTION SERVICE - GET ACCOUNT TRANSACTIONS ===');
-    //console.log('Request AccountId:', accountId);
-    
     return this.http.get<Transaction[]>(`${this.transactionApiUrl}/account/${accountId}`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      //tap(response => console.log('✅ Account Transactions Response:', response)),
+      shareReplay(1), // Cachea las transacciones de la cuenta
       catchError(error => {
         console.error('❌ Get Account Transactions Error:', error);
         return this.handleError(error);
@@ -68,18 +76,16 @@ export class TransactionService {
     return this.http.post<Transaction>(`${this.transactionApiUrl}/add`, transaction, { 
       headers: this.getAuthHeaders() 
     }).pipe(
+      take(1), // Asegura que se complete automáticamente
       catchError(this.handleError.bind(this))
     );
   }
 
   updateTransaction(transaction: any): Observable<Transaction> {
-    //console.log('=== TRANSACTION SERVICE - UPDATE TRANSACTION ===');
-    //console.log('Updating transaction:', transaction);
-    
     return this.http.put<Transaction>(`${this.transactionApiUrl}/update`, transaction, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      //tap(response => console.log('✅ Update Transaction Response:', response)),
+      take(1), // Asegura que se complete automáticamente
       catchError(error => {
         console.error('❌ Update Transaction Error:', error);
         return this.handleError(error);
@@ -88,13 +94,10 @@ export class TransactionService {
   }
 
   deleteTransaction(transactionId: number): Observable<any> {
-    //console.log('=== TRANSACTION SERVICE - DELETE TRANSACTION ===');
-    //console.log('Deleting transaction ID:', transactionId);
-    
     return this.http.delete<any>(`${this.transactionApiUrl}/delete/${transactionId}`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      //tap(response => console.log('✅ Delete Transaction Response:', response)),
+      take(1), // Asegura que se complete automáticamente
       catchError(error => {
         console.error('❌ Delete Transaction Error:', error);
         return this.handleError(error);

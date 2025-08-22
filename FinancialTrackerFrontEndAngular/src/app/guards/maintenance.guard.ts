@@ -17,7 +17,7 @@ export class MaintenanceGuard implements CanActivate {
     // Verificar si la aplicación está en modo mantenimiento
     if (this.scheduleService.isMaintenanceMode()) {
       // Redirigir inmediatamente a mantenimiento
-      this.router.navigate(['/maintenance']);
+              this.router.navigate(['/info']);
       return of(false);
     }
     

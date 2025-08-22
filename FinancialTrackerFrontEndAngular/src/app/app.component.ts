@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
         filter(event => event instanceof NavigationEnd)
       ).subscribe((event: NavigationEnd) => {
         this.currentRoute = event.urlAfterRedirects;
-        this.isMaintenanceRoute = event.url === '/maintenance';
+        this.isMaintenanceRoute = event.url === '/info';
         //console.log('Ruta actual:', this.currentRoute);
       })
     );
@@ -55,7 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   shouldShowNavbar(): boolean {
     // No mostrar navbar en rutas públicas o mantenimiento
-    const publicRoutes = ['/LogIn', '/SignUp', '/maintenance'];
+    const publicRoutes = ['/LogIn', '/SignUp', '/info'];
     
     if (publicRoutes.some(route => this.currentRoute.includes(route))) {
       //console.log('No mostrar navbar - ruta pública:', this.currentRoute);
@@ -79,8 +79,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.http.get(`${environment.apiUrl}/api/system/status`).subscribe({
         next: (response: any) => {
           const isActive = response.active;
-          if (!isActive && this.router.url !== '/maintenance') {
-            this.router.navigate(['/maintenance']);
+                if (!isActive && this.router.url !== '/info') {
+        this.router.navigate(['/info']);
           }
         },
         error: (error) => {

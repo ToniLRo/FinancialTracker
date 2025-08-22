@@ -1,6 +1,5 @@
 package com.tonilr.FinancialTracker.exceptions;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,12 +21,5 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return ResponseEntity.badRequest().body(errors);
-    }
-
-    @ExceptionHandler(SQLInjectionException.class)
-    public ResponseEntity<?> handleSQLInjectionException(SQLInjectionException ex) {
-        return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body("Invalid input detected");
     }
 }

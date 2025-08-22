@@ -5,7 +5,7 @@ import { MyWalletsComponent } from './components/my-wallets/my-wallets.component
 import { PaymentsComponent } from './components/payments/payments.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { LogINComponent } from './components/log-in/log-in.component';
-import { AuthGuard } from './services/auth/auth.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { MaintenanceGuard } from './guards/maintenance.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
@@ -21,7 +21,7 @@ const routes: Routes = [
   { path: 'ResetPassword', component: ResetPasswordComponent, canActivate: [MaintenanceGuard] },
   
   // Ruta de mantenimiento (siempre accesible)
-  { path: 'maintenance', component: MaintenanceInfoComponent },
+  { path: 'info', component: MaintenanceInfoComponent },
   
   // Rutas protegidas que requieren autenticación Y verificación de mantenimiento
   { path: 'Home', component: HomeComponent, canActivate: [MaintenanceGuard, AuthGuard] },

@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LoginResponse } from 'src/app/models/LoginResponse/loginresponse.model';
 import { AuthService } from '../auth/auth.service';
-import { catchError, throwError } from 'rxjs';
+import { catchError, throwError, shareReplay, take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 
@@ -15,13 +15,7 @@ export class UsersService {
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
-  register(username: string, email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add`, { username, email, password });
-  }
-
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password });
-  }
+  // register() y login() eliminados - duplicados con AuthService
 
   getUserSettings(userId: number): Observable<any> {
     const headers = new HttpHeaders().set(
@@ -31,6 +25,8 @@ export class UsersService {
     
     return this.http.get(`${this.apiUrl}/user/${userId}/settings`, { headers })
         .pipe(
+            shareReplay(1), // Cachea los settings del usuario
+            take(1), // Asegura que se complete automáticamente
             catchError(error => {
                 console.error('Error al obtener settings:', error);
                 return throwError(() => error);
@@ -40,10 +36,15 @@ export class UsersService {
 
 updateUserSettings(userId: number, settings: any): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.put<any>(`${this.apiUrl}/user/${userId}/settings`, settings, { headers });
+    return this.http.put<any>(`${this.apiUrl}/user/${userId}/settings`, settings, { headers }).pipe(
+        take(1) // Asegura que se complete automáticamente
+    );
 }
 
   getUserById(userId: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/find/${userId}`);
+    return this.http.get<any>(`${this.apiUrl}/find/${userId}`).pipe(
+        shareReplay(1), // Cachea los datos del usuario
+        take(1) // Asegura que se complete automáticamente
+    );
   }
 }

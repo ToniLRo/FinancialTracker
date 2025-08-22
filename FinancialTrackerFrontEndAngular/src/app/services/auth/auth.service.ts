@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { LoginResponse } from 'src/app/models/LoginResponse/loginresponse.model';
 import { User } from 'src/app/models/User/user.model';
 import { ChangePasswordRequest } from 'src/app/models/ChangePasswordRequest.model';
-import { tap } from 'rxjs/operators';
+import { tap, shareReplay, take } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 
@@ -23,39 +23,44 @@ export class AuthService {
     return userStr ? JSON.parse(userStr) : null;
   }
 
-  // Métodos HTTP
-  register(username: string, email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add`, { username, email, password });
+  // Métodos HTTP con tipado mejorado
+  register(username: string, email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/add`, { username, email, password }).pipe(
+      take(1) // Asegura que se complete automáticamente
+    );
   }
 
-  login(username: string, password: string, keepSignedIn: boolean = false): Observable<any> {
-    //console.log('🔐 Login attempt:', { username, keepSignedIn });
-
-    return this.http.post<any>(`${this.apiUrl}/login`, { username, password }).pipe(
+  login(username: string, password: string, keepSignedIn: boolean = false): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }).pipe(
         tap(response => {
             if (response.token) {
                 if (keepSignedIn) {
                     localStorage.setItem('jwt_token', response.token);
-                    //console.log('✅ Token guardado en localStorage (Keep me signed in)');
                 } else {
                     sessionStorage.setItem('jwt_token', response.token);
-                    //console.log('✅ Token guardado en sessionStorage (sesión normal)');
                 }
             }
-        })
+        }),
+        take(1) // Asegura que se complete automáticamente
     );
   }
 
   changePassword(request: ChangePasswordRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/change-password`, request);
+    return this.http.post(`${this.apiUrl}/change-password`, request).pipe(
+      take(1)
+    );
   }
 
   forgotPassword(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email }).pipe(
+      take(1)
+    );
   }
 
   resetPassword(resetData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reset-password`, resetData);
+    return this.http.post(`${this.apiUrl}/reset-password`, resetData).pipe(
+      take(1)
+    );
   }
 
   // Métodos de autenticación
@@ -104,8 +109,10 @@ export class AuthService {
     }
   }
 
-  getUserProfile(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/profile`);
+  getUserProfile(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/profile`).pipe(
+      shareReplay(1) // Cachea el perfil del usuario
+    );
   }
 }
 

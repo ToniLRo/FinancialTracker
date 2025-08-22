@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, Renderer2, ViewChild, OnDestroy } from '@angular/core';
 import { AccountService, Transaction } from 'src/app/services/account/account.service';
 import { Account } from 'src/app/models/account/account.model';
 import Swiper from 'swiper';
@@ -13,7 +13,7 @@ Swiper.use([Navigation, Pagination]);
     styleUrls: ['./my-wallets.component.css'],
     standalone: false
 })
-export class MyWalletsComponent implements OnInit, AfterViewInit {
+export class MyWalletsComponent implements OnInit, AfterViewInit, OnDestroy {
   accounts: Account[] = [];
   selectedAccount: Account | null = null;
   isEdit = false;
@@ -1542,6 +1542,14 @@ export class MyWalletsComponent implements OnInit, AfterViewInit {
       this.notificationService.showError(
         `La cuenta ${account.holder_name} tiene un saldo bajo: $${account.balance}`
       );
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Limpiar Swiper si existe
+    if (this.swiper) {
+      this.swiper.destroy(true, true);
+      this.swiper = null;
     }
   }
 }

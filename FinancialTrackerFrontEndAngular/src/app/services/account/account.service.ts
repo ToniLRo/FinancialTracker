@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, tap, shareReplay, take } from 'rxjs/operators';
 import { Account } from 'src/app/models/account/account.model';
-import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 export interface Transaction {
@@ -21,18 +20,31 @@ export class AccountService {
   private accountApiUrl = environment.apiUrl+"/account";
   private transactionApiUrl = environment.apiUrl+"/transaction";
   private dashboardApiUrl = environment.apiUrl+"/dashboard";
+  
+  // Cache de headers para evitar recrearlos en cada request
+  private authHeaders$ = new BehaviorSubject<HttpHeaders | null>(null);
 
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('jwt_token'); // CAMBIAR: de 'token' a 'jwt_token'
+    // Usar cache de headers si existe
+    if (this.authHeaders$.value) {
+      return this.authHeaders$.value;
+    }
+    
+    const token = localStorage.getItem('jwt_token');
     if (!token) {
       console.warn('No authentication token found in localStorage');
     }
-    return new HttpHeaders({
+    
+    const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
+    
+    // Cachear headers
+    this.authHeaders$.next(headers);
+    return headers;
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -47,24 +59,10 @@ export class AccountService {
   }
 
   getAccounts(): Observable<Account[]> {
-    //console.log('🔄 Getting user accounts...');
-    const token = localStorage.getItem('jwt_token');
-    //console.log('Token present:', !!token);
-    
     return this.http.get<Account[]>(`${this.accountApiUrl}/all`, { 
       headers: this.getAuthHeaders() 
     }).pipe(
-      tap(accounts => {
-        //console.log('✅ Received accounts:', accounts);
-        //console.log('Number of accounts:', accounts.length);
-        //accounts.forEach((account, index) => {
-          //console.log(`Account ${index}:`, {
-          //  id: account.account_Id,
-          //  name: account.holder_name,
-          //  userId: account.userId
-          //});
-        //});
-      }),
+      shareReplay(1), // Cachea las cuentas para evitar múltiples requests
       catchError(this.handleError.bind(this))
     );
   }
@@ -72,19 +70,25 @@ export class AccountService {
   addAccount(account: Partial<Account>): Observable<Account> {
     return this.http.post<Account>(`${this.accountApiUrl}/add`, account, { 
       headers: this.getAuthHeaders() 
-    });
+    }).pipe(
+      take(1) // Asegura que se complete automáticamente
+    );
   }
 
   updateAccount(account: Account): Observable<Account> {
     return this.http.put<Account>(`${this.accountApiUrl}/update`, account, { 
       headers: this.getAuthHeaders() 
-    });
+    }).pipe(
+      take(1) // Asegura que se complete automáticamente
+    );
   }
 
   deleteAccount(id: number): Observable<void> {
     return this.http.delete<void>(`${this.accountApiUrl}/delete/${id}`, { 
       headers: this.getAuthHeaders() 
-    });
+    }).pipe(
+      take(1) // Asegura que se complete automáticamente
+    );
   }
 
   getAccountTransactions(accountId: number): Observable<Transaction[]> {

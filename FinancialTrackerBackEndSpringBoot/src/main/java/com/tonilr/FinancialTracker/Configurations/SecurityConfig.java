@@ -34,7 +34,7 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
-    private UserDetailsService userDetailsService; // Añadir esta línea
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private UserSettingsRepo userSettingsRepo;
@@ -43,7 +43,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf
-                .disable()  // Temporalmente deshabilitamos CSRF para pruebas
+                .ignoringRequestMatchers("/api/system/status") // Permitir CSRF para el endpoint crítico
+                .ignoringRequestMatchers("/auth/**") // Permitir CSRF para autenticación
+                .ignoringRequestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password")
             )
             .headers(headers -> headers
                 .frameOptions().deny()
@@ -51,22 +53,28 @@ public class SecurityConfig {
                 .and()
                 .contentSecurityPolicy("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https:;")
             )
-
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Añadir esta línea
-            .requestMatchers("/auth/**").permitAll()
-            .requestMatchers("/api/email/**").authenticated()
-            .requestMatchers("/marketdata/**").permitAll()
-            .requestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password").permitAll()
-            .requestMatchers(HttpMethod.GET, "/user/{userId}/settings").authenticated()
-            .requestMatchers(HttpMethod.PUT, "/user/{userId}/settings").authenticated()
-            .requestMatchers("/user/*/settings").authenticated()  // Añadir esta línea
-            .requestMatchers("/account/**", "/transaction/**").authenticated() // Añadir transaction endpoints
-            // Permitir acceso público a endpoints del sistema
-            .requestMatchers("/api/system/**").permitAll()
-            .requestMatchers("/api/test/**").permitAll()
-            .requestMatchers("/actuator/**").permitAll()
-            .anyRequest().authenticated()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/email/**").authenticated()
+                .requestMatchers("/marketdata/**").permitAll()
+                .requestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password").permitAll()
+                .requestMatchers(HttpMethod.GET, "/user/{userId}/settings").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/user/{userId}/settings").authenticated()
+                .requestMatchers("/user/*/settings").authenticated()
+                .requestMatchers("/account/**", "/transaction/**").authenticated()
+                
+                // Endpoint CRÍTICO para el sistema de ahorro de costos - SIEMPRE público
+                .requestMatchers("/api/system/status").permitAll()
+                
+                // Endpoints de testing solo en desarrollo
+                .requestMatchers("/api/test/**").hasRole("ADMIN") // Solo admins en producción
+                .requestMatchers("/api/system/metrics").hasRole("ADMIN") // Solo admins
+                
+                // Actuator solo en desarrollo
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
+                
+                .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -74,13 +82,15 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        
+        log.info("Configuración de seguridad aplicada - CSRF habilitado, CORS unificado, endpoints restringidos");
         return http.build();
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Cambiar a la variable inyectada
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -88,21 +98,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200", "https://myfinancialtracker.netlify.app",
-                        "https://financialtracker-production.up.railway.app")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
-        };
     }
 
     @Bean
@@ -114,7 +109,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Permitir todos los orígenes que necesites
+        // Permitir orígenes específicos para seguridad
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:4200", 
             "http://localhost:8080",
@@ -123,10 +118,10 @@ public class SecurityConfig {
             "https://financialtracker-production.up.railway.app"
         ));
         
-        // Permitir todos los métodos HTTP
+        // Permitir métodos HTTP necesarios
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         
-        // Permitir todos los headers
+        // Permitir headers necesarios
         configuration.setAllowedHeaders(Arrays.asList("*"));
         
         // Permitir credenciales
@@ -137,6 +132,8 @@ public class SecurityConfig {
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+        
+        log.info("Configuración CORS aplicada - orígenes permitidos: {}", configuration.getAllowedOrigins());
         return source;
     }
 }

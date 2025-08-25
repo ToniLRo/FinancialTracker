@@ -46,6 +46,9 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/api/system/status") // Permitir CSRF para el endpoint crítico
                 .ignoringRequestMatchers("/auth/**") // Permitir CSRF para autenticación
                 .ignoringRequestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password")
+                .ignoringRequestMatchers("/marketdata/**") // Permitir CSRF para marketdata
+                .ignoringRequestMatchers("/api/update-control/**") // Permitir CSRF para update-control
+                .ignoringRequestMatchers("/api/test/health", "/api/test/cors-test") // Permitir CSRF para endpoints de prueba
             )
             .headers(headers -> headers
                 .frameOptions().deny()
@@ -58,6 +61,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/email/**").authenticated()
                 .requestMatchers("/marketdata/**").permitAll()
+                .requestMatchers("/api/update-control/**").permitAll() // Permitir explícitamente update-control
                 .requestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/user/{userId}/settings").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/user/{userId}/settings").authenticated()
@@ -66,6 +70,10 @@ public class SecurityConfig {
                 
                 // Endpoint CRÍTICO para el sistema de ahorro de costos - SIEMPRE público
                 .requestMatchers("/api/system/status").permitAll()
+                
+                // Endpoints de testing para debugging
+                .requestMatchers("/api/test/health").permitAll()
+                .requestMatchers("/api/test/cors-test").permitAll()
                 
                 // Endpoints de testing solo en desarrollo
                 .requestMatchers("/api/test/**").hasRole("ADMIN") // Solo admins en producción
@@ -110,12 +118,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Permitir orígenes específicos para seguridad
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:4200", 
-            "http://localhost:8080",
-            "http://localhost:3000",
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*",
             "https://myfinancialtracker.netlify.app",
-            "https://financialtracker-production.up.railway.app"
+            "https://*.up.railway.app"
         ));
         
         // Permitir métodos HTTP necesarios
@@ -133,7 +139,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         
-        log.info("Configuración CORS aplicada - orígenes permitidos: {}", configuration.getAllowedOrigins());
+        log.info("Configuración CORS Security aplicada - patrones permitidos: {}", configuration.getAllowedOriginPatterns());
         return source;
     }
 }

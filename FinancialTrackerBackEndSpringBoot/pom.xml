@@ -66,7 +66,7 @@
 		<dependency>
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
-		    <version>20230227</version> <!-- O la versión más reciente -->
+		    <version>20231013</version> <!-- O la versión más reciente -->
 		</dependency>
 		<dependency>
 	    <groupId>org.postgresql</groupId>

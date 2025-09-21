@@ -10,6 +10,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d miappdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: ./FinancialTrackerBackEndSpringBoot
@@ -24,7 +29,9 @@ services:
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
   frontend:
     build: ./FinancialTrackerFrontEndAngular

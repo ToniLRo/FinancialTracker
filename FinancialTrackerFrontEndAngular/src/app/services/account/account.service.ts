@@ -60,16 +60,10 @@ export class AccountService {
 
   getAccounts(): Observable<Account[]> {
     const headers = this.getAuthHeaders();
-    console.log('🔑 Account Service - Headers:', {
-      'Authorization': headers.get('Authorization')?.substring(0, 20) + '...',
-      'Content-Type': headers.get('Content-Type')
-    });
-    console.log('🔗 Account Service - URL:', `${this.accountApiUrl}/all`);
     
     return this.http.get<Account[]>(`${this.accountApiUrl}/all`, { 
       headers: headers 
     }).pipe(
-      tap(response => console.log('✅ Account Service Response:', response)),
       shareReplay(1), // Cachea las cuentas para evitar múltiples requests
       catchError(error => {
         console.error('❌ Account Service Error:', error);

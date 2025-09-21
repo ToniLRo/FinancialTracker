@@ -126,22 +126,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoadingDashboard = true;
     this.isLoadingCategories = true;
     
-    console.log('🔄 Loading dashboard data...');
     
     this.accountService.getDashboardData().subscribe({
       next: (data) => {
-        console.log('✅ Dashboard data received:', data);
-        console.log('�� monthlyIncomeChart:', data.monthlyIncomeChart);
-        console.log('📊 monthlyExpenseChart:', data.monthlyExpenseChart);
-        
-        // DEBUG: Mostrar información de transacciones si está disponible
-        if (data.transactions) {
-          console.log('📊 Raw transactions from backend:', data.transactions);
-          console.log('📊 Transaction count:', data.transactions.length);
-          if (data.transactions.length > 0) {
-            console.log('�� Sample transaction:', data.transactions[0]);
-          }
-        }
         
         this.dashboardData = {
           ...this.dashboardData,
@@ -203,22 +190,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   tryInitializeChart(): void {
-    console.log('🎯 TRY INIT CHART - dataLoaded:', this.dataLoaded, 'myChart:', !!this.myChart, 'chartInitialized:', this.chartInitialized);
     
     if (this.dataLoaded && this.myChart && !this.chartInitialized) {
-      console.log('🎯 TRY INIT CHART - Calling initChart()');
       this.initChart();
-    } else {
-      console.log('🎯 TRY INIT CHART - Conditions not met for chart initialization');
     }
   }
 
   initChart(): void {
-    console.log('🎯 INIT CHART - Starting chart initialization');
-    console.log('🎯 INIT CHART - Month labels:', this.getMonthLabels());
-    console.log('🎯 INIT CHART - Income data:', this.getIncomeData());
-    console.log('🎯 INIT CHART - Expense data:', this.getExpenseData());
-    
     if (!this.myChart?.nativeElement) {
       console.error('❌ Chart canvas element not available');
       return;
@@ -357,7 +335,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
 
-      console.log('🎯 INIT CHART - Chart created successfully');
       this.chartInitialized = true;
       this.isLoadingChart = false;
       
@@ -427,13 +404,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       return result;
     });
     
-    // Verificar si todos los datos son 0 (problema del backend)
-    const allZero = data.every(val => val === 0);
-    if (allZero) {
-      console.warn('⚠️ BACKEND ISSUE: All income data is 0 - check backend logs');
-    }
-    
-    console.log('📊 Final Income Data:', data);
     return data;
   }
 
@@ -457,13 +427,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       return result;
     });
     
-    // Verificar si todos los datos son 0 (problema del backend)
-    const allZero = data.every(val => val === 0);
-    if (allZero) {
-      console.warn('⚠️ BACKEND ISSUE: All expense data is 0 - check backend logs');
-    }
-    
-    console.log('📊 Final Expense Data:', data);
     return data;
   }
 

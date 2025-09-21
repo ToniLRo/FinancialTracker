@@ -73,10 +73,6 @@ export class PaymentsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('�� ngOnInit called');
-    console.log('�� Initial state - isLoading:', this.isLoading);
-    console.log('🔍 Initial state - error:', this.error);
-    console.log('🔍 Initial state - allTransactions:', this.allTransactions.length);
     this.loadInitialData();
   }
 
@@ -110,27 +106,16 @@ export class PaymentsComponent implements OnInit {
   }
 
   async loadInitialData(): Promise<void> {
-    console.log('🚀 STARTING loadInitialData');
-    console.log('🚀🚀🚀 DOCKER VERSION 3.0 - CAMBIO VISIBLE! 🚀🚀🚀');
-    console.log('✅✅✅ CÓDIGO ACTUALIZADO - VERSIÓN 3.0 ✅✅✅');
-    console.log('🔄 Fecha de actualización:', new Date().toLocaleString());
-    console.log('🎯 Si ves este mensaje, Docker está funcionando correctamente');
     
-    console.log('🔍 Before setting isLoading=true - current value:', this.isLoading);
     this.isLoading = true;
     this.error = null;
-    console.log('🔍 After setting isLoading=true - current value:', this.isLoading);
     
     this.cdr.detectChanges();
-    console.log('�� After first detectChanges - isLoading:', this.isLoading);
     
     try {
-      console.log('🔄 Loading transactions and accounts...');
       
       // Verificar si hay token de autenticación
       const token = localStorage.getItem('jwt_token');
-      console.log('🔑 Token found:', token ? 'YES' : 'NO');
-      console.log('🔑 Token value:', token ? token.substring(0, 20) + '...' : 'null');
       
       if (!token) {
         console.log('❌ No authentication token found');
@@ -140,28 +125,20 @@ export class PaymentsComponent implements OnInit {
         this.filteredTransactions = [];
         this.paginatedTransactions = [];
         this.isLoading = false;
-        console.log('�� No token - setting isLoading=false, value:', this.isLoading);
         this.cdr.detectChanges();
-        console.log('🔍 No token - after detectChanges, isLoading:', this.isLoading);
         return;
       }
       
-      console.log('✅ Authentication token found, proceeding with data load...');
       
       const [accounts, transactions] = await Promise.all([
         firstValueFrom(this.accountService.getAccounts()),
         firstValueFrom(this.transactionService.getAllUserTransactions())
       ]);
       
-      console.log('📦 Raw accounts response:', accounts);
-      console.log('📦 Raw transactions response:', transactions);
       
       this.accounts = accounts || [];
       this.allTransactions = transactions || [];
       
-      console.log(`✅ Loaded ${this.accounts.length} accounts and ${this.allTransactions.length} transactions`);
-      console.log('🔍 Accounts:', this.accounts);
-      console.log('🔍 Transactions:', this.allTransactions);
       
       // Aplicar filtros de forma simple
       this.filteredTransactions = [...this.allTransactions];
@@ -169,9 +146,6 @@ export class PaymentsComponent implements OnInit {
       this.totalPages = Math.ceil(this.filteredTransactions.length / this.rowsPerPage);
       this.currentPage = 1;
       
-      console.log(`📊 Filtered: ${this.filteredTransactions.length}, Paginated: ${this.paginatedTransactions.length}`);
-      console.log('🔍 Final filteredTransactions:', this.filteredTransactions);
-      console.log('🏁 Final paginatedTransactions:', this.paginatedTransactions);
       
     } catch (error: any) {
       console.error('❌ Error loading data:', error);
@@ -192,28 +166,15 @@ export class PaymentsComponent implements OnInit {
       this.filteredTransactions = [];
       this.paginatedTransactions = [];
     } finally {
-      console.log('🔍 Before setting isLoading=false - current value:', this.isLoading);
       this.isLoading = false;
-      console.log('🔄 LOADING SET TO FALSE');
-      console.log('�� isLoading value:', this.isLoading);
       
       // Forzar detección de cambios inmediatamente - SIN setTimeout
       this.cdr.detectChanges();
-      console.log('🔄 After detectChanges - isLoading:', this.isLoading);
-      console.log('�� Final state check:');
-      console.log('  - isLoading:', this.isLoading);
-      console.log('  - error:', this.error);
-      console.log('  - allTransactions.length:', this.allTransactions.length);
-      console.log('  - filteredTransactions.length:', this.filteredTransactions.length);
-      console.log('  - paginatedTransactions.length:', this.paginatedTransactions.length);
-      console.log('🏁 loadInitialData COMPLETED');
     }
   }
 
   applyFilters(): void {
     try {
-      console.log('🔍 Applying filters:', this.filters);
-      console.log('�� Total transactions before filtering:', this.allTransactions.length);
       
       this.filteredTransactions = this.allTransactions.filter(transaction => {
       // Filtro por cuenta
@@ -265,15 +226,12 @@ export class PaymentsComponent implements OnInit {
       return true;
     });
     
-    console.log('✅ Filtered transactions:', this.filteredTransactions.length);
     
     // Recalcular paginación
     this.calculatePages();
-    console.log('📄 Total pages calculated:', this.totalPages);
     
     this.currentPage = 1; // Resetear a primera página
     this.displayPage(1);
-    console.log('📋 Displayed transactions:', this.paginatedTransactions.length);
     
     // Forzar detección de cambios después de aplicar filtros
     this.cdr.detectChanges();
@@ -333,15 +291,12 @@ export class PaymentsComponent implements OnInit {
   }
 
   displayPage(page: number): void {
-    console.log(`📄 Displaying page ${page} of ${this.totalPages}`);
-    console.log(`📊 Filtered transactions available: ${this.filteredTransactions.length}`);
     
     this.currentPage = page;
     const startIndex = (page - 1) * this.rowsPerPage;
     const endIndex = startIndex + this.rowsPerPage;
     this.paginatedTransactions = this.filteredTransactions.slice(startIndex, endIndex);
     
-    console.log(`📋 Showing transactions ${startIndex} to ${endIndex}: ${this.paginatedTransactions.length} items`);
   }
 
   changePage(page: number): void {

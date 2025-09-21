@@ -68,7 +68,7 @@ export class MarketTimerService implements OnDestroy {
     }, config.interval);
 
     this.timers.set(type, timer);
-    console.log(`✅ Timer iniciado para ${type} cada ${config.interval / 60000} minutos`);
+    //console.log(`✅ Timer iniciado para ${type} cada ${config.interval / 60000} minutos`);
   }
 
   /**
@@ -85,7 +85,7 @@ export class MarketTimerService implements OnDestroy {
         config.isActive = false;
       }
       
-      console.log(`⏸️ Timer pausado para ${type}`);
+      //console.log(`⏸️ Timer pausado para ${type}`);
     }
   }
 
@@ -132,7 +132,7 @@ export class MarketTimerService implements OnDestroy {
     const timeUntilTomorrow = tomorrow.getTime() - now.getTime();
 
     setTimeout(() => {
-      console.log(`🌅 ${type}: Reiniciando timer para nuevo día`);
+      //console.log(`🌅 ${type}: Reiniciando timer para nuevo día`);
       this.resumeTimer(type, callback);
     }, timeUntilTomorrow);
   }
@@ -197,7 +197,7 @@ export class MarketTimerService implements OnDestroy {
     
     this.timers.forEach((timer, type) => {
       clearInterval(timer);
-      console.log(`🧹 Timer limpiado para ${type}`);
+      //console.log(`🧹 Timer limpiado para ${type}`);
     });
     
     this.timers.clear();

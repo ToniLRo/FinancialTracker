@@ -50,16 +50,10 @@ export class TransactionService {
 
   getAllUserTransactions(): Observable<Transaction[]> {
     const headers = this.getAuthHeaders();
-    console.log('🔑 Transaction Service - Headers:', {
-      'Authorization': headers.get('Authorization')?.substring(0, 20) + '...',
-      'Content-Type': headers.get('Content-Type')
-    });
-    console.log('🔗 Transaction Service - URL:', `${this.transactionApiUrl}/user`);
     
     return this.http.get<Transaction[]>(`${this.transactionApiUrl}/user`, { 
       headers: headers 
     }).pipe(
-      tap(response => console.log('✅ Transaction Service Response:', response)),
       shareReplay(1), // Cachea las transacciones del usuario
       catchError(error => {
         console.error('❌ Get All User Transactions Error:', error);

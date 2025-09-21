@@ -142,26 +142,18 @@ public class DashboardServices {
             monthlyData.put(month.toString(), 0.0);
         }
         
-        System.out.println("📊 MONTHLY DATA - Processing " + transactions.size() + " transactions for " + (isIncome ? "INCOME" : "EXPENSES"));
-        
         // Agrupar transacciones por mes - SIN FILTRO DE FECHA
         Map<YearMonth, Double> transactionsByMonth = transactions.stream()
             .filter(t -> isIncome ? t.getAmount() > 0 : t.getAmount() < 0) // Clasificar por monto
-            .peek(t -> System.out.println("  - " + (isIncome ? "INCOME" : "EXPENSE") + ": " + t.getAmount() + " on " + t.getDate()))
             .collect(Collectors.groupingBy(
                 t -> YearMonth.from(t.getDate().toLocalDate()),
                 Collectors.summingDouble(t -> Math.abs(t.getAmount()))
             ));
         
-        System.out.println("📊 MONTHLY DATA - Found " + transactionsByMonth.size() + " months with data");
-        
         // Actualizar datos con valores reales
         transactionsByMonth.forEach((month, amount) -> {
             if (monthlyData.containsKey(month.toString())) {
                 monthlyData.put(month.toString(), amount);
-                System.out.println("📊 MONTHLY DATA - " + month + ": " + amount);
-            } else {
-                System.out.println("📊 MONTHLY DATA - Month " + month + " is outside the 12-month range");
             }
         });
         

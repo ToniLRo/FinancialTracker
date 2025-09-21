@@ -359,12 +359,12 @@ public class TransactionController {
 			//System.out.println("Authenticated user: " + username);
 			//System.out.println("User ID: " + user.getUser_Id());
 			
-			// Buscar todas las transacciones del usuario
+			// Buscar todas las transacciones del usuario (ahora optimizado con JOIN FETCH)
 			List<Transaction> transactions = transactionService.findTransactionsByUserId(user.getUser_Id());
 			//System.out.println("Found " + transactions.size() + " transactions for user");
 			
-			// Convertir a DTOs
-			List<TransactionDTO> transactionDTOs = transactions.stream()
+			// Convertir a DTOs de forma más eficiente
+			List<TransactionDTO> transactionDTOs = transactions.parallelStream()
 				.map(this::convertToDTO)
 				.collect(Collectors.toList());
 			

@@ -14,6 +14,9 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { MaintenanceInfoComponent } from './components/maintenance-info/maintenance-info.component';
 
 const routes: Routes = [
+  // Redirección de la ruta raíz
+  { path: '', redirectTo: '/Home', pathMatch: 'full' },
+  
   // Rutas públicas que no requieren autenticación pero sí verificación de mantenimiento
   { path: 'LogIn', component: LogINComponent, canActivate: [MaintenanceGuard] },
   { path: 'SignUp', component: SignUpComponent, canActivate: [MaintenanceGuard] },
@@ -30,7 +33,7 @@ const routes: Routes = [
   { path: 'Profile', component: ProfileComponent, canActivate: [MaintenanceGuard, AuthGuard] },
   { path: 'Settings', component: SettingsComponent, canActivate: [MaintenanceGuard, AuthGuard] },
   
-  // Ruta por defecto
+  // Ruta por defecto para rutas no encontradas
   { path: '**', redirectTo: '/Home', pathMatch: 'full' }
 ];
 

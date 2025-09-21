@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/api/system/status") // Permitir CSRF para el endpoint crítico
                 .ignoringRequestMatchers("/auth/**") // Permitir CSRF para autenticación
                 .ignoringRequestMatchers("/user/login", "/user/add", "/user/forgot-password", "/user/reset-password")
+                .ignoringRequestMatchers("/account/**") // Permitir CSRF para cuentas
+                .ignoringRequestMatchers("/transaction/**") // Permitir CSRF para transacciones
                 .ignoringRequestMatchers("/marketdata/**") // Permitir CSRF para marketdata
                 .ignoringRequestMatchers("/api/update-control/**") // Permitir CSRF para update-control
                 .ignoringRequestMatchers("/api/test/health", "/api/test/cors-test") // Permitir CSRF para endpoints de prueba

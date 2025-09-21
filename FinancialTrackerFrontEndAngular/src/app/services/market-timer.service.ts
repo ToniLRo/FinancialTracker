@@ -59,7 +59,7 @@ export class MarketTimerService implements OnDestroy {
     const timer = setInterval(() => {
       if (this.canMakeCall(type)) {
         callback();
-        this.updateLastCallTime(type);
+        this.saveLastCallTime(type, Date.now());
       } else {
         console.log(`⏰ ${type}: Pausando timer hasta mañana`);
         this.pauseTimer(type);

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { LoginResponse } from 'src/app/models/LoginResponse/loginresponse.model';
 import { AuthService } from '../auth/auth.service';
-import { catchError, throwError, shareReplay, take } from 'rxjs/operators';
+import { catchError, shareReplay, take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 

@@ -14,12 +14,12 @@ import com.tonilr.FinancialTracker.Entities.Transaction;
 @Repository
 public interface TransactionRepo extends JpaRepository<Transaction, Long> {
 	
-	//Buscar transacciones por cuenta
-	@Query("SELECT t FROM Transaction t WHERE t.account.account_Id = :accountId ORDER BY t.register_date DESC")
+	//Buscar transacciones por cuenta con JOIN FETCH para evitar N+1
+	@Query("SELECT t FROM Transaction t LEFT JOIN FETCH t.user LEFT JOIN FETCH t.account WHERE t.account.account_Id = :accountId ORDER BY t.register_date DESC")
 	List<Transaction> findByAccountId(@Param("accountId") Long accountId);
 	
-	//Buscar transacciones por usuario
-	@Query("SELECT t FROM Transaction t WHERE t.user.user_Id = :userId ORDER BY t.register_date DESC")
+	//Buscar transacciones por usuario con JOIN FETCH para evitar N+1
+	@Query("SELECT t FROM Transaction t LEFT JOIN FETCH t.user LEFT JOIN FETCH t.account WHERE t.user.user_Id = :userId ORDER BY t.register_date DESC")
 	List<Transaction> findByUserId(@Param("userId") Long userId);
 
 	//Buscar transacciones por usuario y fecha
